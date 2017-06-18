@@ -1,0 +1,3 @@
+https://lets-ride-a073c.firebaseapp.com/__/auth/handler
+
+ionic cordova plugin add cordova-plugin-facebook4 --variable APP_ID="1906644369591674" --variable APP_NAME="Let's Ride"
