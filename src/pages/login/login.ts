@@ -6,6 +6,7 @@ import { MainPage, SignupPage } from '../../pages';
 
 import { User } from '../../providers/user';
 
+import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
@@ -20,10 +21,7 @@ export class LoginPage {
   // If you're using the username field with or without email, make
   // sure to add it to the type
 
-  /*account: { email: string, password: string } = {
-    email: 'test@example.com',
-    password: 'test'
-  };*/
+
   pushPage: any;
   public signInForm: FormGroup;
 
@@ -35,11 +33,12 @@ export class LoginPage {
     public toastCtrl: ToastController,
     public translateService: TranslateService,
     private afAuth: AngularFireAuth,
-    private formBuilder: FormBuilder) {
+    private formBuilder: FormBuilder,
+    private spinnerDialog: SpinnerDialog
+  ) {
 
     this.pushPage = SignupPage;
 
-    console.log(this)
 
     this.signInForm = formBuilder.group({
       email: ['guillaume.bartolini@gmail.com', Validators.compose([Validators.required, Validators.email])],
@@ -78,32 +77,21 @@ export class LoginPage {
       return
     }
     else {
+      this.spinnerDialog.show(null,'Loading',true,{overlayOpacity:0.60});
+
       this.user.signInUser(this.signInForm.value.email, this.signInForm.value.password)
         .then(() => {
+          this.spinnerDialog.hide();
           this.createToast('Signed in with email: ' + this.signInForm.value.email).present();
           this.navCtrl.setRoot(MainPage);
         },
         (error) => {
+          this.spinnerDialog.hide();
           this.createToast(error.message).present();
         })
     }
   }
 
-  // Attempt to login in through our User service
-  /*doLogin() {
-    this.user.login(this.account).subscribe((resp) => {
-      //this.navCtrl.push(MainPage);
-    }, (err) => {
-      //this.navCtrl.push(MainPage);
-      // Unable to log in
-      let toast = this.toastCtrl.create({
-        message: this.loginErrorString,
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present();
-    });
-  }*/
 
 
 }

@@ -8,17 +8,17 @@
 
 
 <ion-content>
-  <form (submit)="doSignup()">
+  <form [formGroup]="signupForm"  (submit)="signUpFormSubmit()">
     <ion-list>
 
       <ion-item>
         <ion-label fixed>{{ 'NAME' | translate }}</ion-label>
-        <ion-input type="text" [(ngModel)]="account.name" name="name"></ion-input>
+        <ion-input type="text" formControlName="name" name="name" required></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label fixed>{{ 'EMAIL' | translate }}</ion-label>
-        <ion-input type="email" [(ngModel)]="account.email" name="email"></ion-input>
+        <ion-input type="email" formControlName="email" name="email" required></ion-input>
       </ion-item>
 
       <!--
@@ -32,7 +32,7 @@
 
       <ion-item>
         <ion-label fixed>{{ 'PASSWORD' | translate }}</ion-label>
-        <ion-input type="password" [(ngModel)]="account.password" name="password"></ion-input>
+        <ion-input type="password" formControlName="password" name="password" required></ion-input>
       </ion-item>
 
       <div padding>

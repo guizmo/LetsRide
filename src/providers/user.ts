@@ -7,9 +7,9 @@ import 'rxjs/add/operator/toPromise';
 import { Platform } from 'ionic-angular';
 import { Facebook } from '@ionic-native/facebook';
 import { Dialogs } from '@ionic-native/dialogs';
-import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 
 import { AngularFireAuth } from 'angularfire2/auth';
+import { AngularFireDatabase } from 'angularfire2/database';
 import * as firebase from 'firebase/app';
 
 /**
@@ -43,7 +43,7 @@ export class User {
     private dialogs: Dialogs,
     private fb: Facebook,
     private platform: Platform,
-    private spinnerDialog: SpinnerDialog
+    public afDB: AngularFireDatabase
   ) {
       afAuth.authState.subscribe((user: firebase.User) => {
         this.currentUser = user;
@@ -57,23 +57,26 @@ export class User {
   }
 
   signInUser(newEmail: string, newPassword: string): firebase.Promise<any> {
-    this.spinnerDialog.show(null,'Loading',true,{overlayOpacity:0.60});
-
-    let signIn = this.afAuth.auth.signInWithEmailAndPassword(newEmail, newPassword);
-    console.log('firebaseUser login');
-    signIn.then( (firebaseUser) => {
-      console.log('firebaseUser', firebaseUser);
-      this.spinnerDialog.hide();
-    }).catch( (error) => {
-      console.error('ERROR', error);
-      this.spinnerDialog.hide();
-    })
-
-    return signIn;
+    return this.afAuth.auth.signInWithEmailAndPassword(newEmail, newPassword);
   }
 
-  signUpUser(newEmail: string, newPassword: string): firebase.Promise<any> {
-    return this.afAuth.auth.createUserWithEmailAndPassword(newEmail, newPassword);
+  signUpUser(name: string, newEmail: string, newPassword: string): firebase.Promise<any> {
+    console.log(name)
+    console.log(newEmail)
+    console.log(newPassword)
+
+    return this.afAuth.auth.createUserWithEmailAndPassword(newEmail, newPassword).then((newUser) => {
+         // firebase.database().ref('/users').child(email).set({
+          //    firstName: "anonymous",
+           //   id:newUser.uid,
+         // });
+         console.log(this.afDB)
+        this.afDB.database.ref('/userProfile').child(newUser.uid).set({
+          firstName: name,
+          email: newEmail
+        });
+      });
+
   }
 
   resetPassword(email: string): firebase.Promise<any> {
@@ -113,67 +116,23 @@ export class User {
     let btn2 = this.translate.getString('NO') || 'No';
     let alertMsg = this.translate.getString('SIGNOUT_MSG') || 'Do you really want to logout';
 
-    this.dialogs.confirm(
-      alertMsg,
-      alertTitle,
-      [btn1,btn2]
-    )
-    .then((res) => {
-      if(res === 1)
-        this.afAuth.auth.signOut();
-    })
-    .catch(e => console.log('Error displaying dialog', e));
+    if (this.platform.is('cordova')) {
+      this.dialogs.confirm(
+        alertMsg,
+        alertTitle,
+        [btn1,btn2]
+      )
+      .then((res) => {
+        if(res === 1)
+          this.afAuth.auth.signOut();
+      })
+      .catch(e => console.log('Error displaying dialog', e));
+    }else{
+      this.afAuth.auth.signOut();
+    }
 
   }
 
 
-
-
-  /**
-   * Send a POST request to our login endpoint with the data
-   * the user entered on the form.
-   */
-  /*login(accountInfo: any) {
-    let seq = this.api.post('login', accountInfo).share();
-
-    seq
-      .map(res => res.json())
-      .subscribe(res => {
-        // If the API returned a successful response, mark the user as logged in
-        if (res.status == 'success') {
-          this._loggedIn(res);
-        } else {
-        }
-      }, err => {
-        console.error('ERROR', err);
-      });
-
-    return seq;
-  }*/
-
-
-  /**
-   * Send a POST request to our signup endpoint with the data
-   * the user entered on the form.
-   */
-   /*
-  signup(accountInfo: any) {
-    let seq = this.api.post('signup', accountInfo).share();
-
-    seq
-      .map(res => res.json())
-      .subscribe(res => {
-        // If the API returned a successful response, mark the user as logged in
-        if (res.status == 'success') {
-          this._loggedIn(res);
-        }
-      }, err => {
-        console.error('ERROR', err);
-      });
-
-    return seq;
-  }
-
-  */
 
 }
