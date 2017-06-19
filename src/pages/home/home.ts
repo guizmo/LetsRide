@@ -10,8 +10,12 @@ import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/databa
 export class MainPage {
   items: FirebaseListObservable<any[]>;
 
-  constructor(public navCtrl: NavController, public afDB: AngularFireDatabase) {
+  constructor(
+    public navCtrl: NavController,
+    public afDB: AngularFireDatabase
+  ) {
     this.items = afDB.list('/recipes');
   }
+
 
 }

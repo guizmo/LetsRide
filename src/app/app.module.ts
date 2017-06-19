@@ -7,12 +7,13 @@ import { Storage, IonicStorageModule } from '@ionic/storage';
 import { LetsRide } from './app.component';
 import { MainPage, ListPage, LoginPage, SignupPage} from '../pages';
 
-import { Api } from '../providers/api';
-import { User } from '../providers/user';
-import { Settings } from '../providers/settings';
+import { Api, Settings, User, Translate } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { Facebook } from '@ionic-native/facebook';
+import { Dialogs } from '@ionic-native/dialogs';
+import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -86,10 +87,14 @@ export function provideSettings(storage: Storage) {
   providers: [
     Api,
     User,
+    Translate,
     StatusBar,
     SplashScreen,
     AuthService,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    Facebook,
+    Dialogs,
+    SpinnerDialog
   ]
 })
 export class AppModule {}

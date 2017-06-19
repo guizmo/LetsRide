@@ -24,3 +24,5 @@ $ ionic cordova run ios
 
 Substitute ios for android if not on a Mac.
 
+Commands
+ionic cordova emulate ios --target="iPhone-6, 10.3" -l

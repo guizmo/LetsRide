@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
-import { Api } from './api';
+import { Translate } from './translate';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
+
+import { Platform } from 'ionic-angular';
+import { Facebook } from '@ionic-native/facebook';
+import { Dialogs } from '@ionic-native/dialogs';
+import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
@@ -31,7 +36,15 @@ export class User {
   _user: any;
   public currentUser: firebase.User;
 
-  constructor(public http: Http, public api: Api, private afAuth: AngularFireAuth) {
+  constructor(
+    public http: Http,
+    public translate: Translate,
+    private afAuth: AngularFireAuth,
+    private dialogs: Dialogs,
+    private fb: Facebook,
+    private platform: Platform,
+    private spinnerDialog: SpinnerDialog
+  ) {
       afAuth.authState.subscribe((user: firebase.User) => {
         this.currentUser = user;
       });
@@ -44,14 +57,16 @@ export class User {
   }
 
   signInUser(newEmail: string, newPassword: string): firebase.Promise<any> {
-    let signIn = this.afAuth.auth.signInWithEmailAndPassword(newEmail, newPassword);
+    this.spinnerDialog.show(null,'Loading',true,{overlayOpacity:0.60});
 
+    let signIn = this.afAuth.auth.signInWithEmailAndPassword(newEmail, newPassword);
+    console.log('firebaseUser login');
     signIn.then( (firebaseUser) => {
-      if (firebaseUser) {
-        this._loggedIn(firebaseUser);
-      }
+      console.log('firebaseUser', firebaseUser);
+      this.spinnerDialog.hide();
     }).catch( (error) => {
       console.error('ERROR', error);
+      this.spinnerDialog.hide();
     })
 
     return signIn;
@@ -67,16 +82,24 @@ export class User {
 
 
   signInWithFacebook(): firebase.Promise<any> {
-    let signInFB = this.afAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider());
+    let signInFB = null;
+    if (this.platform.is('cordova')) {
+      signInFB = this.fb.login(['email', 'public_profile'])
 
-    signInFB.then(firebaseUser => {
-      console.log('signInWithFacebook' , firebaseUser)
-      if (firebaseUser) {
-        this._loggedIn(firebaseUser);
-      }
-    }).catch( (error) => {
-      console.error('ERROR', error);
-    })
+      signInFB.then(res => {
+        const facebookCredential = firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken);
+        return firebase.auth().signInWithCredential(facebookCredential);
+      })
+    }else{
+      signInFB = this.afAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider());
+
+      signInFB.then(firebaseUser => {
+        console.log('signInWithFacebook' , firebaseUser)
+      }).catch( (error) => {
+        console.error('ERROR', error);
+      })
+
+    }
 
     return signInFB;
   }
@@ -85,16 +108,25 @@ export class User {
    * Log the user out, which forgets the session
    */
   logout() {
-    this.afAuth.auth.signOut();
+    let alertTitle = this.translate.getString('SIGNOUT_TITLE') || 'Sign out';
+    let btn1 = this.translate.getString('YES') || 'Yes';
+    let btn2 = this.translate.getString('NO') || 'No';
+    let alertMsg = this.translate.getString('SIGNOUT_MSG') || 'Do you really want to logout';
+
+    this.dialogs.confirm(
+      alertMsg,
+      alertTitle,
+      [btn1,btn2]
+    )
+    .then((res) => {
+      if(res === 1)
+        this.afAuth.auth.signOut();
+    })
+    .catch(e => console.log('Error displaying dialog', e));
+
   }
 
 
-  /**
-   * Process a login/signup response to store user data
-   */
-  _loggedIn(resp) {
-    this._user = resp;
-  }
 
 
   /**
