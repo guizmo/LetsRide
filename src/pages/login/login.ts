@@ -1,17 +1,15 @@
 import { Component } from '@angular/core';
-import { NavController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, ToastController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 
-import { MainPage, SignupPage } from '../../pages';
+import { MainPage } from '../../pages';
 
 import { User } from '../../providers/user';
 
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { AngularFireAuth } from 'angularfire2/auth';
-import * as firebase from 'firebase/app';
 
-
+@IonicPage()
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html'
@@ -33,12 +31,10 @@ export class LoginPage {
     public user: User,
     public toastCtrl: ToastController,
     public translateService: TranslateService,
-    private afAuth: AngularFireAuth,
     private formBuilder: FormBuilder,
     private spinnerDialog: SpinnerDialog
   ) {
 
-    this.pushPage = SignupPage;
 
 
     this.signInForm = formBuilder.group({
@@ -78,7 +74,7 @@ export class LoginPage {
       return
     }
     else {
-      this.spinnerDialog.show(null,'Loading',true,{overlayOpacity:0.60});
+      this.spinnerDialog.show(null,'Waiting ...',true,{overlayOpacity:0.60});
 
       this.user.signInUser(this.signInForm.value.email, this.signInForm.value.password)
         .then(() => {
@@ -93,14 +89,7 @@ export class LoginPage {
     }
   }
 
-  goToResetPassword(){
-    this.navCtrl.push('PasswordResetPage');
-  }
 
-  //page module.ts TODO
-  goToSignup(){
-    //this.navCtrl.push('SignupPage');
-  }
 
 
 }

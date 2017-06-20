@@ -5,7 +5,7 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { Storage, IonicStorageModule } from '@ionic/storage';
 
 import { LetsRide } from './app.component';
-import { MainPage, ListPage, LoginPage, SignupPage} from '../pages';
+import { MainPage, ListPage} from '../pages';
 
 import { Api, Settings, User, Translate, AppEvents } from '../providers';
 
@@ -59,8 +59,6 @@ export function provideSettings(storage: Storage) {
     LetsRide,
     MainPage,
     ListPage,
-    LoginPage,
-    SignupPage,
     GbLogoutButton
   ],
   imports: [
@@ -83,9 +81,7 @@ export function provideSettings(storage: Storage) {
   entryComponents: [
     LetsRide,
     MainPage,
-    ListPage,
-    LoginPage,
-    SignupPage
+    ListPage
 ],
   providers: [
     Api,

@@ -3,14 +3,10 @@ import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angu
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { EmailValidator } from '../../validators/email';
 
-import { MainPage, SignupPage } from '../../pages';
-
 import { User } from '../../providers/user';
 
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { AngularFireAuth } from 'angularfire2/auth';
-import * as firebase from 'firebase/app';
 
 
 /**
@@ -19,7 +15,9 @@ import * as firebase from 'firebase/app';
  * See http://ionicframework.com/docs/components/#navigation for more info
  * on Ionic pages and navigation.
  */
-@IonicPage()
+@IonicPage({
+    defaultHistory: ['LoginPage']
+})
 @Component({
   selector: 'page-password-reset',
   templateUrl: 'password-reset.html',
@@ -31,17 +29,27 @@ export class PasswordResetPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public user: User,
-    private afAuth: AngularFireAuth,
     private formBuilder: FormBuilder,
+    private toastCtrl: ToastController,
     private spinnerDialog: SpinnerDialog
   ) {
     this.resetPasswordForm = formBuilder.group({
       email: ['', Validators.compose([Validators.required, EmailValidator.isValid])]
     });
+
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad PasswordResetPage');
+  }
+
+  createToast(message: string) {
+    return this.toastCtrl.create({
+      message,
+      dismissOnPageChange: true,
+      closeButtonText: 'OK',
+      showCloseButton: true
+    })
   }
 
 
@@ -49,7 +57,26 @@ export class PasswordResetPage {
     if (!this.resetPasswordForm.valid){
       console.log(this.resetPasswordForm.value);
     } else {
+      this.spinnerDialog.show(null,'Waiting ...',true,{overlayOpacity:0.60});
+
       this.user.resetPassword(this.resetPasswordForm.value.email)
+      .then((user) => {
+        this.spinnerDialog.hide();
+
+        let toast = this.createToast('We just sent you a reset link to your email to: ' + this.resetPasswordForm.value.email)
+        toast.present();
+
+        toast.onDidDismiss(() => {
+          this.navCtrl.pop();
+        });
+
+
+      }, (error) => {
+        this.spinnerDialog.hide();
+        var errorMessage: string = error.message;
+        this.createToast(errorMessage).present();
+      });
+
     }
   }
 

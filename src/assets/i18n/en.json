@@ -47,7 +47,6 @@
   "LOGIN_BUTTON": "Sign in",
   "SIGNUP_TITLE": "Sign up",
   "SIGNUP_ERROR": "Unable to create account. Please check your account information and try again.",
-  "SIGNUP_BUTTON": "Sign up",
 
   "LIST_MASTER_TITLE": "Items",
 
@@ -67,6 +66,10 @@
   "SEARCH_PLACEHOLDER" : "Search the items list, e.g. \"Donald Duck\"",
 
 
+
+  "RESET_PASS_TITLE": "Reset your Password",
+  "FORGOT_PASS_TITLE": "I forgot my password",
+  "SIGNUP_BUTTON": "Join Let's Ride",
   "SIGNOUT": "Sign out",
   "SIGNOUT_TITLE": "Sign out",
   "SIGNOUT_MSG": "Do you really want to sign out ?",

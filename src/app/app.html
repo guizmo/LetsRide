@@ -7,15 +7,27 @@
 
   <ion-content>
     <ion-list>
-      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
+      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p.component)">
         {{p.title}}
       </button>
     </ion-list>
   </ion-content>
-  <ion-footer  class="bar-stable">
+  <ion-footer  class="bar-stable" style="left:0;right:0;margin:0; width: 100%;position: fixed;bottom:0;">
 
-      <button menuClose [hidden]="user.authenticated" (click)="openPage(loginPage)" ion-item nav-clear  style="left:0;right:0;margin:0; width: 100%;position: fixed;bottom:0;">Login</button>
-      <gb-logout-button [hidden]="!user.authenticated" menuClose nav-clear style="left:0;right:0;margin:0; width: 100%;position: fixed;bottom:0;"></gb-logout-button>
+      <button
+        menuClose
+        [hidden]="user.authenticated"
+        (click)="openPage('LoginPage')"
+        ion-button
+        icon-left
+        icon-left
+        full
+        color="primary"
+        no-margin
+      >
+        <ion-icon float-left ios="ios-log-in" md="md-log-in"></ion-icon> Login
+      </button>
+      <gb-logout-button [hidden]="!user.authenticated" menuClose nav-clear ></gb-logout-button>
   </ion-footer>
 
 </ion-menu>

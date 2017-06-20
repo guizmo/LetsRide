@@ -8,45 +8,41 @@
 </ion-header>
 
 
-<ion-content>
-  <form [formGroup]="signInForm" (submit)="signInFormSubmit()">
-    <ion-list>
+<ion-content padding>
+  <form [formGroup]="signInForm" (submit)="signInFormSubmit()" padding-bottom>
 
       <ion-item>
         <ion-label fixed>{{ 'EMAIL' | translate }}</ion-label>
         <ion-input type="email" formControlName="email" name="email" required ></ion-input>
       </ion-item>
 
-      <!--
-      Want to use a Username instead of an Email? Here you go:
-
-      <ion-item>
-        <ion-label floating>{{ 'USERNAME' | translate }}</ion-label>
-        <ion-input type="text" [(ngModel)]="account.username"></ion-input>
-      </ion-item>
-      -->
-
       <ion-item>
         <ion-label fixed>{{ 'PASSWORD' | translate }}</ion-label>
         <ion-input type="password" formControlName="password" clearInput name="password"></ion-input>
       </ion-item>
 
-      <div padding>
-        <button ion-button color="primary" block>{{ 'LOGIN_BUTTON' | translate }}</button>
-      </div>
-    </ion-list>
-  </form>
-  <div padding>
-  <button [navPush]="pushPage" ion-button outline>Sign up</button>
-</div>
 
-  <div padding>
-    <button ion-button block clear (click)="goToResetPassword()">
-      I forgot my password
+      <button margin-top ion-button icon-left color="primary" block>
+        <ion-icon ios="ios-log-in" md="md-log-in"></ion-icon>
+        {{ 'LOGIN_BUTTON' | translate }}
+      </button>
+
+      <div margin-bottom>
+        <button ion-button block clear [navPush]="'PasswordResetPage'">
+          {{ 'FORGOT_PASS_TITLE' | translate }}
+        </button>
+      </div>
+  </form>
+  <div margin-bottom>
+    <button [navPush]="'SignupPage'" icon-left  ion-button block>
+      <ion-icon ios="ios-mail-open" md="md-mail-open" ></ion-icon> Signup with Email
+    </button>
+  </div>
+  <div margin-bottom>
+    <button ion-button icon-left block (click)="signInWithFacebook()">
+      <ion-icon name="logo-facebook"></ion-icon>  Continue with facebook
     </button>
   </div>
 
-  <div padding>
-    <button ion-button outline (click)="signInWithFacebook()">Login with facebook</button>
-  </div>
+
 </ion-content>
