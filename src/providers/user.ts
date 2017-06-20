@@ -6,7 +6,6 @@ import 'rxjs/add/operator/toPromise';
 
 import { Platform } from 'ionic-angular';
 import { Facebook } from '@ionic-native/facebook';
-import { Dialogs } from '@ionic-native/dialogs';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase } from 'angularfire2/database';
@@ -33,14 +32,13 @@ import * as firebase from 'firebase/app';
  */
 @Injectable()
 export class User {
-  _user: any;
+
   public currentUser: firebase.User;
 
   constructor(
     public http: Http,
     public translate: Translate,
     private afAuth: AngularFireAuth,
-    private dialogs: Dialogs,
     private fb: Facebook,
     private platform: Platform,
     public afDB: AngularFireDatabase
@@ -48,8 +46,6 @@ export class User {
       afAuth.authState.subscribe((user: firebase.User) => {
         this.currentUser = user;
       });
-      console.log(this)
-
   }
 
   get authenticated(): boolean {
@@ -61,20 +57,10 @@ export class User {
   }
 
   signUpUser(name: string, newEmail: string, newPassword: string): firebase.Promise<any> {
-    console.log(name)
-    console.log(newEmail)
-    console.log(newPassword)
-
+    let infos = {name, newEmail};
     return this.afAuth.auth.createUserWithEmailAndPassword(newEmail, newPassword).then((newUser) => {
-         // firebase.database().ref('/users').child(email).set({
-          //    firstName: "anonymous",
-           //   id:newUser.uid,
-         // });
-         console.log(this.afDB)
-        this.afDB.database.ref('/userProfile').child(newUser.uid).set({
-          firstName: name,
-          email: newEmail
-        });
+        this.updateProfile(newUser, infos);
+        //this.storeProfileDatabase(newUser, infos);
       });
 
   }
@@ -97,42 +83,30 @@ export class User {
       signInFB = this.afAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider());
 
       signInFB.then(firebaseUser => {
-        console.log('signInWithFacebook' , firebaseUser)
-      }).catch( (error) => {
-        console.error('ERROR', error);
-      })
-
+      }).catch( (error) => console.error('ERROR', error))
     }
-
     return signInFB;
   }
 
+  updateProfile(user, infos){
+    user.updateProfile({
+      displayName: infos.name
+    }).then(() => {
+      // Update successful
+    });
+  }
+
+  storeProfileDatabase(user, infos){
+    this.afDB.database.ref('/userProfile').child(user.uid).set({
+      firstName: infos.name,
+      email: infos.newEmail
+    });
+  }
   /**
    * Log the user out, which forgets the session
    */
   logout() {
-    let alertTitle = this.translate.getString('SIGNOUT_TITLE') || 'Sign out';
-    let btn1 = this.translate.getString('YES') || 'Yes';
-    let btn2 = this.translate.getString('NO') || 'No';
-    let alertMsg = this.translate.getString('SIGNOUT_MSG') || 'Do you really want to logout';
-
-    if (this.platform.is('cordova')) {
-      this.dialogs.confirm(
-        alertMsg,
-        alertTitle,
-        [btn1,btn2]
-      )
-      .then((res) => {
-        if(res === 1)
-          this.afAuth.auth.signOut();
-      })
-      .catch(e => console.log('Error displaying dialog', e));
-    }else{
-      this.afAuth.auth.signOut();
-    }
-
+    this.afAuth.auth.signOut()
   }
-
-
 
 }

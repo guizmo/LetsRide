@@ -1,12 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
+
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-
+import { Dialogs } from '@ionic-native/dialogs';
 
 import { MainPage, ListPage, LoginPage} from '../pages';
-
-import { User, Translate } from '../providers';
+import { User, Translate, AppEvents} from '../providers';
 
 @Component({
   templateUrl: 'app.html'
@@ -18,12 +18,21 @@ export class LetsRide {
   loginPage: any = { title: 'Login', component: LoginPage };
   pages: any[] = [
     { title: 'Home', component: MainPage },
-    { title: 'Profile', component: ListPage },
-    { title: 'Places', component: ListPage },
+    { title: 'Profile', component: 'ProfilePage' },
+    { title: 'Places', component: 'PlacesPage' },
+    { title: 'List', component: ListPage },
     { title: 'settings', component: ListPage }
   ]
 
-  constructor(private translate: Translate, public user: User, public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
+  constructor(
+    private translate: Translate,
+    private dialogs: Dialogs,
+    public user: User,
+    public platform: Platform,
+    public statusBar: StatusBar,
+    public splashScreen: SplashScreen,
+    public appEvents: AppEvents
+  ) {
     this.translate.init();
   }
 
@@ -37,9 +46,6 @@ export class LetsRide {
   }
 
 
-  logout(){
-    this.user.logout();
-  }
 
   openPage(page) {
     // Reset the content nav to have just this page

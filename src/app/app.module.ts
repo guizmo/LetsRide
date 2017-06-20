@@ -7,7 +7,7 @@ import { Storage, IonicStorageModule } from '@ionic/storage';
 import { LetsRide } from './app.component';
 import { MainPage, ListPage, LoginPage, SignupPage} from '../pages';
 
-import { Api, Settings, User, Translate } from '../providers';
+import { Api, Settings, User, Translate, AppEvents } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -21,6 +21,8 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AuthService } from '../providers/auth-service';
+
+import { GbLogoutButton } from '../components/gb-logout-button/gb-logout-button';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyBvmBNw3scf3o1dSZGQRGjFUGfhlOQw0a0",
@@ -58,7 +60,8 @@ export function provideSettings(storage: Storage) {
     MainPage,
     ListPage,
     LoginPage,
-    SignupPage
+    SignupPage,
+    GbLogoutButton
   ],
   imports: [
     BrowserModule,
@@ -94,7 +97,8 @@ export function provideSettings(storage: Storage) {
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     Facebook,
     Dialogs,
-    SpinnerDialog
+    SpinnerDialog,
+    AppEvents
   ]
 })
 export class AppModule {}

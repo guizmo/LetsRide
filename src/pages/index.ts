@@ -7,3 +7,4 @@ export { MainPage } from './home/home';
 export { SignupPage } from './signup/signup';
 export { ListPage } from './list/list';
 export { LoginPage } from './login/login';
+export { ProfilePage } from './profile/profile';

@@ -28,7 +28,8 @@ export class LoginPage {
   // Our translated text strings
   private loginErrorString: string;
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public user: User,
     public toastCtrl: ToastController,
     public translateService: TranslateService,
@@ -92,6 +93,14 @@ export class LoginPage {
     }
   }
 
+  goToResetPassword(){
+    this.navCtrl.push('PasswordResetPage');
+  }
+
+  //page module.ts TODO
+  goToSignup(){
+    //this.navCtrl.push('SignupPage');
+  }
 
 
 }

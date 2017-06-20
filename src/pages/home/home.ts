@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Events } from 'ionic-angular';
 //test firbase db
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 
@@ -12,10 +12,14 @@ export class MainPage {
 
   constructor(
     public navCtrl: NavController,
-    public afDB: AngularFireDatabase
+    public afDB: AngularFireDatabase,
+    public events: Events
   ) {
     this.items = afDB.list('/recipes');
   }
 
+  goToProfile(){
+    this.navCtrl.setRoot('ProfilePage');
+  }
 
 }
