@@ -25,12 +25,17 @@
 
 
 <ion-content padding>
-  <div class="list card">
+  <div class="list card" *ngIf="currentUser">
 
     <div class="item item-avatar">
+      <img width="100" height="100" src="{{currentUser.photoURL }}" />
+
     </div>
 
     <div class="item item-body">
+      <div class="item item-avatar">{{currentUser.email}}</div>
+      <div class="item item-avatar">{{currentUser.displayName}}</div>
+
       <p>
         This is a "Facebook" styled Card. The header is created from a Thumbnail List item,
         the content is from a card-body consisting of an image and paragraph text. The footer

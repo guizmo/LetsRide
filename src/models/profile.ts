@@ -1,5 +1,13 @@
-export class Profile {
-  constructor(
+export interface Profile {
+  uid: string;
+  aFuid: string;
+  displayName: string;
+  email: string;
+  photoURL: string;
+  settings: string;
+  providerId: string;
+}
+/*   constructor(
     public uid: string,
     public aFuid: string,
     public displayName: string,
@@ -9,15 +17,16 @@ export class Profile {
     public providerId: string
   ){
 
-/*    this.uid = uid || '';
+   this.uid = uid || '';
     this.displayName = json.displayName || '';
     this.photoURL = json.photoURL || '';
     this.providerId = json.providerId || '';
     this.emailAddress = json.emailAddress || '';
-    */
-  }
-}
-  /*
+
+  }*/
+
+
+    /*
   avatarUrl(size: number = 100): string {
     return './assets/images/avatar.png';
   }

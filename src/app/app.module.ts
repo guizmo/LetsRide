@@ -20,7 +20,6 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
-import { AngularFireOfflineModule } from 'angularfire2-offline';
 import { AuthService } from '../providers/auth-service';
 
 import { GbLogoutButton } from '../components/gb-logout-button/gb-logout-button';
@@ -76,8 +75,7 @@ export function provideSettings(storage: Storage) {
     IonicStorageModule.forRoot(),
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
-    AngularFireAuthModule,
-    AngularFireOfflineModule
+    AngularFireAuthModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

@@ -16,7 +16,7 @@
 
       <button
         menuClose
-        [hidden]="authenticated"
+        [hidden]="currentUser"
         (click)="openPage('LoginPage')"
         ion-button
         icon-left
@@ -27,7 +27,7 @@
       >
         <ion-icon float-left ios="ios-log-in" md="md-log-in"></ion-icon> Login
       </button>
-      <gb-logout-button [hidden]="authenticated" menuClose nav-clear ></gb-logout-button>
+      <gb-logout-button [hidden]="!currentUser" menuClose nav-clear ></gb-logout-button>
   </ion-footer>
 
 </ion-menu>

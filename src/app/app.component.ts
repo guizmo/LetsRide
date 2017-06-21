@@ -37,18 +37,7 @@ export class LetsRide {
   ) {
     this.translate.init();
     console.log('app.compenent constructor',  this)
-
-    this.userProvider.profileUser.subscribe((_user) => {
-      // get the user...
-      this.currentUser = _user;
-      // if user.. show data, else show login
-      if (this.currentUser) {
-
-      } else {
-
-      }
-
-    })
+    this.userProvider.getProfile().subscribe(data => this.currentUser = data );
   }
 
   ionViewDidLoad() {

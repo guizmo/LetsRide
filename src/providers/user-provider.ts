@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Translate } from './translate';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject'
+//import { BehaviorSubject } from 'rxjs/BehaviorSubject'
+import { Observable } from "rxjs/Rx";
 
 import { Platform } from 'ionic-angular';
 import { Facebook } from '@ionic-native/facebook';
@@ -17,10 +18,8 @@ import {Profile} from '../models/profile';
 export class UserProvider {
 
   public currentUser: firebase.User;
-  public profileUser = new BehaviorSubject<Profile>(null);
+  //profileUser = new BehaviorSubject<Profile>(null);
 
-
-  public testProfileUser: any;
   constructor(
     public http: Http,
     public translate: Translate,
@@ -29,25 +28,27 @@ export class UserProvider {
     private platform: Platform,
     public afDB: AngularFireDatabase
   ) {
-      afAuth.authState.subscribe((_user: firebase.User) => {
+  }
+
+  getProfile(): Observable<Profile> {
+    return Observable.create(observer => {
+      this.afAuth.authState.subscribe((_user: firebase.User) => {
         if (_user) {
           this.currentUser = _user;
           let providerData = {..._user.providerData[0], ...{'aFuid':_user.uid} };
-          this.profileUser.next( Object.assign(providerData) );
-          console.log('logged in')
+          //this.profileUser.next( Object.assign(providerData) );
+          observer.next( Object.assign(providerData) );
+          observer.complete();
+          console.log('Observable in', this)
         } else {
-          //his.currentUser = 'local';
-          console.log('logged out')
-          this.profileUser.next(null)
+          console.log('Observable out')
+          observer.next(null);
         }
 
       });
+    });
   }
 
-  /*get authenticated(): boolean {
-    console.log('authenticated', this.currentUser)
-    return this.currentUser !== null;
-  }*/
 
   signInUser(newEmail: string, newPassword: string): firebase.Promise<any> {
     return this.afAuth.auth.signInWithEmailAndPassword(newEmail, newPassword);

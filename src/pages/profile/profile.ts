@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Observable } from "rxjs/Rx";
 import { UserProvider } from '../../providers';
 import { Profile } from '../../models/profile';
-import { Observable } from "rxjs/Rx";
+
 
 /**
  * Generated class for the ProfilePage page.
@@ -15,23 +16,41 @@ import { Observable } from "rxjs/Rx";
   selector: 'page-profile',
   templateUrl: 'profile.html',
 })
-export class ProfilePage {
+export class ProfilePage implements OnInit {
 
   editIcon: string = "create";
   editState: boolean = false;
 
-  userProfile: Observable<Profile>;
+  currentUser: Profile;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public userProvider: UserProvider
   ) {
-    console.log('*** Profile Page ****', this);
+    console.log('constructor ProfilePage', this);
+    this.userProvider.getProfile().subscribe(
+      (data) => {
+        this.currentUser = data;
+        console.log('data', this.currentUser);
+      },
+      (err) => {
+        console.log(err);
+      },
+      () => {
+        console.log("completed");
+      }
+    );
+  }
+
+  ngOnInit() {
+    console.log('ngOnInit ProfilePage', this.currentUser);
+
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad ProfilePage');
+    console.log('ionViewDidLoad ProfilePage', this.currentUser);
+    console.log(JSON.stringify(this.currentUser))
   }
 
   etitProfile(){
