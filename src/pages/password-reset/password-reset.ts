@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angu
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { EmailValidator } from '../../validators/email';
 
-import { User } from '../../providers/user';
+import { UserProvider } from '../../providers';
 
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,8 +27,9 @@ export class PasswordResetPage {
 
   constructor(
     public navCtrl: NavController,
+    public translateService: TranslateService,
     public navParams: NavParams,
-    public user: User,
+    public userProvider: UserProvider,
     private formBuilder: FormBuilder,
     private toastCtrl: ToastController,
     private spinnerDialog: SpinnerDialog
@@ -59,7 +60,7 @@ export class PasswordResetPage {
     } else {
       this.spinnerDialog.show(null,'Waiting ...',true,{overlayOpacity:0.60});
 
-      this.user.resetPassword(this.resetPasswordForm.value.email)
+      this.userProvider.resetPassword(this.resetPasswordForm.value.email)
       .then((user) => {
         this.spinnerDialog.hide();
 

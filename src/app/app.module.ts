@@ -7,7 +7,7 @@ import { Storage, IonicStorageModule } from '@ionic/storage';
 import { LetsRide } from './app.component';
 import { MainPage, ListPage} from '../pages';
 
-import { Api, Settings, User, Translate, AppEvents } from '../providers';
+import { Api, Settings, UserProvider, Translate, AppEvents } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -20,6 +20,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
+import { AngularFireOfflineModule } from 'angularfire2-offline';
 import { AuthService } from '../providers/auth-service';
 
 import { GbLogoutButton } from '../components/gb-logout-button/gb-logout-button';
@@ -75,7 +76,8 @@ export function provideSettings(storage: Storage) {
     IonicStorageModule.forRoot(),
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    AngularFireOfflineModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -85,7 +87,7 @@ export function provideSettings(storage: Storage) {
 ],
   providers: [
     Api,
-    User,
+    UserProvider,
     Translate,
     StatusBar,
     SplashScreen,

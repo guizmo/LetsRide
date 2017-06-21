@@ -1,4 +1,4 @@
-export { User } from './user';
+export { UserProvider } from './user-provider';
 export { Api } from './api';
 export { Settings } from './settings';
 export { AuthService } from './auth-service';

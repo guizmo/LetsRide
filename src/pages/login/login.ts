@@ -4,7 +4,7 @@ import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 
 import { MainPage } from '../../pages';
 
-import { User } from '../../providers/user';
+import { UserProvider } from '../../providers';
 
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 import { TranslateService } from '@ngx-translate/core';
@@ -28,7 +28,7 @@ export class LoginPage {
 
   constructor(
     public navCtrl: NavController,
-    public user: User,
+    public userProvider: UserProvider,
     public toastCtrl: ToastController,
     public translateService: TranslateService,
     private formBuilder: FormBuilder,
@@ -49,7 +49,7 @@ export class LoginPage {
   }
 
   signInWithFacebook() {
-    this.user.signInWithFacebook()
+    this.userProvider.signInWithFacebook()
     .then((res) => {
       console.log('user', res)
 
@@ -76,7 +76,7 @@ export class LoginPage {
     else {
       this.spinnerDialog.show(null,'Waiting ...',true,{overlayOpacity:0.60});
 
-      this.user.signInUser(this.signInForm.value.email, this.signInForm.value.password)
+      this.userProvider.signInUser(this.signInForm.value.email, this.signInForm.value.password)
         .then(() => {
           this.spinnerDialog.hide();
           this.createToast('Signed in with email: ' + this.signInForm.value.email).present();

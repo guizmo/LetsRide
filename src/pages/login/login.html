@@ -34,12 +34,12 @@
       </div>
   </form>
   <div margin-bottom>
-    <button [navPush]="'SignupPage'" icon-left  ion-button block>
+    <button icon-left  ion-button block [navPush]="'SignupPage'">
       <ion-icon ios="ios-mail-open" md="md-mail-open" ></ion-icon> Signup with Email
     </button>
   </div>
   <div margin-bottom>
-    <button ion-button icon-left block (click)="signInWithFacebook()">
+    <button ion-button icon-left block color="facebook" (click)="signInWithFacebook()">
       <ion-icon name="logo-facebook"></ion-icon>  Continue with facebook
     </button>
   </div>

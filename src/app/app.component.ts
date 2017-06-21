@@ -6,7 +6,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { Dialogs } from '@ionic-native/dialogs';
 
 import { MainPage, ListPage, LoginPage} from '../pages';
-import { User, Translate, AppEvents} from '../providers';
+import { Translate, AppEvents, UserProvider} from '../providers';
 
 @Component({
   templateUrl: 'app.html'
@@ -24,16 +24,31 @@ export class LetsRide {
     { title: 'settings', component: ListPage }
   ]
 
+  currentUser;
+
   constructor(
     private translate: Translate,
     private dialogs: Dialogs,
-    public user: User,
     public platform: Platform,
     public statusBar: StatusBar,
     public splashScreen: SplashScreen,
-    public appEvents: AppEvents
+    public appEvents: AppEvents,
+    public userProvider: UserProvider
   ) {
     this.translate.init();
+    console.log('app.compenent constructor',  this)
+
+    this.userProvider.profileUser.subscribe((_user) => {
+      // get the user...
+      this.currentUser = _user;
+      // if user.. show data, else show login
+      if (this.currentUser) {
+
+      } else {
+
+      }
+
+    })
   }
 
   ionViewDidLoad() {
@@ -43,6 +58,7 @@ export class LetsRide {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
+
   }
 
 

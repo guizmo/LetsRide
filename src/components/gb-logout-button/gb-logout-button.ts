@@ -3,7 +3,7 @@ import { Platform, ToastController, App, Events } from 'ionic-angular';
 
 import { MainPage, ListPage} from '../../pages';
 
-import { User, Translate } from '../../providers';
+import { UserProvider, Translate } from '../../providers';
 import { Dialogs } from '@ionic-native/dialogs';
 
 
@@ -24,7 +24,7 @@ export class GbLogoutButton {
     private translate: Translate,
     public platform: Platform,
     private dialogs: Dialogs,
-    public user: User,
+    public userProvider: UserProvider,
     private app: App,
     public events: Events
   ) {
@@ -45,11 +45,11 @@ export class GbLogoutButton {
       )
       .then((res) => {
         if(res === 1)
-          this.user.logout();
+          this.userProvider.logout();
       })
       .catch(e => console.log('Error displaying dialog', e));
     }else{
-      this.user.logout();
+      this.userProvider.logout();
       this.app.getRootNav().setRoot(MainPage);
       this.events.publish('user:logout');
 

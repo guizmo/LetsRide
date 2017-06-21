@@ -3,7 +3,7 @@ import { IonicPage, NavController, ToastController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { EmailValidator } from '../../validators/email';
 
-import { User } from '../../providers/user';
+import { UserProvider } from '../../providers';
 
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,7 +27,7 @@ export class SignupPage {
 
 
   constructor(public navCtrl: NavController,
-    public user: User,
+    public userProvider: UserProvider,
     public toastCtrl: ToastController,
     public translateService: TranslateService,
     private formBuilder: FormBuilder,
@@ -60,7 +60,7 @@ export class SignupPage {
     else {
       this.spinnerDialog.show(null,'Loading',true,{overlayOpacity:0.60});
 
-      this.user.signUpUser(this.signupForm.value.name, this.signupForm.value.email, this.signupForm.value.password)
+      this.userProvider.signUpUser(this.signupForm.value.name, this.signupForm.value.email, this.signupForm.value.password)
         .then(() => {
           this.spinnerDialog.hide();
           this.createToast('Signed in with email: ' + this.signupForm.value.email).present();

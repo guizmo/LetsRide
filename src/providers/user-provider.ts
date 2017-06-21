@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Translate } from './translate';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/toPromise';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject'
 
 import { Platform } from 'ionic-angular';
 import { Facebook } from '@ionic-native/facebook';
@@ -11,30 +10,17 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase } from 'angularfire2/database';
 import * as firebase from 'firebase/app';
 
-/**
- * Most apps have the concept of a User. This is a simple provider
- * with stubs for login/signup/etc.
- *
- * This User provider makes calls to our API at the `login` and `signup` endpoints.
- *
- * By default, it expects `login` and `signup` to return a JSON object of the shape:
- *
- * ```json
- * {
- *   status: 'success',
- *   user: {
- *     // User fields your app needs, like "id", "name", "email", etc.
- *   }
- * }
- * ```
- *
- * If the `status` field is not `success`, then an error is detected and returned.
- */
+import {Profile} from '../models/profile';
+
+
 @Injectable()
-export class User {
+export class UserProvider {
 
   public currentUser: firebase.User;
+  public profileUser = new BehaviorSubject<Profile>(null);
 
+
+  public testProfileUser: any;
   constructor(
     public http: Http,
     public translate: Translate,
@@ -43,14 +29,25 @@ export class User {
     private platform: Platform,
     public afDB: AngularFireDatabase
   ) {
-      afAuth.authState.subscribe((user: firebase.User) => {
-        this.currentUser = user;
+      afAuth.authState.subscribe((_user: firebase.User) => {
+        if (_user) {
+          this.currentUser = _user;
+          let providerData = {..._user.providerData[0], ...{'aFuid':_user.uid} };
+          this.profileUser.next( Object.assign(providerData) );
+          console.log('logged in')
+        } else {
+          //his.currentUser = 'local';
+          console.log('logged out')
+          this.profileUser.next(null)
+        }
+
       });
   }
 
-  get authenticated(): boolean {
+  /*get authenticated(): boolean {
+    console.log('authenticated', this.currentUser)
     return this.currentUser !== null;
-  }
+  }*/
 
   signInUser(newEmail: string, newPassword: string): firebase.Promise<any> {
     return this.afAuth.auth.signInWithEmailAndPassword(newEmail, newPassword);
@@ -107,6 +104,7 @@ export class User {
    */
   logout() {
     this.afAuth.auth.signOut()
+
   }
 
 }

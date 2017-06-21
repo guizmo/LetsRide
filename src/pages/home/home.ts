@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, Events } from 'ionic-angular';
-//test firbase db
+
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
+import { UserProvider} from '../../providers';
 
 @Component({
   selector: 'page-home',
@@ -13,13 +14,12 @@ export class MainPage {
   constructor(
     public navCtrl: NavController,
     public afDB: AngularFireDatabase,
-    public events: Events
+    public events: Events,
+    public userProvider: UserProvider
   ) {
     this.items = afDB.list('/recipes');
-  }
 
-  goToProfile(){
-    this.navCtrl.setRoot('ProfilePage');
+    console.log(this)
   }
 
 }
