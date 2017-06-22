@@ -1,7 +1,7 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { Platform, ToastController, App, Events } from 'ionic-angular';
 
-import { MainPage, ListPage} from '../../pages';
+import { MainPage} from '../../pages';
 
 import { UserProvider, Translate } from '../../providers';
 import { Dialogs } from '@ionic-native/dialogs';

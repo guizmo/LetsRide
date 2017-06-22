@@ -7,7 +7,15 @@ import { Storage, IonicStorageModule } from '@ionic/storage';
 import { LetsRide } from './app.component';
 import { MainPage, ListPage} from '../pages';
 
-import { Api, Settings, UserProvider, Translate, AppEvents, DisciplinesService } from '../providers';
+import {
+  Api,
+  Settings,
+  UserProvider,
+  Translate,
+  AppEvents,
+  DisciplinesProvider,
+  CountriesProvider
+} from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -86,7 +94,7 @@ export function provideSettings(storage: Storage) {
   providers: [
     Api,
     UserProvider,
-    DisciplinesService,
+    DisciplinesProvider,
     Translate,
     StatusBar,
     SplashScreen,
@@ -95,7 +103,8 @@ export function provideSettings(storage: Storage) {
     Facebook,
     Dialogs,
     SpinnerDialog,
-    AppEvents
+    AppEvents,
+    CountriesProvider
   ]
 })
 export class AppModule {}

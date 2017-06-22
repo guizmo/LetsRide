@@ -1,6 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
+
 import { Observable } from "rxjs/Rx";
+
 import { UserProvider } from '../../providers';
 import { Profile } from '../../models/profile';
 
@@ -21,7 +24,8 @@ export class ProfilePage implements OnInit, OnDestroy {
   editIcon: string = "create";
   editState: boolean = false;
 
-
+  localProfile: any;
+  displayName: string = null;
   currentUser: Profile;
   profileObserver;
 
@@ -29,8 +33,14 @@ export class ProfilePage implements OnInit, OnDestroy {
     public navCtrl: NavController,
     public navParams: NavParams,
     public userProvider: UserProvider,
-    public modalCtrl: ModalController
+    public modalCtrl: ModalController,
+    public storage: Storage
   ) {
+
+    this.getLocalProfile();
+
+
+
     console.log('constructor ProfilePage', this);
   }
 
@@ -55,13 +65,22 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
   presentProfileModal() {
-    let profileModal = this.modalCtrl.create('ProfileEditModalPage', { userId: 8675309 });
-    profileModal.onDidDismiss(data => {
-      console.log(data);
+    let profileModal = this.modalCtrl.create('ProfileEditModalPage', { user: this.currentUser, profile: this.localProfile } );
+    profileModal.onDidDismiss(profile => {
+      console.log(profile);
+      this.storage.set('profile', profile);
+      this.localProfile = profile;
     });
     profileModal.present();
   }
 
+
+  getLocalProfile(){
+    this.storage.get('profile').then((data) => {
+      console.log('this.localProfile' , data);
+      this.localProfile = data;
+    });
+  }
 
   subscribeToProfile(){
     /*this.profileObserver = this.userProvider.getProfile().subscribe(
@@ -79,6 +98,13 @@ export class ProfilePage implements OnInit, OnDestroy {
     this.profileObserver = this.userProvider.currentProfile.subscribe(
       (data) => {
         this.currentUser = data;
+
+
+        if(this.localProfile != null){
+          this.displayName = this.localProfile.displayName || this.currentUser.displayName;
+        }
+
+
       },
       (err) => {
         console.log(err);
@@ -88,5 +114,9 @@ export class ProfilePage implements OnInit, OnDestroy {
       }
     );
   }
+
+
+
+
 
 }

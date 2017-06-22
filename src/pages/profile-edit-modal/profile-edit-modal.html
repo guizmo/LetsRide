@@ -20,24 +20,92 @@
 
 
 <ion-content padding>
-  <button ion-button (click)="dismiss()" >DISMISS</button>
 
 <form [formGroup]="editProfileForm" (submit)="editProfileFormSubmit()" padding-bottom>
 
   <ion-list>
+
+
+    <!-- DISPLAYNAME -->
+    <ion-item>
+      <ion-label>Name</ion-label>
+      <ion-input type="text" formControlName="displayName" name="displayName"></ion-input>
+    </ion-item>
+
+    <!-- CITY -->
+    <ion-item >
+      <ion-label>City</ion-label>
+      <ion-input type="text" formControlName="city" name="city"></ion-input>
+    </ion-item>
+    <!-- COUNTRIE -->
+    <ion-item>
+      <ion-label>Countrie</ion-label>
+      <ion-select
+        formControlName="country"
+        name="country"
+        okText="Okay"
+        cancelText="Dismiss"
+        >
+        <ion-option *ngFor="let country of countries" [value]="code">{{country.name}}</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- GENDER -->
+    <ion-row radio-group formControlName="gender" name="gender">
+      <ion-col width-50>
+        <ion-item no-lines>
+          <ion-label>
+            <ion-icon icon-left name="man" large></ion-icon>
+          </ion-label>
+          <ion-radio value="Male" checked></ion-radio>
+        </ion-item>
+      </ion-col>
+      <ion-col width-50>
+        <ion-item no-border no-lines>
+          <ion-label>
+            <ion-icon icon-left name="woman" large></ion-icon>
+          </ion-label>
+          <ion-radio value="Female"></ion-radio>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <!-- AGE -->
+    <ion-item>
+      <ion-label>Age</ion-label>
+      <ion-datetime displayFormat="DD/MM/YYYY" pickerFormat="DD MM YYYY" formControlName="age" name="age"></ion-datetime>
+    </ion-item>
+
+    <ion-item-divider color="light">Rider profile</ion-item-divider>
+    <!-- DISCIPLINE -->
     <ion-item>
       <ion-label>Disciplines</ion-label>
       <ion-select
-        formControlName="disciplines" name="disciplines"
+        formControlName="disciplines"
+        name="disciplines"
         multiple="true"
         okText="Okay"
         cancelText="Dismiss"
         (ionChange)="onSelectChange($event)"
         >
-        <ion-option *ngFor="let discipline of disciplines" [value]="alias">{{discipline.name}}</ion-option>
+        <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
       </ion-select>
-
     </ion-item>
+
+
+
+
+    <!-- LEVEL -->
+    <ion-item>
+      <ion-label>Level</ion-label>
+      <ion-range min="1" max="5" step="1" snaps="true" formControlName="level" name="level">
+        <ion-icon range-left small name="stats-outline"></ion-icon>
+        <ion-icon range-right name="stats"></ion-icon>
+      </ion-range>
+    </ion-item>
+
+
+
   </ion-list>
 </form>
 

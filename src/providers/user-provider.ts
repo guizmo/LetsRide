@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
-import { Translate } from './translate';
+import { Storage } from '@ionic/storage';
+import { Platform } from 'ionic-angular';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject'
-
 import { Observable } from "rxjs/Rx";
 
-import { Platform } from 'ionic-angular';
 import { Facebook } from '@ionic-native/facebook';
 
+import { Translate } from './translate';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase } from 'angularfire2/database';
 import * as firebase from 'firebase/app';
@@ -21,6 +21,7 @@ export class UserProvider {
 
   currentUser: firebase.User;
   currentProfile = new BehaviorSubject<Profile>(null);
+  localUser: any;
 
   constructor(
     public http: Http,
@@ -28,7 +29,8 @@ export class UserProvider {
     private afAuth: AngularFireAuth,
     private fb: Facebook,
     private platform: Platform,
-    public afDB: AngularFireDatabase
+    public afDB: AngularFireDatabase,
+    public storage: Storage
   ) {
 
     console.log('user service constructor', this)
@@ -38,6 +40,8 @@ export class UserProvider {
         let providerData = {..._user.providerData[0], ...{'aFuid':_user.uid} };
 
         this.currentProfile.next( Object.assign(providerData) );
+
+        this.setLocalUser(providerData);
 
         console.log('Observable in 1')
       } else {
@@ -129,5 +133,21 @@ export class UserProvider {
     this.afAuth.auth.signOut()
 
   }
+
+
+
+
+  setLocalUser(user){
+    this.storage.set('user', user);
+  }
+
+  getLocalUser(){
+    this.storage.get('user').then((data) => {
+      this.localUser = data;
+    });
+  }
+
+
+
 
 }

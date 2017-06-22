@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { DisciplinesService } from '../../providers';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+
+import { DisciplinesProvider, CountriesProvider } from '../../providers';
+import { Discipline, Country } from '../../models';
 
 /**
  * Generated class for the ProfileEditModalPage page.
@@ -16,31 +18,46 @@ import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 })
 export class ProfileEditModalPage {
 
-  disciplines: null;
+  private disciplines: ReadonlyArray<Discipline>;
+  private countries: ReadonlyArray<Country>;
 
   editProfileForm: FormGroup;
+  localProfile: any;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public viewCtrl: ViewController,
     private formBuilder: FormBuilder,
-    public disciplinesService: DisciplinesService
+    public disciplinesProvider: DisciplinesProvider,
+    public countriesProvider: CountriesProvider
   ) {
-    console.log(this)
+    let displayName = this.navParams.data.user.displayName;
+    let { disciplines, country, gender , age , city, level } = this.navParams.data.profile;
+    if(this.navParams.data.profile != null){
+      displayName = this.navParams.data.profile.displayName || displayName;
+    }
 
+    console.log('disciplines', disciplines)
     this.editProfileForm = formBuilder.group({
-      disciplines: '',
-      email: ['', Validators.compose([Validators.required, Validators.email])],
-      displayName: ['', Validators.compose([Validators.required])]
+      disciplines: [disciplines],
+      country: country,
+      gender: gender,
+      age: age,
+      city: city,
+      level: level,
+      displayName: [displayName, Validators.compose([Validators.required])]
     });
 
 
   }
 
   ngOnInit() {
-    this.disciplinesService.findAll().subscribe(
+    this.disciplinesProvider.findAll().subscribe(
       data => this.disciplines = data
+    );
+    this.countriesProvider.findAll().subscribe(
+      data => this.countries = data
     );
   }
 
@@ -51,14 +68,16 @@ export class ProfileEditModalPage {
 
 
   dismiss() {
-    let data = { 'foo': 'bar' };
+    let data = this.editProfileForm.value;
     this.viewCtrl.dismiss(data);
   }
 
 
   //test select event
   onSelectChange(selectedValue) {
-    console.log('Selected', selectedValue);
+    console.log('Selected');
   }
+
+
 
 }
