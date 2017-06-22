@@ -37,7 +37,7 @@ export class LetsRide {
   ) {
     this.translate.init();
     console.log('app.compenent constructor',  this)
-    this.userProvider.getProfile().subscribe(data => this.currentUser = data );
+    this.userProvider.currentProfile.subscribe(data => this.currentUser = data )
   }
 
   ionViewDidLoad() {
@@ -55,6 +55,16 @@ export class LetsRide {
   openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
+
+    switch (page) {
+      case 'ProfilePage':
+        page = this.currentUser != null ? page : 'LoginPage';
+        break;
+      default:
+        page = page;
+        break;
+    }
+
     this.nav.setRoot(page);
   }
 }

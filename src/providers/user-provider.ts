@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Translate } from './translate';
-//import { BehaviorSubject } from 'rxjs/BehaviorSubject'
+
+import { BehaviorSubject } from 'rxjs/BehaviorSubject'
+
 import { Observable } from "rxjs/Rx";
 
 import { Platform } from 'ionic-angular';
@@ -17,8 +19,8 @@ import {Profile} from '../models/profile';
 @Injectable()
 export class UserProvider {
 
-  public currentUser: firebase.User;
-  //profileUser = new BehaviorSubject<Profile>(null);
+  currentUser: firebase.User;
+  currentProfile = new BehaviorSubject<Profile>(null);
 
   constructor(
     public http: Http,
@@ -28,6 +30,23 @@ export class UserProvider {
     private platform: Platform,
     public afDB: AngularFireDatabase
   ) {
+
+    console.log('user service constructor', this)
+    afAuth.authState.subscribe((_user: firebase.User) => {
+      if (_user) {
+        this.currentUser = _user;
+        let providerData = {..._user.providerData[0], ...{'aFuid':_user.uid} };
+
+        this.currentProfile.next( Object.assign(providerData) );
+
+        console.log('Observable in 1')
+      } else {
+        console.log('Observable out 2')
+        this.currentProfile.next(null);
+      }
+
+    });
+
   }
 
   getProfile(): Observable<Profile> {
@@ -36,10 +55,13 @@ export class UserProvider {
         if (_user) {
           this.currentUser = _user;
           let providerData = {..._user.providerData[0], ...{'aFuid':_user.uid} };
-          //this.profileUser.next( Object.assign(providerData) );
+
+          this.currentProfile.next( Object.assign(providerData) );
+          //this.currentProfile.complete();
+
           observer.next( Object.assign(providerData) );
           observer.complete();
-          console.log('Observable in', this)
+          console.log('Observable in')
         } else {
           console.log('Observable out')
           observer.next(null);

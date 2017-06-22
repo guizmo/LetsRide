@@ -14,19 +14,18 @@
   </ion-content>
   <ion-footer  class="bar-stable" style="left:0;right:0;margin:0; width: 100%;position: fixed;bottom:0;">
 
-      <button
+      <ion-item
         menuClose
         [hidden]="currentUser"
         (click)="openPage('LoginPage')"
-        ion-button
-        icon-left
-        icon-left
+        no-lines
+        tappable
         full
         color="primary"
         no-margin
       >
-        <ion-icon float-left ios="ios-log-in" md="md-log-in"></ion-icon> Login
-      </button>
+        <ion-icon item-start large ios="ios-log-in" md="md-log-in"></ion-icon> Login
+      </ion-item>
       <gb-logout-button [hidden]="!currentUser" menuClose nav-clear ></gb-logout-button>
   </ion-footer>
 

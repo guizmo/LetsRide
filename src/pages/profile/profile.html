@@ -16,7 +16,7 @@
 
     <ion-buttons end icon-only>
       <button ion-button (click)="etitProfile()" >
-        <ion-icon [name]="editIcon"></ion-icon>
+        <ion-icon name="create"></ion-icon>
       </button>
     </ion-buttons>
 
@@ -26,32 +26,53 @@
 
 <ion-content padding>
   <div class="list card" *ngIf="currentUser">
+    <ion-item>
+    <ion-input type="text" [(ngModel)]="currentUser.displayName" name="displayName"></ion-input>
+  </ion-item>
 
-    <div class="item item-avatar">
-      <img width="100" height="100" src="{{currentUser.photoURL }}" />
 
-    </div>
+      <div class="profile">
+        <img src="{{currentUser.photoURL}}" tappable (click)="setPhoto()" />
+      </div>
 
-    <div class="item item-body">
-      <div class="item item-avatar">{{currentUser.email}}</div>
-      <div class="item item-avatar">{{currentUser.displayName}}</div>
 
-      <p>
-        This is a "Facebook" styled Card. The header is created from a Thumbnail List item,
-        the content is from a card-body consisting of an image and paragraph text. The footer
-        consists of tabs, icons aligned left, within the card-footer.
-      </p>
-      <p>
-        <a href="#" class="subdued">1 Like</a>
-        <a href="#" class="subdued">5 Comments</a>
-      </p>
-    </div>
+      <!-- Show icon of logged in provider -->
+      <h4>
+        <span tappable (click)="setName()">{{currentUser.displayName}} </span>
+        <ion-icon name="md-flame" class="firebase"></ion-icon>
+        <!-- <ion-icon name="logo-facebook" *ngIf="user.provider == 'Facebook'" class="facebook"></ion-icon>
+        <ion-icon name="logo-google" *ngIf="user.provider == 'Google'" class="google"></ion-icon> -->
+      </h4>
+      <div class="divider"></div>
+      <p tappable (click)="setEmail()">{{currentUser.email}}</p>
+      <!-- Profile Menu -->
+      <ion-list>
+        <ion-item no-lines tappable (click)="setName()">
+          Set Profile Name
+          <ion-icon name="md-contact" item-right></ion-icon>
+        </ion-item>
+        <ion-item no-lines tappable (click)="setPhoto()">
+          Set Profile Photo
+          <ion-icon name="ios-camera" item-right></ion-icon>
+        </ion-item>
+        <ion-item no-lines tappable (click)="setEmail()">
+          Change Email Address
+          <ion-icon name="md-mail-open" item-right></ion-icon>
+        </ion-item>
+        <ion-item no-lines tappable (click)="setPassword()" >
+          Change Password
+          <ion-icon name="md-key" item-right></ion-icon>
+        </ion-item>
+        <ion-item no-lines tappable (click)="deleteAccount()">
+          Delete Account
+          <ion-icon name="md-trash" item-right></ion-icon>
+        </ion-item>
+        <ion-item no-lines tappable (click)="logout()">
+          Logout
+          <ion-icon name="md-log-out" item-right></ion-icon>
+        </ion-item>
+      </ion-list>
 
-    <div class="item tabs tabs-secondary tabs-icon-left">
-      <a class="tab-item" href="#"> <i class="icon ion-thumbsup"></i> Like </a>
-  	<a class="tab-item" href="#"> <i class="icon ion-chatbox"></i> Comment</a>
-      <a class="tab-item" href="#"> <i class="icon ion-share"></i>Share</a>
-    </div>
 
   </div>
 </ion-content>

@@ -7,7 +7,7 @@ import { Storage, IonicStorageModule } from '@ionic/storage';
 import { LetsRide } from './app.component';
 import { MainPage, ListPage} from '../pages';
 
-import { Api, Settings, UserProvider, Translate, AppEvents } from '../providers';
+import { Api, Settings, UserProvider, Translate, AppEvents, DisciplinesService } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -86,6 +86,7 @@ export function provideSettings(storage: Storage) {
   providers: [
     Api,
     UserProvider,
+    DisciplinesService,
     Translate,
     StatusBar,
     SplashScreen,

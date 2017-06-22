@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { Observable } from "rxjs/Rx";
 import { UserProvider } from '../../providers';
 import { Profile } from '../../models/profile';
@@ -16,23 +16,69 @@ import { Profile } from '../../models/profile';
   selector: 'page-profile',
   templateUrl: 'profile.html',
 })
-export class ProfilePage implements OnInit {
+export class ProfilePage implements OnInit, OnDestroy {
 
   editIcon: string = "create";
   editState: boolean = false;
 
+
   currentUser: Profile;
+  profileObserver;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    public userProvider: UserProvider
+    public userProvider: UserProvider,
+    public modalCtrl: ModalController
   ) {
     console.log('constructor ProfilePage', this);
-    this.userProvider.getProfile().subscribe(
+  }
+
+  ngOnInit() {
+    console.log('ngOnInit ProfilePage');
+    this.subscribeToProfile();
+  }
+
+  ngOnDestroy(){
+    console.log('ngOnDestroy ProfilePage');
+    this.profileObserver.unsubscribe();
+  }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad ProfilePage');
+  }
+
+  etitProfile(){
+
+    console.log(this)
+    this.presentProfileModal()
+  }
+
+  presentProfileModal() {
+    let profileModal = this.modalCtrl.create('ProfileEditModalPage', { userId: 8675309 });
+    profileModal.onDidDismiss(data => {
+      console.log(data);
+    });
+    profileModal.present();
+  }
+
+
+  subscribeToProfile(){
+    /*this.profileObserver = this.userProvider.getProfile().subscribe(
       (data) => {
         this.currentUser = data;
-        console.log('data', this.currentUser);
+      },
+      (err) => {
+        console.log(err);
+      },
+      () => {
+        console.log("completed");
+      }
+    );*/
+
+    this.profileObserver = this.userProvider.currentProfile.subscribe(
+      (data) => {
+        this.currentUser = data;
       },
       (err) => {
         console.log(err);
@@ -41,30 +87,6 @@ export class ProfilePage implements OnInit {
         console.log("completed");
       }
     );
-  }
-
-  ngOnInit() {
-    console.log('ngOnInit ProfilePage', this.currentUser);
-
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ProfilePage', this.currentUser);
-    console.log(JSON.stringify(this.currentUser))
-  }
-
-  etitProfile(){
-
-    if(!this.editState){
-      this.editState = true;
-      this.editIcon = 'close-circle';
-    }else{
-      this.editState = false;
-      this.editIcon = 'create';
-    }
-
-    console.log(this)
-
   }
 
 }
