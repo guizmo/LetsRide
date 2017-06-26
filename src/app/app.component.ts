@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, NgZone } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -14,7 +14,9 @@ import { Translate, AppEvents, UserProvider} from '../providers';
 export class LetsRide {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = MainPage;
+  rootPage:any = MainPage;
+  public zone:NgZone;
+
   loginPage: any = { title: 'Login', component: LoginPage };
   pages: any[] = [
     { title: 'Home', component: MainPage },
@@ -35,9 +37,22 @@ export class LetsRide {
     public appEvents: AppEvents,
     public userProvider: UserProvider
   ) {
+    this.zone = new NgZone({});
     this.translate.init();
     console.log('app.compenent constructor',  this)
-    this.userProvider.currentProfile.subscribe(data => this.currentUser = data )
+    this.userProvider.currentProfile.subscribe(data => {
+      this.currentUser = data;
+      this.zone.run( () => {
+        if (!data) {
+          this.rootPage = 'LoginPage';
+          /*if (this.nav){
+            this.nav.setRoot('LoginPage')
+          }*/
+        } else {
+          //this.rootPage = MainPage;
+        }
+      });
+    });
   }
 
   ionViewDidLoad() {
@@ -64,6 +79,7 @@ export class LetsRide {
         page = page;
         break;
     }
+    console.log(this)
 
     this.nav.setRoot(page);
   }

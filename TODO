@@ -1,0 +1,6 @@
+1 - PROFILE
+- Check user uuid for the user profile in localStorage (facebook/email/google user)
+
+2 - ACCOUNT PAGE
+ - has LOGIN/LOGOUT buttons
+ - has account removal and email reset/change IF user email

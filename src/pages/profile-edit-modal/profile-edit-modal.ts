@@ -32,13 +32,26 @@ export class ProfileEditModalPage {
     public disciplinesProvider: DisciplinesProvider,
     public countriesProvider: CountriesProvider
   ) {
+
+    const emptyValues = {
+      disciplines: '',
+      country: '',
+      gender: '',
+      age: '',
+      city: '',
+      level: ''
+    }
+
+    let ProfilValues = this.navParams.data.profile != null ? this.navParams.data.profile : emptyValues;
+
     let displayName = this.navParams.data.user.displayName;
-    let { disciplines, country, gender , age , city, level } = this.navParams.data.profile;
+    let { disciplines = '', country = '', gender = '', age = '', city = '', level = '' } = ProfilValues;
+
     if(this.navParams.data.profile != null){
       displayName = this.navParams.data.profile.displayName || displayName;
     }
 
-    console.log('disciplines', disciplines)
+    //console.log('disciplines 2', disciplines)
     this.editProfileForm = formBuilder.group({
       disciplines: [disciplines],
       country: country,

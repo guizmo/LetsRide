@@ -26,6 +26,18 @@
       >
         <ion-icon item-start large ios="ios-log-in" md="md-log-in"></ion-icon> Login
       </ion-item>
+      <ion-item
+        menuClose
+        [hidden]="!currentUser"
+        (click)="openPage('AccountPage')"
+        no-lines
+        tappable
+        full
+        color="primary"
+        no-margin
+      >
+        <ion-icon item-start large ios="ios-log-in" md="md-log-in"></ion-icon> AccountPage
+      </ion-item>
       <gb-logout-button [hidden]="!currentUser" menuClose nav-clear ></gb-logout-button>
   </ion-footer>
 

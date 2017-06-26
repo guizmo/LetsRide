@@ -25,6 +25,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   editState: boolean = false;
 
   localProfile: any;
+  allLocalProfiles: {} = null;
   displayName: string = null;
   currentUser: Profile;
   profileObserver;
@@ -36,11 +37,6 @@ export class ProfilePage implements OnInit, OnDestroy {
     public modalCtrl: ModalController,
     public storage: Storage
   ) {
-
-    this.getLocalProfile();
-
-
-
     console.log('constructor ProfilePage', this);
   }
 
@@ -58,27 +54,41 @@ export class ProfilePage implements OnInit, OnDestroy {
     console.log('ionViewDidLoad ProfilePage');
   }
 
-  etitProfile(){
-
-    console.log(this)
-    this.presentProfileModal()
-  }
 
   presentProfileModal() {
     let profileModal = this.modalCtrl.create('ProfileEditModalPage', { user: this.currentUser, profile: this.localProfile } );
     profileModal.onDidDismiss(profile => {
-      console.log(profile);
-      this.storage.set('profile', profile);
+      console.log(this)
+      let aFuid = this.currentUser.aFuid;
+
       this.localProfile = profile;
+
+      this.displayName = profile.displayName;
+
+      this.setAllLocalProfiles(profile, aFuid)
+        //.then((data) => {});
     });
     profileModal.present();
   }
 
 
-  getLocalProfile(){
-    this.storage.get('profile').then((data) => {
-      console.log('this.localProfile' , data);
-      this.localProfile = data;
+  getLocalProfile(id){
+    this.storage.get('profiles').then((data) => {
+      this.localProfile = data[id];
+      this.displayName = data[id].displayName;
+    });
+  }
+
+  setAllLocalProfiles(profile, id = null ){
+    return this.storage.get('profiles').then((data) => {
+
+      if(data == null){
+        data = {};
+      }
+      data[id] = profile;
+      this.storage.set('profiles', data);
+
+      return data;
     });
   }
 
@@ -97,14 +107,13 @@ export class ProfilePage implements OnInit, OnDestroy {
 
     this.profileObserver = this.userProvider.currentProfile.subscribe(
       (data) => {
-        this.currentUser = data;
+        if(data){
+          this.currentUser = data;
+          let aFuid = data.aFuid;
 
-
-        if(this.localProfile != null){
-          this.displayName = this.localProfile.displayName || this.currentUser.displayName;
+          this.displayName = this.currentUser.displayName;
+          this.getLocalProfile(aFuid);
         }
-
-
       },
       (err) => {
         console.log(err);
@@ -115,7 +124,13 @@ export class ProfilePage implements OnInit, OnDestroy {
     );
   }
 
-
+  setDisplayName(displayName = null){
+    if(this.localProfile != null){
+      this.displayName = this.localProfile.displayName || this.currentUser.displayName;
+    }else{
+      this.displayName = displayName;
+    }
+  }
 
 
 

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
+import { CommonModule } from '@angular/common';
 import { GbLogoutButton } from './gb-logout-button';
 import { LetsRide } from '../../app/app.component';
 
@@ -8,7 +9,8 @@ import { LetsRide } from '../../app/app.component';
     GbLogoutButton,
   ],
   imports: [
-    IonicModule.forRoot(LetsRide)
+    IonicModule,
+    CommonModule
   ],
   exports: [
     GbLogoutButton

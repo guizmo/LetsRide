@@ -15,7 +15,7 @@
     <ion-title>Profile</ion-title>
 
     <ion-buttons end icon-only>
-      <button ion-button (click)="etitProfile()" >
+      <button ion-button (click)="presentProfileModal()" >
         <ion-icon name="create"></ion-icon>
       </button>
     </ion-buttons>
@@ -40,34 +40,37 @@
         <ion-icon name="logo-google" *ngIf="user.provider == 'Google'" class="google"></ion-icon> -->
       </h4>
       <div class="divider"></div>
-      <p tappable (click)="setEmail()">{{currentUser.email}}</p>
-      <!-- Profile Menu -->
-      <ion-list>
-        <ion-item no-lines tappable (click)="setName()">
-          Set Profile Name
-          <ion-icon name="md-contact" item-right></ion-icon>
-        </ion-item>
-        <ion-item no-lines tappable (click)="setPhoto()">
-          Set Profile Photo
-          <ion-icon name="ios-camera" item-right></ion-icon>
-        </ion-item>
-        <ion-item no-lines tappable (click)="setEmail()">
-          Change Email Address
-          <ion-icon name="md-mail-open" item-right></ion-icon>
-        </ion-item>
-        <ion-item no-lines tappable (click)="setPassword()" >
-          Change Password
-          <ion-icon name="md-key" item-right></ion-icon>
-        </ion-item>
-        <ion-item no-lines tappable (click)="deleteAccount()">
-          Delete Account
+
+      <div *ngIf="localProfile">
+        <div>
+          City - {{localProfile.city}}
           <ion-icon name="md-trash" item-right></ion-icon>
-        </ion-item>
-        <ion-item no-lines tappable (click)="logout()">
-          Logout
-          <ion-icon name="md-log-out" item-right></ion-icon>
-        </ion-item>
-      </ion-list>
+        </div>
+
+        <div>
+          Country - {{localProfile.country}}
+          <ion-icon name="md-trash" item-right></ion-icon>
+        </div>
+
+        <div>
+          Gender - {{localProfile.gender}}
+          <ion-icon name="md-trash" item-right></ion-icon>
+        </div>
+
+        <div>
+          Disciplines -
+          <ul>
+            <li class="text" *ngFor="let discipline of localProfile.disciplines">
+        			{{discipline}}
+        		</li>
+          </ul>
+        </div>
+
+        <div>
+          Level - {{localProfile.level}}
+          <ion-icon name="md-trash" item-right></ion-icon>
+        </div>
+      </div>
 
 
   </div>

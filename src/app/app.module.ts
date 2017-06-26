@@ -31,6 +31,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AuthService } from '../providers/auth-service';
 
 import { GbLogoutButton } from '../components/gb-logout-button/gb-logout-button';
+import { GbLogoutButtonModule } from '../components/gb-logout-button/gb-logout-button.module';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyBvmBNw3scf3o1dSZGQRGjFUGfhlOQw0a0",
@@ -67,11 +68,12 @@ export function provideSettings(storage: Storage) {
     LetsRide,
     MainPage,
     ListPage,
-    GbLogoutButton
+
   ],
   imports: [
     BrowserModule,
     HttpModule,
+    GbLogoutButtonModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
