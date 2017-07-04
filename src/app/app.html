@@ -16,7 +16,7 @@
 
       <ion-item
         menuClose
-        [hidden]="currentUser"
+        *ngIf="!currentUser"
         (click)="openPage('LoginPage')"
         no-lines
         tappable
@@ -27,8 +27,8 @@
         <ion-icon item-start large ios="ios-log-in" md="md-log-in"></ion-icon> Login
       </ion-item>
       <ion-item
+        *ngIf="currentUser && currentUser.providerId == 'password'"
         menuClose
-        [hidden]="!currentUser"
         (click)="openPage('AccountPage')"
         no-lines
         tappable
@@ -38,7 +38,7 @@
       >
         <ion-icon item-start large ios="ios-log-in" md="md-log-in"></ion-icon> AccountPage
       </ion-item>
-      <gb-logout-button [hidden]="!currentUser" menuClose nav-clear ></gb-logout-button>
+      <gb-logout-button *ngIf="currentUser && currentUser.providerId != 'password'" nav-clear ></gb-logout-button>
   </ion-footer>
 
 </ion-menu>

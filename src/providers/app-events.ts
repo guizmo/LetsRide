@@ -14,6 +14,7 @@ export class AppEvents {
 
   constructor(public http: Http, public events: Events) {
     this.listenLogout();
+    
   }
 
   listenLogout(){
@@ -21,6 +22,7 @@ export class AppEvents {
       console.log('user:logout event');
     });
   }
+
 
 
 

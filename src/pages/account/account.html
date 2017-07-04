@@ -6,7 +6,7 @@
 -->
 <ion-header>
   <ion-navbar >
-    <ion-buttons start>
+    <ion-buttons start *ngIf="emailVerified">
       <button ion-button menuToggle icon-only>
         <ion-icon name="menu"></ion-icon>
       </button>
@@ -19,8 +19,22 @@
 
 
 <ion-content padding>
-  <!-- <p>{{currentUser.email}}</p>
+  <p *ngIf="currentUser">{{currentUser.email}}</p>
+  <ion-list *ngIf="providerId == 'password'" >
+    <ion-item no-lines tappable (click)="presentAccountModal('password')" >
+      Change Password
+      <ion-icon name="md-key" item-right></ion-icon>
+    </ion-item>
 
+    <ion-item no-lines tappable (click)="presentAccountModal('email')">
+      Change Email Address
+      <ion-icon name="md-mail-open" item-right></ion-icon>
+    </ion-item>
+
+
+  </ion-list>
+
+<!--
   <ion-list>
     <ion-item no-lines tappable (click)="setName()">
       Set Profile Name

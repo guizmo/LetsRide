@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { Observable } from "rxjs/Rx";
 
-import { UserProvider } from '../../providers';
+import { UserProvider, AlertProvider } from '../../providers';
 import { Profile } from '../../models/profile';
 
 
@@ -29,44 +29,69 @@ export class ProfilePage implements OnInit, OnDestroy {
   displayName: string = null;
   currentUser: Profile;
   profileObserver;
+  userObserver;
+  emailVerified: boolean = false;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public userProvider: UserProvider,
     public modalCtrl: ModalController,
-    public storage: Storage
+    public storage: Storage,
+    public events: Events,
+    public alertProvider: AlertProvider
   ) {
-    console.log('constructor ProfilePage', this);
+    let _emailVerified = this.navParams.data.emailVerified;
+    if(_emailVerified !== undefined){
+      let {emailVerified, displayName, aFuid } = this.navParams.data;
+      //this.userProvider.setLocalProfiles({displayName, displayName}, aFuid);
+      if(!emailVerified){
+        this.userProvider.checkEmailIsVerified()
+          .then((res) => {
+            this.emailVerified = res;
+            this.alertProvider.showEmailVerifiedMessage();
+          })
+          .catch((error) => {
+            console.error(error)
+          });
+      }
+
+
+
+    }else{
+      //not coming from SIGNUP page
+    }
+
+    this.userObserver = this.userProvider.getUser().subscribe(user => {
+      if(user.providerData[0].providerId != 'password'){
+        this.emailVerified = true;
+      }else{
+        this.emailVerified = user.emailVerified;
+      }
+    });
+
   }
 
   ngOnInit() {
-    console.log('ngOnInit ProfilePage');
     this.subscribeToProfile();
   }
 
   ngOnDestroy(){
-    console.log('ngOnDestroy ProfilePage');
     this.profileObserver.unsubscribe();
+    this.userObserver.unsubscribe();
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ProfilePage');
-  }
 
 
   presentProfileModal() {
     let profileModal = this.modalCtrl.create('ProfileEditModalPage', { user: this.currentUser, profile: this.localProfile } );
     profileModal.onDidDismiss(profile => {
-      console.log(this)
-      let aFuid = this.currentUser.aFuid;
-
-      this.localProfile = profile;
-
-      this.displayName = profile.displayName;
-
-      this.setAllLocalProfiles(profile, aFuid)
-        //.then((data) => {});
+      if(profile != null && profile != 'cancel'){
+        let aFuid = this.currentUser.aFuid;
+        this.localProfile = profile;
+        this.displayName = profile.displayName;
+        this.userProvider.setLocalProfiles(profile, aFuid).then((data) => {});
+      }
     });
     profileModal.present();
   }
@@ -79,18 +104,6 @@ export class ProfilePage implements OnInit, OnDestroy {
     });
   }
 
-  setAllLocalProfiles(profile, id = null ){
-    return this.storage.get('profiles').then((data) => {
-
-      if(data == null){
-        data = {};
-      }
-      data[id] = profile;
-      this.storage.set('profiles', data);
-
-      return data;
-    });
-  }
 
   subscribeToProfile(){
     /*this.profileObserver = this.userProvider.getProfile().subscribe(
@@ -133,5 +146,13 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
 
+  listenEmailVerified(){
+    this.events.subscribe('email:verified', (res) => {
+      if(res){
+        this.emailVerified = res;
+        this.alertProvider.showEmailVerifiedMessage();
+      }
+    });
+  }
 
 }

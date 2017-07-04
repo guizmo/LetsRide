@@ -4,8 +4,10 @@ import { HttpModule, Http } from '@angular/http';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { Storage, IonicStorageModule } from '@ionic/storage';
 
+import { ReactiveFormsModule } from '@angular/forms';
+
 import { LetsRide } from './app.component';
-import { MainPage, ListPage} from '../pages';
+import { ListPage} from '../pages';
 
 import {
   Api,
@@ -14,7 +16,9 @@ import {
   Translate,
   AppEvents,
   DisciplinesProvider,
-  CountriesProvider
+  CountriesProvider,
+  LoadingProvider,
+  AlertProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -30,7 +34,6 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AuthService } from '../providers/auth-service';
 
-import { GbLogoutButton } from '../components/gb-logout-button/gb-logout-button';
 import { GbLogoutButtonModule } from '../components/gb-logout-button/gb-logout-button.module';
 
 export const firebaseConfig = {
@@ -66,9 +69,7 @@ export function provideSettings(storage: Storage) {
 @NgModule({
   declarations: [
     LetsRide,
-    MainPage,
-    ListPage,
-
+    ListPage
   ],
   imports: [
     BrowserModule,
@@ -85,12 +86,12 @@ export function provideSettings(storage: Storage) {
     IonicStorageModule.forRoot(),
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    ReactiveFormsModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     LetsRide,
-    MainPage,
     ListPage
 ],
   providers: [
@@ -106,7 +107,9 @@ export function provideSettings(storage: Storage) {
     Dialogs,
     SpinnerDialog,
     AppEvents,
-    CountriesProvider
+    CountriesProvider,
+    LoadingProvider,
+    AlertProvider
   ]
 })
 export class AppModule {}

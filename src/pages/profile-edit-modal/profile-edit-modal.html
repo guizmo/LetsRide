@@ -92,9 +92,6 @@
       </ion-select>
     </ion-item>
 
-
-
-
     <!-- LEVEL -->
     <ion-item>
       <ion-label>Level</ion-label>
@@ -105,6 +102,16 @@
     </ion-item>
 
 
+    <ion-item>
+      <button type="button" ion-button color="danger" icon-start (click)="dismiss()">
+        <ion-icon name='close'></ion-icon>
+        Cancel
+      </button>
+      <button type="submit" ion-button [disabled]="!editProfileForm.valid" >
+        <ion-icon></ion-icon>
+        Submit
+      </button>
+    </ion-item>
 
   </ion-list>
 </form>

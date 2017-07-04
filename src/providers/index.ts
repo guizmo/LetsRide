@@ -6,3 +6,5 @@ export { Translate } from './translate';
 export { AppEvents } from './app-events';
 export { DisciplinesProvider } from './disciplines';
 export { CountriesProvider } from './countries';
+export { LoadingProvider } from './loading';
+export { AlertProvider } from './alert';

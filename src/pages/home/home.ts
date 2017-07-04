@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { NavController, Events } from 'ionic-angular';
+import { IonicPage, NavController, Events } from 'ionic-angular';
 
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 import { UserProvider} from '../../providers';
 
+@IonicPage()
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
@@ -18,8 +19,7 @@ export class MainPage {
     public userProvider: UserProvider
   ) {
     this.items = afDB.list('/recipes');
-
-    console.log(this)
+    this.events.publish('email:verified');
   }
 
 }

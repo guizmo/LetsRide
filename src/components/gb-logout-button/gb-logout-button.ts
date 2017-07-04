@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { Platform, ToastController, App, Events } from 'ionic-angular';
 
-import { MainPage} from '../../pages';
-
 import { UserProvider, Translate } from '../../providers';
 import { Dialogs } from '@ionic-native/dialogs';
 
@@ -50,7 +48,7 @@ export class GbLogoutButton {
       .catch(e => console.log('Error displaying dialog', e));
     }else{
       this.userProvider.logout();
-      this.app.getRootNav().setRoot(MainPage);
+      this.app.getRootNav().setRoot('MainPage');
       this.events.publish('user:logout');
 
     }

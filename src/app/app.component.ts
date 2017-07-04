@@ -5,7 +5,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Dialogs } from '@ionic-native/dialogs';
 
-import { MainPage, ListPage, LoginPage} from '../pages';
+import { ListPage, LoginPage} from '../pages';
 import { Translate, AppEvents, UserProvider} from '../providers';
 
 @Component({
@@ -14,12 +14,12 @@ import { Translate, AppEvents, UserProvider} from '../providers';
 export class LetsRide {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage:any = MainPage;
+  rootPage:any = 'MainPage';
   public zone:NgZone;
 
   loginPage: any = { title: 'Login', component: LoginPage };
   pages: any[] = [
-    { title: 'Home', component: MainPage },
+    { title: 'Home', component: 'MainPage' },
     { title: 'Profile', component: 'ProfilePage' },
     { title: 'Places', component: 'PlacesPage' },
     { title: 'List', component: ListPage },
@@ -44,10 +44,10 @@ export class LetsRide {
       this.currentUser = data;
       this.zone.run( () => {
         if (!data) {
-          this.rootPage = 'LoginPage';
-          /*if (this.nav){
+          //this.rootPage = 'LoginPage';
+          if (this.nav){
             this.nav.setRoot('LoginPage')
-          }*/
+          }
         } else {
           //this.rootPage = MainPage;
         }
@@ -70,16 +70,6 @@ export class LetsRide {
   openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
-
-    switch (page) {
-      case 'ProfilePage':
-        page = this.currentUser != null ? page : 'LoginPage';
-        break;
-      default:
-        page = page;
-        break;
-    }
-    console.log(this)
 
     this.nav.setRoot(page);
   }

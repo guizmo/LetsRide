@@ -1,5 +1,6 @@
 1 - PROFILE
 - Check user uuid for the user profile in localStorage (facebook/email/google user)
+- dismiss and submit form function
 
 2 - ACCOUNT PAGE
  - has LOGIN/LOGOUT buttons

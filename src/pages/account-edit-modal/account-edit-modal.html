@@ -1,0 +1,57 @@
+<!--
+  Generated template for the AccountEditModalPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar >
+    <ion-title>Edit account modal to Change</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+
+
+  <form [formGroup]="editAccountForm" (submit)="editAccountFormSubmit()" padding-bottom>
+
+    <ion-list>
+      <ion-item-group *ngIf="field == 'password'">
+        <ion-item>
+          <ion-input type="password" required placeholder="current Password" formControlName="currentPassword" name="currentPassword" ></ion-input>
+        </ion-item>
+        <ion-item *ngIf="!editAccountForm.controls.currentPassword.pristine && editAccountForm.controls.currentPassword.errors?.required">currentPassword required error</ion-item>
+        <ion-item>
+          <ion-input type="password" required placeholder="New Password" formControlName="newPassword" name="newPassword"></ion-input>
+        </ion-item>
+        <ion-item *ngIf="editAccountForm.controls.newPassword.errors?.minlength">newPassword lenght error</ion-item>
+        <ion-item>
+          <ion-input type="password" required placeholder="Confirm Password" formControlName="confirmPassword" name="confirmPassword"></ion-input>
+        </ion-item>
+        <ion-item *ngIf="!editAccountForm.controls.confirmPassword.pristine && editAccountForm.controls.confirmPassword.errors?.equalTo">confirmPassword equalto error</ion-item>
+      </ion-item-group>
+
+      <ion-item-group *ngIf="field == 'email'">
+        <ion-item>
+          <ion-input type="text" required placeholder="Email" formControlName="email" name="email"></ion-input>
+        </ion-item>
+        <ion-item *ngIf="!editAccountForm.controls.email.pristine && editAccountForm.controls.email.errors?.email">email error</ion-item>
+      </ion-item-group>
+
+      <ion-item-group>
+        <ion-item>
+          <button type="button" ion-button color="danger" icon-start (click)="dismiss()">
+            <ion-icon name='close'></ion-icon>
+            Cancel
+          </button>
+          <button type="submit" ion-button color="danger" [disabled]="!editAccountForm.valid" icon-start>
+            <ion-icon name='close'></ion-icon>
+            Submit
+          </button>
+        </ion-item>
+      </ion-item-group>
+
+    </ion-list>
+  </form>
+</ion-content>

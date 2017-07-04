@@ -40,10 +40,6 @@ export class PasswordResetPage {
 
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad PasswordResetPage');
-  }
-
   createToast(message: string) {
     return this.toastCtrl.create({
       message,
@@ -56,7 +52,6 @@ export class PasswordResetPage {
 
   resetPassword(){
     if (!this.resetPasswordForm.valid){
-      console.log(this.resetPasswordForm.value);
     } else {
       this.spinnerDialog.show(null,'Waiting ...',true,{overlayOpacity:0.60});
 

@@ -2,11 +2,9 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, ToastController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 
-import { MainPage } from '../../pages';
 
-import { UserProvider } from '../../providers';
+import { UserProvider, LoadingProvider } from '../../providers';
 
-import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 import { TranslateService } from '@ngx-translate/core';
 
 @IonicPage()
@@ -32,14 +30,14 @@ export class LoginPage {
     public toastCtrl: ToastController,
     public translateService: TranslateService,
     private formBuilder: FormBuilder,
-    private spinnerDialog: SpinnerDialog
+    public loadingProvider: LoadingProvider
   ) {
 
 
 
     this.signInForm = formBuilder.group({
       email: ['guillaume.bartolini@gmail.com', Validators.compose([Validators.required, Validators.email])],
-      password: ['', Validators.compose([Validators.minLength(6), Validators.required])]
+      password: ['qwer12', Validators.compose([Validators.minLength(6), Validators.required])]
     });
 
     this.translateService.get('LOGIN_ERROR').subscribe((value) => {
@@ -50,15 +48,21 @@ export class LoginPage {
 
   signInWithFacebook() {
     this.userProvider.signInWithFacebook()
-    .then((res) => {
-      console.log('user', res)
+      .then((user) => {
+        console.log('Signed in with FACEBOOK: ' , user)
 
-      this.createToast('Signed in with FACEBOOK: ' + res.user.displayName).present();
-      this.navCtrl.setRoot(MainPage);
-    },
-    (error) => {
-      this.createToast(error.message).present();
-    })
+        this.createToast('Signed in with FACEBOOK: ' + user.displayName).present();
+        this.userProvider.profileExist(user.uid).then((data) => {
+          if(data){
+            this.navCtrl.setRoot('MainPage');
+          }else{
+            this.navCtrl.setRoot('ProfilePage', {'emailVerified': true, 'displayName': user.displayName, 'aFuid': user.uid} );
+          }
+        });
+      },
+      (error) => {
+        this.createToast(error.message).present();
+      })
   }
 
   createToast(message: string) {
@@ -74,16 +78,19 @@ export class LoginPage {
       return
     }
     else {
-      this.spinnerDialog.show(null,'Waiting ...',true,{overlayOpacity:0.60});
+      this.loadingProvider.show();
 
       this.userProvider.signInUser(this.signInForm.value.email, this.signInForm.value.password)
-        .then(() => {
-          this.spinnerDialog.hide();
+        .then((success) => {
+          this.loadingProvider.hide();
           this.createToast('Signed in with email: ' + this.signInForm.value.email).present();
-          this.navCtrl.setRoot(MainPage);
+
+          this.userProvider.checkEmailIsVerified();
+
+          this.navCtrl.setRoot('MainPage');
         },
         (error) => {
-          this.spinnerDialog.hide();
+          this.loadingProvider.hide();
           this.createToast(error.message).present();
         })
     }

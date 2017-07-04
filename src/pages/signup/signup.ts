@@ -3,9 +3,8 @@ import { IonicPage, NavController, ToastController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { EmailValidator } from '../../validators/email';
 
-import { UserProvider } from '../../providers';
+import { UserProvider, LoadingProvider, AlertProvider } from '../../providers';
 
-import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 import { TranslateService } from '@ngx-translate/core';
 
 
@@ -31,7 +30,8 @@ export class SignupPage {
     public toastCtrl: ToastController,
     public translateService: TranslateService,
     private formBuilder: FormBuilder,
-    private spinnerDialog: SpinnerDialog
+    public loadingProvider: LoadingProvider,
+    public alertProvider: AlertProvider
   ) {
 
     this.translateService.get('SIGNUP_ERROR').subscribe((value) => {
@@ -45,10 +45,12 @@ export class SignupPage {
     })
   }
 
-  createToast(message: string) {
+  createToast(message: string, duration: number = 3000, showCloseButton: boolean = null) {
     return this.toastCtrl.create({
       message,
-      duration: 3000
+      duration,
+      showCloseButton,
+      closeButtonText: 'OK'
     })
   }
 
@@ -58,16 +60,24 @@ export class SignupPage {
       return
     }
     else {
-      this.spinnerDialog.show(null,'Loading',true,{overlayOpacity:0.60});
-
+      this.loadingProvider.show();
       this.userProvider.signUpUser(this.signupForm.value.name, this.signupForm.value.email, this.signupForm.value.password)
-        .then(() => {
-          this.spinnerDialog.hide();
-          this.createToast('Signed in with email: ' + this.signupForm.value.email).present();
-          this.navCtrl.setRoot('ProfilePage');
+        .then((newUser) => {
+          this.loadingProvider.hide();
+          this.createToast(
+            this.alertProvider.successMessages.emailVerificationSent.subTitle + this.signupForm.value.email ,
+            5000,
+            true
+          ).present();
+
+          this.userProvider.setLocalProfiles({'displayName':this.signupForm.value.name}, newUser.uid)
+            .then((data) => {
+              this.navCtrl.setRoot('ProfilePage', {'emailVerified': false, 'displayName':this.signupForm.value.name, 'aFuid': newUser.uid});
+            })
+
         },
         (error) => {
-          this.spinnerDialog.hide();
+          this.loadingProvider.hide();
           this.createToast(error.message).present();
         })
     }

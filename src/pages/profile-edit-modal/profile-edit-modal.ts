@@ -62,7 +62,6 @@ export class ProfileEditModalPage {
       displayName: [displayName, Validators.compose([Validators.required])]
     });
 
-
   }
 
   ngOnInit() {
@@ -74,23 +73,23 @@ export class ProfileEditModalPage {
     );
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ProfileEditModalPage');
-  }
-
-
-
   dismiss() {
-    let data = this.editProfileForm.value;
-    this.viewCtrl.dismiss(data);
+    this.viewCtrl.dismiss('cancel');
   }
-
 
   //test select event
   onSelectChange(selectedValue) {
     console.log('Selected');
   }
 
+  editProfileFormSubmit(){
+  if (!this.editProfileForm.valid) {
+      //NOT VALID
+      return
+    } else {
+      this.viewCtrl.dismiss(this.editProfileForm.value);
+    }
+  }
 
 
 }

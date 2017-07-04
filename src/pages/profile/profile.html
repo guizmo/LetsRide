@@ -6,7 +6,7 @@
 -->
 <ion-header>
   <ion-navbar >
-    <ion-buttons start>
+    <ion-buttons *ngIf="emailVerified" start>
       <button ion-button menuToggle icon-only>
         <ion-icon name="menu"></ion-icon>
       </button>
@@ -28,13 +28,13 @@
   <div class="list card" *ngIf="currentUser">
 
     <div class="profile">
-      <img src="{{currentUser.photoURL}}" tappable (click)="setPhoto()" />
+      <img src="{{currentUser.photoURL}}" tappable  />
     </div>
 
 
       <!-- Show icon of logged in provider -->
       <h4>
-        <span tappable (click)="setName()">{{displayName}} </span>
+        <span>{{displayName}}</span>
         <ion-icon name="md-flame" class="firebase"></ion-icon>
         <!-- <ion-icon name="logo-facebook" *ngIf="user.provider == 'Facebook'" class="facebook"></ion-icon>
         <ion-icon name="logo-google" *ngIf="user.provider == 'Google'" class="google"></ion-icon> -->
@@ -49,6 +49,11 @@
 
         <div>
           Country - {{localProfile.country}}
+          <ion-icon name="md-trash" item-right></ion-icon>
+        </div>
+
+        <div>
+          Age - {{localProfile.age}}
           <ion-icon name="md-trash" item-right></ion-icon>
         </div>
 
