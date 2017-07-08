@@ -36,8 +36,13 @@
     </button>
   </div>
   <div margin-bottom>
-    <button ion-button icon-left block color="facebook" (click)="signInWithFacebook()">
-      <ion-icon name="logo-facebook"></ion-icon>  Continue with facebook
+    <button ion-button icon-left block color="facebook" (click)="signInWithProvider('Facebook')">
+      <ion-icon name="logo-facebook"></ion-icon>  Continue with Facebook
+    </button>
+  </div>
+  <div margin-bottom>
+    <button ion-button icon-left block color="google" (click)="signInWithProvider('Google+')">
+      <ion-icon name="logo-google"></ion-icon>  Continue with Google+
     </button>
   </div>
 

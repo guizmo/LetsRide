@@ -46,23 +46,23 @@ export class LoginPage {
 
   }
 
-  signInWithFacebook() {
-    this.userProvider.signInWithFacebook()
-      .then((user) => {
-        console.log('Signed in with FACEBOOK: ' , user)
 
-        this.createToast('Signed in with FACEBOOK: ' + user.displayName).present();
-        this.userProvider.profileExist(user.uid).then((data) => {
+  signInWithProvider(provider:string) {
+    this.userProvider.signInWithProvider(provider)
+      .then((user) => {
+        console.log('Signed in with GOOGLE+: ' , user)
+
+        this.createToast('Signed in with ' + provider + ': ' + user.displayName).present();
+        this.userProvider.getLocalProfile(user.uid).then((data) => {
           if(data){
             this.navCtrl.setRoot('MainPage');
           }else{
             this.navCtrl.setRoot('ProfilePage', {'emailVerified': true, 'displayName': user.displayName, 'aFuid': user.uid} );
           }
         });
-      },
-      (error) => {
+      }).catch( (error) => {
         this.createToast(error.message).present();
-      })
+      });
   }
 
   createToast(message: string) {

@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, AlertController } from 'ionic-angular';
 
 import { UserProvider, LoadingProvider, AlertProvider } from '../../providers';
-import { Profile } from '../../models/profile';
+
+import * as firebase from 'firebase/app';
 
 /**
  * Generated class for the AccountPage page.
@@ -17,52 +18,40 @@ import { Profile } from '../../models/profile';
 })
 export class AccountPage {
 
-  profileObserver;
-  userObserver;
-  currentUser: Profile;
-  providerId: string = null;
-  emailVerified: boolean = false;
+  private currentUser: firebase.User;
+  private emailVerified: boolean = false;
   private alert;
+  private providerId: string = null;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    public userProvider: UserProvider,
+    private userProvider: UserProvider,
     public loadingProvider: LoadingProvider,
     public modalCtrl: ModalController,
     public alertCtrl: AlertController,
     public alertProvider: AlertProvider
   ) {
-    this.userObserver = this.userProvider.getUser().subscribe(user => {
-      if(user.providerData[0].providerId != 'password'){
-        this.emailVerified = true;
-      }else{
-        this.emailVerified = user.emailVerified;
+    this.userAuth();
+
+    console.log(this)
+
+  }
+
+
+
+  userAuth(){
+    this.userProvider.afAuth.authState.subscribe((_user: firebase.User) => {
+      if (_user) {
+        this.providerId = _user.providerData[0].providerId;
+        this.currentUser = _user;
+        if(this.providerId == 'facebook'){
+          this.emailVerified = true;
+        }else{
+          this.emailVerified = _user.emailVerified;
+        }
       }
     });
-  }
-
-  ngOnInit() {
-    this.subscribeToProfile();
-  }
-
-
-
-  subscribeToProfile(){
-    this.profileObserver = this.userProvider.currentProfile.subscribe(
-      (data) => {
-        if(data){
-          this.currentUser = data;
-          this.providerId = data.providerId;
-        }
-      },
-      (err) => {
-        console.log(err);
-      },
-      () => {
-        console.log("completed");
-      }
-    );
   }
 
 
@@ -94,9 +83,7 @@ export class AccountPage {
       buttons: [
         {
           text: confirmMessages.emailUpdate.back,
-          handler: data => {
-            console.log('No update')
-          }
+          handler: data => {}
         },
         {
           text: confirmMessages.emailUpdate.next,
@@ -108,10 +95,9 @@ export class AccountPage {
                 this.emailVerified = _user.emailVerified;
               })
               .catch((error) => {
-                console.log('onDidDismiss', error)
+                console.error('onDidDismiss', error);
+                throw error;
               });
-
-
             this.emailVerified = false;
           }
         }
@@ -123,8 +109,6 @@ export class AccountPage {
 
 
   ngOnDestroy(){
-    this.profileObserver.unsubscribe();
-    this.userObserver.unsubscribe();
   }
 
 }

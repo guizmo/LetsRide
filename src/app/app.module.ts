@@ -18,12 +18,14 @@ import {
   DisciplinesProvider,
   CountriesProvider,
   LoadingProvider,
+  AuthProvider,
   AlertProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Facebook } from '@ionic-native/facebook';
+import { GooglePlus } from '@ionic-native/google-plus';
 import { Dialogs } from '@ionic-native/dialogs';
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 
@@ -32,7 +34,6 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
-import { AuthService } from '../providers/auth-service';
 
 import { GbLogoutButtonModule } from '../components/gb-logout-button/gb-logout-button.module';
 
@@ -101,9 +102,10 @@ export function provideSettings(storage: Storage) {
     Translate,
     StatusBar,
     SplashScreen,
-    AuthService,
+    AuthProvider,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     Facebook,
+    GooglePlus,
     Dialogs,
     SpinnerDialog,
     AppEvents,

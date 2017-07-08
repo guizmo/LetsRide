@@ -5,8 +5,10 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Dialogs } from '@ionic-native/dialogs';
 
-import { ListPage, LoginPage} from '../pages';
-import { Translate, AppEvents, UserProvider} from '../providers';
+import { ListPage} from '../pages';
+import { Translate} from '../providers';
+
+import { AngularFireAuth } from 'angularfire2/auth';
 
 @Component({
   templateUrl: 'app.html'
@@ -14,10 +16,7 @@ import { Translate, AppEvents, UserProvider} from '../providers';
 export class LetsRide {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage:any = 'MainPage';
-  public zone:NgZone;
-
-  loginPage: any = { title: 'Login', component: LoginPage };
+  rootPage: any = 'MainPage';
   pages: any[] = [
     { title: 'Home', component: 'MainPage' },
     { title: 'Profile', component: 'ProfilePage' },
@@ -26,7 +25,7 @@ export class LetsRide {
     { title: 'settings', component: ListPage }
   ]
 
-  currentUser;
+  currentUser: any = null;
 
   constructor(
     private translate: Translate,
@@ -34,25 +33,19 @@ export class LetsRide {
     public platform: Platform,
     public statusBar: StatusBar,
     public splashScreen: SplashScreen,
-    public appEvents: AppEvents,
-    public userProvider: UserProvider
+    private afAuth: AngularFireAuth
   ) {
-    this.zone = new NgZone({});
     this.translate.init();
-    console.log('app.compenent constructor',  this)
-    this.userProvider.currentProfile.subscribe(data => {
-      this.currentUser = data;
-      this.zone.run( () => {
-        if (!data) {
-          //this.rootPage = 'LoginPage';
-          if (this.nav){
-            this.nav.setRoot('LoginPage')
-          }
-        } else {
-          //this.rootPage = MainPage;
-        }
-      });
+    console.log('app.component constructor',  this)
+
+    afAuth.authState.subscribe((user) => {
+      if (!user) {
+        this.nav.setRoot('LoginPage');
+      } else {
+        this.currentUser = {...user.providerData[0], ...{'aFuid': user.uid} };
+      }
     });
+
   }
 
   ionViewDidLoad() {

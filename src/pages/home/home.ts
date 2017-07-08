@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, Events } from 'ionic-angular';
+import { IonicPage, NavController } from 'ionic-angular';
 
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 import { UserProvider} from '../../providers';
@@ -15,11 +15,10 @@ export class MainPage {
   constructor(
     public navCtrl: NavController,
     public afDB: AngularFireDatabase,
-    public events: Events,
     public userProvider: UserProvider
   ) {
-    this.items = afDB.list('/recipes');
-    this.events.publish('email:verified');
+    //this.items = afDB.list('/recipes');
   }
+
 
 }

@@ -59,7 +59,6 @@ export class AlertProvider {
     public alertCtrl: AlertController
     //public logoutProvider: LogoutProvider
   ) {
-    console.log("Initializing Alert Provider");
     this.successMessages = successMessages;
     this.errorMessages = errorMessages;
     this.comfirmMessages = comfirmMessages;

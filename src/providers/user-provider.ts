@@ -3,14 +3,14 @@ import { Http } from '@angular/http';
 import { Platform, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Facebook } from '@ionic-native/facebook';
+import { GooglePlus } from '@ionic-native/google-plus';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject'
 import { Observable } from "rxjs/Rx";
 
 
 import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireDatabase } from 'angularfire2/database';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 
 import {Profile} from '../models/profile';
 import { Translate } from './translate';
@@ -22,7 +22,6 @@ import { AlertProvider } from './alert';
 export class UserProvider {
 
   currentUser: firebase.User;
-  currentProfile = new BehaviorSubject<Profile>(null);
   localUser: any;
   emailVerified: boolean = false;
   checkVerified;
@@ -30,210 +29,167 @@ export class UserProvider {
   constructor(
     public http: Http,
     public translate: Translate,
-    private afAuth: AngularFireAuth,
+    public afAuth: AngularFireAuth,
     private fb: Facebook,
+    private googlePlus: GooglePlus,
     private platform: Platform,
-    public afDB: AngularFireDatabase,
-    public storage: Storage,
+    private storage: Storage,
     public alertProvider: AlertProvider,
     public loadingProvider: LoadingProvider,
-    public events: Events
   ) {
-
     afAuth.authState.subscribe((_user: firebase.User) => {
       if (_user) {
         this.currentUser = _user;
         let providerData = {..._user.providerData[0], ...{'aFuid':_user.uid} };
         this.emailVerified = this.currentUser.emailVerified;
-        this.currentProfile.next( Object.assign(providerData) );
         this.setLocalUser(providerData);
         console.log('afAuth.authState Observable in')
       } else {
         console.log('afAuth.authState Observable out')
-        this.currentProfile.next(null);
       }
 
     });
 
   }
-  getUser(): Observable<firebase.User> {
-    return Observable.create(observer => {
-      this.afAuth.authState.subscribe((_user: firebase.User) => {
-        if (_user) {
-          let providerData = {..._user.providerData[0], ...{'aFuid':_user.uid} }
-          observer.next( Object.assign(_user) );
-          this.currentProfile.next( Object.assign(providerData) );
-          observer.complete();
-        } else {
-          observer.next(null);
-          this.currentProfile.next(null);
-        }
 
-      });
-    });
 
-  }
 
-  //TEST
-  getProfile(): Observable<Profile> {
-    return Observable.create(observer => {
-      this.afAuth.authState.subscribe((_user: firebase.User) => {
-        if (_user) {
-          this.currentUser = _user;
-          let providerData = {..._user.providerData[0], ...{'aFuid':_user.uid} };
-          this.currentProfile.next( Object.assign(providerData) );
-          //this.currentProfile.complete();
-          observer.next( Object.assign(providerData) );
-          observer.complete();
-          console.log('Observable getProfile in')
-        } else {
-          console.log('Observable getProfile out')
-          observer.next(null);
-        }
-
-      });
-    });
-  }
-
-  isVerifiedEmail() {
-    // Return the observable. DO NOT subscribe here.
-    //return this.afAuth.authState;
-    return Observable.create(observer => {
-        observer.next(this.emailVerified);
-        observer.complete();
-    });
-    // Hint: you could also transform the value before returning it:
-    // return this.af.auth.map(authData => new User({name: authData.name}));
-  }
-
+  //OK
   signInUser(email: string, password: string): firebase.Promise<any> {
     return this.afAuth.auth.signInWithEmailAndPassword(email, password);
   }
 
-
+  //OK
   signUpUser(name: string, newEmail: string, newPassword: string): firebase.Promise<any> {
     let infos = {name, newEmail};
     return this.afAuth.auth.createUserWithEmailAndPassword(newEmail, newPassword)
       .then((newUser) => {
 
-        newUser.sendEmailVerification().then(
-          (success) => {
+        newUser.sendEmailVerification()
+          .then((success) => {
             console.log("please verify your email")
-          }
-        ).catch(
-          (err) => {
+          }).catch(
+          (error) => {
             //this.error = err;
-            console.log('error', err)
-          }
-        )
+            console.error(error);
+            throw error;
+          });
 
-        this.updateProfile(newUser, infos);
-        return newUser;
-        //this.storeProfileDatabase(newUser, infos);
+        return newUser.updateProfile({
+            displayName: infos.name
+          }).then(() => {
+            return newUser;
+          }).catch((error) => {
+            console.error(error);
+            throw error;
+          });
+
       });
 
   }
 
+  //OK
   resetPassword(email: string): firebase.Promise<any> {
     return this.afAuth.auth.sendPasswordResetEmail(email);
   }
 
 
-  signInWithFacebook(): firebase.Promise<any> {
-    let signInFB = null;
-    if (this.platform.is('cordova')) {
-      signInFB = this.fb.login(['email', 'public_profile'])
-
-      return signInFB.then(res => {
-        const facebookCredential = firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken);
-        return this.afAuth.auth.signInWithCredential(facebookCredential).then(user => {
-          console.log('firebaseUser', JSON.stringify(user))
-
-          this.profileExist(user.uid).then((data) => {
-            if(!data){
-              this.setLocalProfiles({'displayName': user.displayName}, user.uid)
-            }
-          });
-          return user;
-        }).catch( (error) => console.error('ERROR', error))
-      })
-
-    }else{
-      signInFB = this.afAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider());
-
-      return signInFB.then(firebaseUser => {
-        let user = firebaseUser.user;
-
-        this.profileExist(user.uid).then((data) => {
-          if(!data){
-            this.setLocalProfiles({'displayName': user.displayName}, user.uid)
-          }
-        });
-
-        return user;
-
-      }).catch( (error) => console.error('ERROR', error))
+  //OK
+  signInWithProvider(provider:string): firebase.Promise<any> {
+    let sdkProvider;
+    let webProvider;
+    const providers = {
+      gp : 'Google+',
+      fb : 'Facebook'
     }
 
-  }
+    if(provider == providers.gp){
+      sdkProvider = this.googlePlus.login({ 'webClientId': '897213692051-lvpeb0c5t59slq2e5uoobrmpa54f5i11.apps.googleusercontent.com', 'offline': true });
+      webProvider = this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    }else if(provider == providers.fb){
+      sdkProvider = this.fb.login(['email', 'public_profile']);
+      webProvider = this.afAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider());
+    }else{
+      throw 'need provider';
+    }
 
+    let is_cordova = this.platform.is('cordova');
+    let signInGP = (is_cordova) ? sdkProvider : webProvider;
 
-  profileExist(aFuid){
-    return this.storage.get('profiles').then((data) => {
-      if(!data || !data[aFuid] ){
-        console.log('new firebaseUser', aFuid)
-        return false;
+    return signInGP.then(res => {
+      if(is_cordova){
+        let sdkCredential = (provider == providers.fb) ? firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken) : firebase.auth.GoogleAuthProvider.credential(res.idToken);
+        return this.afAuth.auth.signInWithCredential(sdkCredential).then(user => {
+          this.setLocalProfiles({'displayName': user.displayName}, user.uid)
+          return user;
+        }).catch( (error) => {
+          console.error('ERROR', error);
+          throw error ;
+        });
       }else{
-        console.log('already a firebaseUser', aFuid)
-        return true;
+        let user = res.user;
+        this.setLocalProfiles({'displayName': user.displayName}, user.uid)
+        return user;
       }
+    }).catch( (error) => {
+      console.error('ERROR', error);
+      throw error ;
     });
+
   }
 
-  updateProfile(user, infos){
-    user.updateProfile({
-      displayName: infos.name
-    }).then(() => {
-      // Update successful
-    });
-  }
 
-  storeProfileDatabase(user, infos){
-    this.afDB.database.ref('/userProfile').child(user.uid).set({
-      firstName: infos.name,
-      email: infos.newEmail
-    });
-  }
   /**
    * Log the user out, which forgets the session
    */
+  //OK
   logout() {
     this.afAuth.auth.signOut()
 
   }
-
+  //OK
   setLocalUser(user){
     this.storage.set('user', user);
   }
-
+  //OK
   getLocalUser(){
     this.storage.get('user').then((data) => {
       this.localUser = data;
     });
   }
 
-  setLocalProfiles(profile, id = null ){
+  //OK
+  setLocalProfiles(profile, id = null, update = false ){
     return this.storage.get('profiles').then((data) => {
       if(!data){
         data = {};
       }
-      data[id] = profile;
+      if(data[id]){
+        if(!update){
+          profile.displayName = data[id].displayName;
+        }
+        Object.assign(data[id], profile);
+      }else{
+        data[id] = profile;
+      }
       this.storage.set('profiles', data);
       return data;
     });
   }
 
+  //OK
+  getLocalProfile(aFuid){
+    return this.storage.get('profiles').then((data) => {
+      if(!data || !data[aFuid] ){
+        return null;
+      }else{
+        return data[aFuid];
+      }
+    });
+  }
 
+
+  //OK
   updatePassword(currentPassword, password){
     this.loadingProvider.show();
     let credential = firebase.auth.EmailAuthProvider.credential(this.currentUser.email, currentPassword);
@@ -275,7 +231,7 @@ export class UserProvider {
 
 
 
-
+  //OK
   updateEmail(email){
     this.loadingProvider.show();
 
@@ -307,7 +263,7 @@ export class UserProvider {
   }
 
 
-
+  //OK
   sendEmailVerification(){
     return this.afAuth.auth.currentUser.sendEmailVerification().then(() => {
       this.alertProvider.showEmailVerificationSentMessage(this.afAuth.auth.currentUser.email);
@@ -322,21 +278,29 @@ export class UserProvider {
       throw error;
     })
   }
-
+  //OK
   checkEmailIsVerified(): Promise<boolean>{
-    var that = this;
+    let that = this;
     return new Promise<boolean>((resolve, reject) => {
-      that.checkVerified = setInterval(function() {
+      let checkVerified = setInterval(function() {
+        console.log('ticking')
         that.currentUser.reload();
         if (that.currentUser.emailVerified) {
-          clearInterval(that.checkVerified);
-          that.emailVerified = true;
+          clearInterval(checkVerified);
+          //that.emailVerified = true;
           resolve(true);
         }
       }, 1000);
     });
   }
 
+  displayName(): string {
+    if (this.currentUser !== null) {
+      return this.currentUser.displayName;
+    } else {
+      return '';
+    }
+  }
 
 
 

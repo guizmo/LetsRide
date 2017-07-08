@@ -1,7 +1,7 @@
 export { UserProvider } from './user-provider';
 export { Api } from './api';
 export { Settings } from './settings';
-export { AuthService } from './auth-service';
+export { AuthProvider } from './auth';
 export { Translate } from './translate';
 export { AppEvents } from './app-events';
 export { DisciplinesProvider } from './disciplines';

@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController, Events } from 'ionic-angular';
-import { Storage } from '@ionic/storage';
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 
 import { Observable } from "rxjs/Rx";
 
 import { UserProvider, AlertProvider } from '../../providers';
 import { Profile } from '../../models/profile';
 
+import * as firebase from 'firebase/app';
 
 /**
  * Generated class for the ProfilePage page.
@@ -20,29 +20,25 @@ import { Profile } from '../../models/profile';
   templateUrl: 'profile.html',
 })
 export class ProfilePage implements OnInit, OnDestroy {
-
-  editIcon: string = "create";
-  editState: boolean = false;
-
-  localProfile: any;
-  allLocalProfiles: {} = null;
-  displayName: string = null;
-  currentUser: Profile;
-  profileObserver;
-  userObserver;
-  emailVerified: boolean = false;
+  test: string;
+  private localProfile: any;
+  private displayName: string = null;
+  private currentUser: firebase.User;
+  private emailVerified: boolean = false;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public userProvider: UserProvider,
     public modalCtrl: ModalController,
-    public storage: Storage,
-    public events: Events,
     public alertProvider: AlertProvider
   ) {
+    this.userAuth();
+    console.log('profile', this)
+
     let _emailVerified = this.navParams.data.emailVerified;
     if(_emailVerified !== undefined){
+
       let {emailVerified, displayName, aFuid } = this.navParams.data;
       //this.userProvider.setLocalProfiles({displayName, displayName}, aFuid);
       if(!emailVerified){
@@ -55,30 +51,16 @@ export class ProfilePage implements OnInit, OnDestroy {
             console.error(error)
           });
       }
-
-
-
     }else{
       //not coming from SIGNUP page
     }
 
-    this.userObserver = this.userProvider.getUser().subscribe(user => {
-      if(user.providerData[0].providerId != 'password'){
-        this.emailVerified = true;
-      }else{
-        this.emailVerified = user.emailVerified;
-      }
-    });
-
   }
 
   ngOnInit() {
-    this.subscribeToProfile();
   }
 
   ngOnDestroy(){
-    this.profileObserver.unsubscribe();
-    this.userObserver.unsubscribe();
   }
 
 
@@ -87,72 +69,36 @@ export class ProfilePage implements OnInit, OnDestroy {
     let profileModal = this.modalCtrl.create('ProfileEditModalPage', { user: this.currentUser, profile: this.localProfile } );
     profileModal.onDidDismiss(profile => {
       if(profile != null && profile != 'cancel'){
-        let aFuid = this.currentUser.aFuid;
+        //let aFuid = this.currentUser.aFuid;
+        let aFuid = this.currentUser.uid;
         this.localProfile = profile;
         this.displayName = profile.displayName;
-        this.userProvider.setLocalProfiles(profile, aFuid).then((data) => {});
+        this.userProvider.setLocalProfiles(profile, aFuid, true).then((data) => {});
       }
     });
     profileModal.present();
   }
 
 
-  getLocalProfile(id){
-    this.storage.get('profiles').then((data) => {
-      this.localProfile = data[id];
-      this.displayName = data[id].displayName;
-    });
-  }
-
-
-  subscribeToProfile(){
-    /*this.profileObserver = this.userProvider.getProfile().subscribe(
-      (data) => {
-        this.currentUser = data;
-      },
-      (err) => {
-        console.log(err);
-      },
-      () => {
-        console.log("completed");
-      }
-    );*/
-
-    this.profileObserver = this.userProvider.currentProfile.subscribe(
-      (data) => {
-        if(data){
-          this.currentUser = data;
-          let aFuid = data.aFuid;
-
-          this.displayName = this.currentUser.displayName;
-          this.getLocalProfile(aFuid);
+  userAuth(){
+    this.userProvider.afAuth.authState.subscribe((_user: firebase.User) => {
+      if (_user) {
+        if(_user.providerData[0].providerId == 'facebook'){
+          this.emailVerified = true;
+        }else{
+          this.emailVerified = _user.emailVerified;
         }
-      },
-      (err) => {
-        console.log(err);
-      },
-      () => {
-        console.log("completed");
-      }
-    );
-  }
-
-  setDisplayName(displayName = null){
-    if(this.localProfile != null){
-      this.displayName = this.localProfile.displayName || this.currentUser.displayName;
-    }else{
-      this.displayName = displayName;
-    }
-  }
-
-
-  listenEmailVerified(){
-    this.events.subscribe('email:verified', (res) => {
-      if(res){
-        this.emailVerified = res;
-        this.alertProvider.showEmailVerifiedMessage();
+        this.currentUser = _user;
+        this.userProvider.getLocalProfile(_user.uid).then((data) => {
+          if(data){
+            this.localProfile = data;
+            this.displayName = data.displayName;
+          }
+        })
       }
     });
   }
+
+
 
 }

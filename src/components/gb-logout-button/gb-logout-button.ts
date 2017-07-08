@@ -48,7 +48,7 @@ export class GbLogoutButton {
       .catch(e => console.log('Error displaying dialog', e));
     }else{
       this.userProvider.logout();
-      this.app.getRootNav().setRoot('MainPage');
+      //this.app.getRootNav().setRoot('MainPage');
       this.events.publish('user:logout');
 
     }
