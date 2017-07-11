@@ -15,5 +15,13 @@
 
 
 <ion-content padding>
+  <ion-list>
+    <ion-item ion-item *ngFor="let place of places" >
+      {{place.name}}<br>
+      <button (click)="presentModal('update', place.$key)">Update</button>
+      <button (click)="delete(place.$key)">Delete</button>
+    </ion-item>
+  </ion-list>
 
+  <button ion-button color="light" round (click)="presentModal('create')">Add a place</button>
 </ion-content>

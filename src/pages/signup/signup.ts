@@ -21,6 +21,7 @@ export class SignupPage {
   // sure to add it to the type
 
   // Our translated text strings
+
   private signupErrorString: string;
   public signupForm: FormGroup;
 
@@ -60,20 +61,28 @@ export class SignupPage {
       return
     }
     else {
+
+
       this.loadingProvider.show();
       this.userProvider.signUpUser(this.signupForm.value.name, this.signupForm.value.email, this.signupForm.value.password)
-        .then((newUser) => {
+        .then((user) => {
           this.loadingProvider.hide();
           this.createToast(
             this.alertProvider.successMessages.emailVerificationSent.subTitle + this.signupForm.value.email ,
-            5000,
+            10000,
             true
           ).present();
 
-          this.userProvider.setLocalProfiles({'displayName':this.signupForm.value.name}, newUser.uid)
-            .then((data) => {
-              this.navCtrl.setRoot('ProfilePage', {'emailVerified': false, 'displayName':this.signupForm.value.name, 'aFuid': newUser.uid});
-            })
+          let providerData = {...user.providerData[0], ...{'aFuid':user.uid} };
+
+          this.userProvider.addUserData(providerData).subscribe((data) => {
+            if(data.aFuid){
+              this.navCtrl.setRoot('ProfilePage', {...providerData, ...{'emailVerified': user.emailVerified} });
+            }else{
+              console.error('Database create didnt work');
+              throw 'Database create didnt work';
+            }
+          });
 
         },
         (error) => {

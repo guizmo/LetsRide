@@ -11,6 +11,11 @@
         {{p.title}}
       </button>
     </ion-list>
+
+    <ion-item *ngFor="let user of users | async">
+    {{user.email}}
+    </ion-item>
+
   </ion-content>
   <ion-footer  class="bar-stable" style="left:0;right:0;margin:0; width: 100%;position: fixed;bottom:0;">
 

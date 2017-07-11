@@ -35,47 +35,46 @@
 
       <!-- Show icon of logged in provider -->
       <h4>
-        <span *ngIf="currentUser && !localProfile">{{currentUser.displayName}}</span><br>
-        <span *ngIf="localProfile">{{localProfile.displayName}}</span><br>
-        <span>currentUser emailVerified [[{{currentUser.emailVerified}}]]</span><br>
+        <span>{{displayName}}</span><br>
+        <span>currentUser emailVerified [[{{currentUser.emailVerified}}]]</span>
         <ion-icon name="md-flame" class="firebase"></ion-icon>
         <!-- <ion-icon name="logo-facebook" *ngIf="user.provider == 'Facebook'" class="facebook"></ion-icon>
         <ion-icon name="logo-google" *ngIf="user.provider == 'Google'" class="google"></ion-icon> -->
       </h4>
       <div class="divider"></div>
 
-      <div *ngIf="localProfile">
+      <div *ngIf="userData">
         <div>
-          City - {{localProfile.city}}
+          City - {{userData.settings.city}}
           <ion-icon name="md-trash" item-right></ion-icon>
         </div>
 
         <div>
-          Country - {{localProfile.country}}
+          Country - {{userData.settings.country}}
           <ion-icon name="md-trash" item-right></ion-icon>
         </div>
 
         <div>
-          Age - {{localProfile.age}}
+          Age - {{userData.settings.age}}
           <ion-icon name="md-trash" item-right></ion-icon>
         </div>
 
-        <div>
-          Gender - {{localProfile.gender}}
+        <div >
+          Gender - {{userData.settings.gender}}
           <ion-icon name="md-trash" item-right></ion-icon>
         </div>
 
         <div>
           Disciplines -
-          <ul>
-            <li class="text" *ngFor="let discipline of localProfile.disciplines">
+          <ul *ngIf="userData.settings.disciplines">
+            <li class="text" *ngFor="let discipline of userData.settings.disciplines">
         			{{discipline}}
         		</li>
           </ul>
         </div>
 
         <div>
-          Level - {{localProfile.level}}
+          Level - {{userData.settings.level}}
           <ion-icon name="md-trash" item-right></ion-icon>
         </div>
       </div>

@@ -9,6 +9,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject'
 import { Observable } from "rxjs/Rx";
 
 
+import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 
@@ -25,11 +26,14 @@ export class UserProvider {
   localUser: any;
   emailVerified: boolean = false;
   checkVerified;
+  //users:FirebaseListObservable<any[]>;
+  userData: FirebaseObjectObservable<any>;
 
   constructor(
     public http: Http,
     public translate: Translate,
     public afAuth: AngularFireAuth,
+    public afdb: AngularFireDatabase,
     private fb: Facebook,
     private googlePlus: GooglePlus,
     private platform: Platform,
@@ -40,9 +44,8 @@ export class UserProvider {
     afAuth.authState.subscribe((_user: firebase.User) => {
       if (_user) {
         this.currentUser = _user;
-        let providerData = {..._user.providerData[0], ...{'aFuid':_user.uid} };
+        this.userData = this.afdb.object(`users/${_user.uid}`);
         this.emailVerified = this.currentUser.emailVerified;
-        this.setLocalUser(providerData);
         console.log('afAuth.authState Observable in')
       } else {
         console.log('afAuth.authState Observable out')
@@ -50,7 +53,26 @@ export class UserProvider {
 
     });
 
+
   }
+
+  addUserData(data: Profile) {
+    //Create new User with uid Key
+    this.userData = this.afdb.object(`/users/${data.aFuid}`);
+    this.userData.set(data);
+    return this.userData ;
+  }
+
+  saveUserData(data: any) {
+    this.userData.set(data);
+  }
+
+  updateUserData(data: Profile) {
+    this.userData.update(data);
+
+    return this.userData;
+  }
+
 
 
 
@@ -96,40 +118,37 @@ export class UserProvider {
 
   //OK
   signInWithProvider(provider:string): firebase.Promise<any> {
-    let sdkProvider;
-    let webProvider;
+
     const providers = {
       gp : 'Google+',
       fb : 'Facebook'
     }
 
+
+    let signInGP;
+    let is_cordova = this.platform.is('cordova');
     if(provider == providers.gp){
-      sdkProvider = this.googlePlus.login({ 'webClientId': '897213692051-lvpeb0c5t59slq2e5uoobrmpa54f5i11.apps.googleusercontent.com', 'offline': true });
-      webProvider = this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+      signInGP = (is_cordova) ? this.googlePlus.login({ 'webClientId': '897213692051-lvpeb0c5t59slq2e5uoobrmpa54f5i11.apps.googleusercontent.com', 'offline': true }) : this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
     }else if(provider == providers.fb){
-      sdkProvider = this.fb.login(['email', 'public_profile']);
-      webProvider = this.afAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider());
+      signInGP = (is_cordova) ? this.fb.login(['email', 'public_profile']) : this.afAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider()) ;
     }else{
       throw 'need provider';
     }
 
-    let is_cordova = this.platform.is('cordova');
-    let signInGP = (is_cordova) ? sdkProvider : webProvider;
 
     return signInGP.then(res => {
       if(is_cordova){
         let sdkCredential = (provider == providers.fb) ? firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken) : firebase.auth.GoogleAuthProvider.credential(res.idToken);
         return this.afAuth.auth.signInWithCredential(sdkCredential).then(user => {
-          this.setLocalProfiles({'displayName': user.displayName}, user.uid)
+
           return user;
         }).catch( (error) => {
           console.error('ERROR', error);
           throw error ;
         });
       }else{
-        let user = res.user;
-        this.setLocalProfiles({'displayName': user.displayName}, user.uid)
-        return user;
+
+        return res.user;
       }
     }).catch( (error) => {
       console.error('ERROR', error);

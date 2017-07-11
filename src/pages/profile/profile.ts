@@ -20,8 +20,8 @@ import * as firebase from 'firebase/app';
   templateUrl: 'profile.html',
 })
 export class ProfilePage implements OnInit, OnDestroy {
-  test: string;
-  private localProfile: any;
+
+  private userData: any;
   private displayName: string = null;
   private currentUser: firebase.User;
   private emailVerified: boolean = false;
@@ -33,14 +33,13 @@ export class ProfilePage implements OnInit, OnDestroy {
     public modalCtrl: ModalController,
     public alertProvider: AlertProvider
   ) {
-    this.userAuth();
     console.log('profile', this)
+    this.userAuth();
 
     let _emailVerified = this.navParams.data.emailVerified;
     if(_emailVerified !== undefined){
 
       let {emailVerified, displayName, aFuid } = this.navParams.data;
-      //this.userProvider.setLocalProfiles({displayName, displayName}, aFuid);
       if(!emailVerified){
         this.userProvider.checkEmailIsVerified()
           .then((res) => {
@@ -53,6 +52,7 @@ export class ProfilePage implements OnInit, OnDestroy {
       }
     }else{
       //not coming from SIGNUP page
+      console.log('not coming from SIGNUP page')
     }
 
   }
@@ -66,14 +66,17 @@ export class ProfilePage implements OnInit, OnDestroy {
 
 
   presentProfileModal() {
-    let profileModal = this.modalCtrl.create('ProfileEditModalPage', { user: this.currentUser, profile: this.localProfile } );
+    let profileModal = this.modalCtrl.create('ProfileEditModalPage', { user: this.currentUser, profile: this.userData.settings } );
     profileModal.onDidDismiss(profile => {
       if(profile != null && profile != 'cancel'){
-        //let aFuid = this.currentUser.aFuid;
         let aFuid = this.currentUser.uid;
-        this.localProfile = profile;
-        this.displayName = profile.displayName;
-        this.userProvider.setLocalProfiles(profile, aFuid, true).then((data) => {});
+
+        let userData = {...this.currentUser.providerData[0], ...{'aFuid': aFuid, settings: profile } };
+        this.userProvider.updateUserData(userData).subscribe((data) => {
+          //TODO
+          //Handle errors
+          console.log(data)
+        });
       }
     });
     profileModal.present();
@@ -81,20 +84,17 @@ export class ProfilePage implements OnInit, OnDestroy {
 
 
   userAuth(){
+
     this.userProvider.afAuth.authState.subscribe((_user: firebase.User) => {
       if (_user) {
-        if(_user.providerData[0].providerId == 'facebook'){
-          this.emailVerified = true;
-        }else{
-          this.emailVerified = _user.emailVerified;
-        }
+        this.userProvider.userData.subscribe((data) => {
+          this.userData = data;
+          this.displayName = (data.settings && data.settings.displayName) ? data.settings.displayName : _user.displayName;
+        });
+
+        this.emailVerified =  (_user.providerData[0].providerId == 'facebook.com') ? true : _user.emailVerified;
+
         this.currentUser = _user;
-        this.userProvider.getLocalProfile(_user.uid).then((data) => {
-          if(data){
-            this.localProfile = data;
-            this.displayName = data.displayName;
-          }
-        })
       }
     });
   }

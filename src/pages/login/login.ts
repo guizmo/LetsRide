@@ -50,16 +50,26 @@ export class LoginPage {
   signInWithProvider(provider:string) {
     this.userProvider.signInWithProvider(provider)
       .then((user) => {
-        console.log('Signed in with GOOGLE+: ' , user)
+        console.log('Signed in with ' + provider + ' : ' , user)
 
         this.createToast('Signed in with ' + provider + ': ' + user.displayName).present();
-        this.userProvider.getLocalProfile(user.uid).then((data) => {
-          if(data){
-            this.navCtrl.setRoot('MainPage');
-          }else{
-            this.navCtrl.setRoot('ProfilePage', {'emailVerified': true, 'displayName': user.displayName, 'aFuid': user.uid} );
-          }
+        this.userProvider.afdb.object(`/users/${user.uid}`).subscribe((data) => {
+            if(data.$exists()){
+              this.navCtrl.setRoot('MainPage');
+            }else{
+              let providerData = {...user.providerData[0], ...{'aFuid':user.uid} , ...{settings : { displayName : user.displayName } } };
+              this.userProvider.addUserData(providerData).subscribe((data) => {
+                if(data.aFuid){
+                  this.navCtrl.setRoot('ProfilePage', {...providerData, ...{'emailVerified': true} } );
+                }else{
+                  console.error('Database create didnt work');
+                  throw 'Database create didnt work';
+                }
+              });
+
+            }
         });
+
       }).catch( (error) => {
         this.createToast(error.message).present();
       });

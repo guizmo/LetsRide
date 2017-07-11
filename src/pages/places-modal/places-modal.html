@@ -1,0 +1,44 @@
+
+<ion-header>
+  <ion-navbar >
+    <ion-title>PlacesModal</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+
+
+  <form [formGroup]="placeForm" (submit)="placeFormSubmit()" padding-bottom>
+
+    <ion-list>
+      <ion-item-group>
+        <ion-item>
+          <ion-input type="text" placeholder="Name" formControlName="name" name="name" ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input type="text" placeholder="Latitude" formControlName="lat" name="lat" ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input type="text" placeholder="Longitude" formControlName="long" name="long" ></ion-input>
+        </ion-item>
+      </ion-item-group>
+
+      <ion-item-group>
+        <ion-item>
+          <button type="button" ion-button color="danger" icon-start (click)="dismiss()">
+            <ion-icon name='close'></ion-icon>
+            Cancel
+          </button>
+          <button type="submit" ion-button color="danger" [disabled]="!placeForm.valid" icon-start>
+            <ion-icon name='close'></ion-icon>
+            Submit
+          </button>
+        </ion-item>
+      </ion-item-group>
+
+    </ion-list>
+  </form>
+</ion-content>

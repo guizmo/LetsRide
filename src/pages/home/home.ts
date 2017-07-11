@@ -15,10 +15,13 @@ export class MainPage {
   constructor(
     public navCtrl: NavController,
     public afDB: AngularFireDatabase,
-    public userProvider: UserProvider
+    public userProvider: UserProvider,
   ) {
     //this.items = afDB.list('/recipes');
+
+
   }
+
 
 
 }

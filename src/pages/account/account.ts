@@ -90,8 +90,6 @@ export class AccountPage {
           handler: data => {
             this.userProvider.updateEmail(email)
               .then((_user) => {
-                let providerData = {..._user.providerData[0], ...{'aFuid':_user.uid} };
-                this.userProvider.currentProfile.next( Object.assign(providerData) );
                 this.emailVerified = _user.emailVerified;
               })
               .catch((error) => {

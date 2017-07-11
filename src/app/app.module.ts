@@ -18,8 +18,8 @@ import {
   DisciplinesProvider,
   CountriesProvider,
   LoadingProvider,
-  AuthProvider,
-  AlertProvider
+  AlertProvider,
+  PlacesProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -102,7 +102,6 @@ export function provideSettings(storage: Storage) {
     Translate,
     StatusBar,
     SplashScreen,
-    AuthProvider,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     Facebook,
     GooglePlus,
@@ -111,7 +110,8 @@ export function provideSettings(storage: Storage) {
     AppEvents,
     CountriesProvider,
     LoadingProvider,
-    AlertProvider
+    AlertProvider,
+    PlacesProvider,
   ]
 })
 export class AppModule {}

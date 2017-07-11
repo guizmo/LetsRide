@@ -1,11 +1,11 @@
 export interface Profile {
-  uid: string;
-  aFuid: string;
-  displayName: string;
-  email: string;
-  photoURL: string;
-  settings: string;
-  providerId: string;
+  uid?: string;
+  aFuid?: string;
+  displayName?: string;
+  email?: string;
+  photoURL?: string;
+  settings?: any;
+  providerId?: string;
 }
 /*   constructor(
     public uid: string,
