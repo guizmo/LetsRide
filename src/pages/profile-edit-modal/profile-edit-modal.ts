@@ -52,7 +52,7 @@ export class ProfileEditModalPage {
     }
 
     //console.log('disciplines 2', disciplines)
-    this.editProfileForm = formBuilder.group({
+    let controls = {
       disciplines: [disciplines],
       country: country,
       gender: gender,
@@ -60,7 +60,9 @@ export class ProfileEditModalPage {
       city: city,
       level: level,
       displayName: [displayName, Validators.compose([Validators.required])]
-    });
+    }
+    console.log(controls);
+    this.editProfileForm = formBuilder.group(controls);
 
   }
 

@@ -1,0 +1,14 @@
+
+https://github.com/mapsplugin/cordova-plugin-googlemaps-doc/blob/master/v1.4.0/Installation/macosx/README.md
+
+
+
+ionic cordova plugin add cordova-plugin-googlemaps --variable API_KEY_FOR_ANDROID="TOCREATE" --variable API_KEY_FOR_IOS="AIzaSyDelCYByTgSHrLwjksEnJN975i_430HG8o"
+
+
+ionic cordova plugin add cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=com.googleusercontent.apps.897213692051-7kkb79uur5glo5ltin079ip8bfl56u3t
+
+
+<plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus">
+    <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.897213692051-7kkb79uur5glo5ltin079ip8bfl56u3t" />
+</plugin>

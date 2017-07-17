@@ -3,6 +3,23 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { HttpModule, Http } from '@angular/http';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { Storage, IonicStorageModule } from '@ionic/storage';
+import { NativePageTransitions } from '@ionic-native/native-page-transitions';
+import { Network } from '@ionic-native/network';
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
+import { Geolocation } from '@ionic-native/geolocation';
+import { OneSignal } from '@ionic-native/onesignal';
+
+import 'web-animations-js/web-animations.min';
+
+// import { AgmCoreModule } from '@agm/core';
+// import {GoogleMapsAPIWrapper} from '@agm/core/services';
+import {
+  AgmCoreModule,
+  MapsAPILoader,
+  NoOpMapsAPILoader,
+  MouseEvent,
+  GoogleMapsAPIWrapper,
+} from '@agm/core';
 
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -19,7 +36,10 @@ import {
   CountriesProvider,
   LoadingProvider,
   AlertProvider,
-  PlacesProvider
+  PlacesProvider,
+  ConnectivityService,
+  LocationTrackerProvider,
+  NotificationsProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -70,7 +90,7 @@ export function provideSettings(storage: Storage) {
 @NgModule({
   declarations: [
     LetsRide,
-    ListPage
+    ListPage,
   ],
   imports: [
     BrowserModule,
@@ -83,6 +103,10 @@ export function provideSettings(storage: Storage) {
         deps: [Http]
       }
     }),
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyBvmBNw3scf3o1dSZGQRGjFUGfhlOQw0a0',
+      libraries: ['places']
+    }),
     IonicModule.forRoot(LetsRide),
     IonicStorageModule.forRoot(),
     AngularFireModule.initializeApp(firebaseConfig),
@@ -93,8 +117,8 @@ export function provideSettings(storage: Storage) {
   bootstrap: [IonicApp],
   entryComponents: [
     LetsRide,
-    ListPage
-],
+    ListPage,
+  ],
   providers: [
     Api,
     UserProvider,
@@ -112,6 +136,15 @@ export function provideSettings(storage: Storage) {
     LoadingProvider,
     AlertProvider,
     PlacesProvider,
+    NativePageTransitions,
+    GoogleMapsAPIWrapper,
+    ConnectivityService,
+    Network,
+    LocationTrackerProvider,
+    BackgroundGeolocation,
+    Geolocation,
+    OneSignal,
+    NotificationsProvider
   ]
 })
 export class AppModule {}

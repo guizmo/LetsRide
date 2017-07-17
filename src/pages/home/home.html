@@ -4,14 +4,26 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>Home</ion-title>
+    <ion-buttons end>
+      <ion-toggle [(ngModel)]="state.enabled" (ionChange)="onToggleEnabled()" color="secondary" style="display:block;"></ion-toggle>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <h3>Ionic Menu Starter</h3>
 
+  <h4>Current Latitude: {{locationTracker.lat}}</h4>
+  <h4>Current Longitude: {{locationTracker.lng}}</h4>
+  <button ion-button full primary (click)="findPeopleAround()">Get riders around</button>
+
+  <ion-list>
+    <ion-item *ngFor="let people of peopleAround; let i = index" (click)="sendMessage(i)">
+      <ion-avatar item-start>
+        <img *ngIf="!people.photoURL" src="./assets/img/man.svg" />
+        <img *ngIf="people.photoURL" [src]="people.photoURL" />
+      </ion-avatar>
+      <h2>{{people.displayName}}</h2>
+    </ion-item>
+  </ion-list>
   <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will show you the way.
-  </p>
-
 </ion-content>

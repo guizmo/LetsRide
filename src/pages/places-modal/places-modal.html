@@ -1,6 +1,12 @@
 
 <ion-header>
   <ion-navbar >
+  <ion-buttons *ngIf="state == 'update'" start>
+    <button ion-button icon-only color="royal" (click)="dismiss()">
+      <ion-icon name="arrow-back"></ion-icon>
+      Cancel
+    </button>
+  </ion-buttons>
     <ion-title>PlacesModal</ion-title>
   </ion-navbar>
 </ion-header>
@@ -16,28 +22,57 @@
         <ion-item>
           <ion-input type="text" placeholder="Name" formControlName="name" name="name" ></ion-input>
         </ion-item>
+        <!-- CITY -->
+        <ion-item >
+          <ion-label>City</ion-label>
+          <ion-input type="text" formControlName="city" name="city"></ion-input>
+        </ion-item>
+        <!-- COUNTRIE -->
+        <ion-item>
+          <ion-label>Countrie</ion-label>
+          <ion-select
+            formControlName="country"
+            name="country"
+            okText="Okay"
+            cancelText="Dismiss"
+            >
+            <ion-option *ngFor="let country of countries" [value]="code">{{country.name}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <!-- DISCIPLINE -->
+        <ion-item>
+          <ion-label>Disciplines</ion-label>
+          <ion-select
+            formControlName="disciplines"
+            name="disciplines"
+            multiple="true"
+            okText="Okay"
+            cancelText="Dismiss"
+            >
+            <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
+          </ion-select>
+        </ion-item>
 
         <ion-item>
           <ion-input type="text" placeholder="Latitude" formControlName="lat" name="lat" ></ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-input type="text" placeholder="Longitude" formControlName="long" name="long" ></ion-input>
+          <ion-input type="text" placeholder="Longitude" formControlName="lng" name="lng" ></ion-input>
         </ion-item>
+
+        <ion-item tappable block (click)="setGeolocation()">
+          Set geolocation
+        </ion-item>
+
       </ion-item-group>
 
-      <ion-item-group>
-        <ion-item>
-          <button type="button" ion-button color="danger" icon-start (click)="dismiss()">
-            <ion-icon name='close'></ion-icon>
-            Cancel
-          </button>
-          <button type="submit" ion-button color="danger" [disabled]="!placeForm.valid" icon-start>
-            <ion-icon name='close'></ion-icon>
-            Submit
+        <ion-item text-center>
+          <button type="submit" ion-button color="danger" large [disabled]="!placeForm.valid" icon-start>
+            <ion-icon ios="md-checkmark" md="md-checkmark"></ion-icon>
+            Save
           </button>
         </ion-item>
-      </ion-item-group>
 
     </ion-list>
   </form>

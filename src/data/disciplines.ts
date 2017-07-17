@@ -42,7 +42,7 @@ export let DISCIPLINES = [
       icon: 'string',
     },
     {
-      alias: 'all-mountain',
+      alias: 'all_mountain',
       id: 8,
       name: 'All-mountain',
       icon: 'string',

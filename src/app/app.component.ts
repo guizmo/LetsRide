@@ -6,7 +6,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { Dialogs } from '@ionic-native/dialogs';
 
 import { ListPage} from '../pages';
-import { Translate} from '../providers';
+import { Translate, NotificationsProvider } from '../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 
@@ -33,7 +33,8 @@ export class LetsRide {
     public platform: Platform,
     public statusBar: StatusBar,
     public splashScreen: SplashScreen,
-    private afAuth: AngularFireAuth
+    private afAuth: AngularFireAuth,
+    private notifications: NotificationsProvider
   ) {
     this.translate.init();
     console.log('app.component constructor',  this)
@@ -46,21 +47,19 @@ export class LetsRide {
       }
 
     });
-
+    this.initializeApp();
   }
 
-  ionViewDidLoad() {
-    //NEVER CALLED
+
+  initializeApp() {
     this.platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
-    });
-
-
+      if(this.platform.is('cordova')){
+        this.statusBar.styleDefault();
+        this.splashScreen.hide();
+        this.notifications.init()
+      }
+    })
   }
-
 
 
   openPage(page) {

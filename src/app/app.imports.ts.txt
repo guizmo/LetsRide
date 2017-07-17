@@ -1,0 +1,59 @@
+// Providers
+import {
+  UserProvider,
+  Translate,
+  AppEvents,
+  DisciplinesProvider,
+  CountriesProvider,
+  LoadingProvider,
+  AlertProvider,
+  PlacesProvider,
+  ConnectivityService,
+  LocationTrackerProvider
+} from '../providers';
+
+// Ionic native providers
+import { Storage, IonicStorageModule } from '@ionic/storage';
+import { NativePageTransitions } from '@ionic-native/native-page-transitions';
+import { Network } from '@ionic-native/network';
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
+import { Geolocation } from '@ionic-native/geolocation';
+
+// Directives
+
+// Components
+
+// Pipes
+
+// Modules
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpModule, Http } from '@angular/http';
+
+
+
+export const Modules = [
+  Http,
+  BrowserModule,
+  HttpModule,
+]
+
+
+export const Providers = [
+  UserProvider,
+  Translate,
+  AppEvents,
+  DisciplinesProvider,
+  CountriesProvider,
+  LoadingProvider,
+  AlertProvider,
+  PlacesProvider,
+  ConnectivityService,
+  LocationTrackerProvider
+
+  // Ionic native specific providers
+  Storage,
+  NativePageTransitions,
+  Network,
+  Geolocation,
+  BackgroundGeolocation,
+]

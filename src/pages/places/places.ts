@@ -27,11 +27,10 @@ export class PlacesPage {
     public userProvider: UserProvider,
     public placesProvider: PlacesProvider
   ) {
-    console.log('constructor PlacesPage');
-
   }
 
   ionViewDidLoad() {
+    console.log('places', this);
     this.userProvider.afAuth.authState.subscribe((user) => {
       if(user){
         this.user = user.toJSON();
@@ -41,19 +40,22 @@ export class PlacesPage {
       }
     });
 
-    console.log(this)
-    console.log('ionViewDidLoad PlacesPage');
   }
 
 
   presentModal(state: string, key: string = null){
-    let modal = this.modalCtrl.create('PlacesModalPage', {
+    let page = 'PlacesModalPage';
+    if(state == 'create'){
+      page = 'MapPage';
+    }
+    let modal = this.modalCtrl.create('ModalNavPage', {
       state: state,
-      key: key
+      key: key,
+      values: (key) ? this.places.filter( place => place.$key === key)[0] : null,
+      page: page
     })
-    modal.present();
+
     modal.onDidDismiss(data => {
-      console.log(data)
       if(data != null && data.state != 'cancel'){
 
           switch(data.state) {
@@ -73,8 +75,10 @@ export class PlacesPage {
 
 
       }
-    })
+    });
 
+
+    modal.present();
   }
 
   add(item: any) {

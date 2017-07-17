@@ -5,6 +5,7 @@ import { Observable } from "rxjs/Rx";
 
 import { UserProvider, AlertProvider } from '../../providers';
 import { Profile } from '../../models/profile';
+import { DisciplinesProvider, NotificationsProvider } from '../../providers';
 
 import * as firebase from 'firebase/app';
 
@@ -25,16 +26,22 @@ export class ProfilePage implements OnInit, OnDestroy {
   private displayName: string = null;
   private currentUser: firebase.User;
   private emailVerified: boolean = false;
+  private disciplines: ReadonlyArray<any>;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public userProvider: UserProvider,
     public modalCtrl: ModalController,
-    public alertProvider: AlertProvider
+    public alertProvider: AlertProvider,
+    public disciplinesProvider: DisciplinesProvider,
+    private notifications: NotificationsProvider
   ) {
     console.log('profile', this)
     this.userAuth();
+    this.disciplinesProvider.findAll().subscribe(
+      data => this.disciplines = data
+    );
 
     let _emailVerified = this.navParams.data.emailVerified;
     if(_emailVerified !== undefined){
@@ -72,10 +79,10 @@ export class ProfilePage implements OnInit, OnDestroy {
         let aFuid = this.currentUser.uid;
 
         let userData = {...this.currentUser.providerData[0], ...{'aFuid': aFuid, settings: profile } };
+        this.sendDisciplinesTags(profile.disciplines);
         this.userProvider.updateUserData(userData).subscribe((data) => {
           //TODO
           //Handle errors
-          console.log(data)
         });
       }
     });
@@ -100,5 +107,20 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
 
+  sendDisciplinesTags(values: Array<any>) {
+    if(values.length == 0 ){
+      return;
+    }
+    let tags = {};
+    for(let value of values){
+      let obj = this.disciplines.filter( discipline => value == discipline.name )[0];
+      tags[obj.alias] = obj.name;
+    }
+
+    console.log(Object.keys(tags).length);
+    if(Object.keys(tags).length){
+      this.notifications.tagUser(tags);
+    }
+  }
 
 }
