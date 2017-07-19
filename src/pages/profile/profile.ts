@@ -79,7 +79,10 @@ export class ProfilePage implements OnInit, OnDestroy {
         let aFuid = this.currentUser.uid;
 
         let userData = {...this.currentUser.providerData[0], ...{'aFuid': aFuid, settings: profile } };
-        this.sendDisciplinesTags(profile.disciplines);
+        console.log('send user tags');
+        let tags = profile;
+        tags.user_id = aFuid;
+        this.sendUserTags(tags);
         this.userProvider.updateUserData(userData).subscribe((data) => {
           //TODO
           //Handle errors
@@ -107,17 +110,12 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
 
-  sendDisciplinesTags(values: Array<any>) {
-    if(values.length == 0 ){
-      return;
+  sendUserTags(values: any) {
+    let { age, city, gender } = values;
+    let tags = { age, city, gender, user_name:values.displayName, user_level:values.level };
+    for (let discipline of this.disciplines) {
+      tags[discipline.alias] = values.disciplines.filter( disciplineVal => disciplineVal == discipline.name )[0] || '';
     }
-    let tags = {};
-    for(let value of values){
-      let obj = this.disciplines.filter( discipline => value == discipline.name )[0];
-      tags[obj.alias] = obj.name;
-    }
-
-    console.log(Object.keys(tags).length);
     if(Object.keys(tags).length){
       this.notifications.tagUser(tags);
     }

@@ -33,7 +33,14 @@ var message = {
   app_id: "1b28e204-835f-4462-9c10-5b8eb31bfcc9",
   contents: {"en": "English Message"},
   //included_segments: ["All"]
-  include_player_ids: ['337092a2-4fa9-46df-9116-94fa3d701148']
+  include_player_ids: ['337092a2-4fa9-46df-9116-94fa3d701148'],
+  data: {
+    friendRequest:true,
+    from: '337092a2-4fa9-46df-9116-94fa3d701148', 
+    displayName:'Toto'
+  },
+  url: 'www.google.com'
+
 };
 
 sendNotification(message);

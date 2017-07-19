@@ -18,6 +18,7 @@ export class MainPage {
   public state: any;
   public currentUser: any;
   public peopleAround: any = [];
+  public userSettings: any;
 
 
 
@@ -41,6 +42,10 @@ export class MainPage {
     this.afAuth.authState.subscribe((user) => {
       this.currentUser = user.toJSON();
     });
+
+    //this.userProvider.userData.subscribe((settings) => this.userSettings = settings);
+
+
 
   }
 
@@ -87,7 +92,11 @@ export class MainPage {
 
   sendMessage(index){
     let oneSignalId = this.peopleAround[index].oneSignalId;
-    this.notifications.sendMessage(oneSignalId);
+    this.notifications.sendMessage(oneSignalId, {friendRequest:false, from: '1234-1223-3383-34-34', displayName:this.userSettings.displayName});
+  }
+
+  test(){
+    this.notifications.handleData({friendRequest:true, from: '1234-1223-3383-34-34', displayName:'tata'})
   }
 
 }

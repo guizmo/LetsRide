@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { IonicPage, NavController, App } from 'ionic-angular';
 
 import {OneSignal} from '@ionic-native/onesignal';
 
@@ -10,11 +11,17 @@ import {OneSignal} from '@ionic-native/onesignal';
 */
 @Injectable()
 export class NotificationsProvider {
+  one_id: string = null;
+
+  private navCtrl: NavController;
+
 
   constructor(
-    private oneSignal: OneSignal
+    private oneSignal: OneSignal,
+    private app: App,
   ) {
-    console.log('Hello NotificationsProvider Provider');
+    this.navCtrl = app.getActiveNav();
+    console.log(this);
   }
 
   init() {
@@ -31,17 +38,31 @@ export class NotificationsProvider {
     this.oneSignal.handleNotificationOpened().subscribe((data) => {
       // handle opened here how you wish.
       console.log(data);
+
+      if(data.notification.payload.additionalData){
+        this.handleData(data.notification.payload.additionalData);
+      }
     });
+
+
+    this.oneSignal.getIds().then((ids) => {
+      console.log(ids);
+      this.one_id = ids.userId;
+    });
+
+
     this.oneSignal.endInit();
 
   }
 
-  sendMessage(userId:string){
+  sendMessage(userId:string, payload){
     let notificationObj:any = {
       contents: {
         en: "message body my message",
       },
-      include_player_ids: [userId]
+      include_player_ids: [userId],
+      data: payload,
+      url: 'www.google.com'
     };
     this.oneSignal.postNotification(notificationObj).then((success) => {
       console.log(success);
@@ -52,6 +73,15 @@ export class NotificationsProvider {
 
   tagUser(tags:any){
     this.oneSignal.sendTags(tags);
+  }
+
+  handleData(data){
+    if(!this.navCtrl){
+      this.navCtrl = this.app.getActiveNav();
+    }
+    if(data.friendRequest){
+      this.navCtrl.setRoot('NotificationsPage', data);
+    }
   }
 
 }

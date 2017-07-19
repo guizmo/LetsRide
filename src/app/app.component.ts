@@ -11,7 +11,8 @@ import { Translate, NotificationsProvider } from '../providers';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 @Component({
-  templateUrl: 'app.html'
+  templateUrl: 'app.html',
+  providers: [NotificationsProvider]
 })
 export class LetsRide {
   @ViewChild(Nav) nav: Nav;
@@ -21,6 +22,7 @@ export class LetsRide {
     { title: 'Home', component: 'MainPage' },
     { title: 'Profile', component: 'ProfilePage' },
     { title: 'Places', component: 'PlacesPage' },
+    { title: 'Buddies', component: 'BuddiesPage' },
     { title: 'List', component: ListPage },
     { title: 'settings', component: ListPage }
   ]

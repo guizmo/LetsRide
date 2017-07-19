@@ -17,6 +17,7 @@ import {Profile} from '../models/profile';
 import { Translate } from './translate';
 import { LoadingProvider } from './loading';
 import { AlertProvider } from './alert';
+import { NotificationsProvider } from './notifications';
 
 
 @Injectable()
@@ -26,7 +27,6 @@ export class UserProvider {
   localUser: any;
   emailVerified: boolean = false;
   checkVerified;
-  //users:FirebaseListObservable<any[]>;
   userData: FirebaseObjectObservable<any>;
 
   constructor(
@@ -40,6 +40,7 @@ export class UserProvider {
     private storage: Storage,
     public alertProvider: AlertProvider,
     public loadingProvider: LoadingProvider,
+    private notifications: NotificationsProvider
   ) {
     afAuth.authState.subscribe((_user: firebase.User) => {
       if (_user) {
@@ -59,6 +60,10 @@ export class UserProvider {
   addUserData(data: Profile) {
     //Create new User with uid Key
     this.userData = this.afdb.object(`/users/${data.aFuid}`);
+    console.log(data);
+    console.log(this.notifications.one_id);
+    data.oneSignalId = this.notifications.one_id;
+    data.settings = {age: '', city: '', country: '', disciplines: '', displayName: '', gender: '',level: ''};
     this.userData.set(data);
     return this.userData ;
   }
@@ -69,7 +74,6 @@ export class UserProvider {
 
   updateUserData(data: Profile) {
     this.userData.update(data);
-
     return this.userData;
   }
 
