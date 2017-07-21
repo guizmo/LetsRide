@@ -10,20 +10,22 @@
 
 
 <ion-content padding>
-  <h1>Duis imperdiet elit in risus.</h1>
-  <h1>Duis imperdiet elit in risus.</h1>
   <ion-list>
-
-    <ion-item *ngFor="let user of users | async">
-      <ion-avatar item-start>
-        <img *ngIf="user.photoURL" src="{{user.photoURL}}">
-      </ion-avatar>
-      <h2>{{user.settings.displayName}}</h2>
-      <h3 *ngIf="user.settings.country">{{user.settings.country}}</h3>
-      <button ion-button clear item-end icon-only (click)="sendFrienRequest(user.$key)" >
-        <ion-icon name="add-circle"></ion-icon>
-      </button>
-    </ion-item>
+    <ng-container *ngFor="let user of users | async">
+      <ion-item  *ngIf="currentUser && user.aFuid != currentUser.uid ">
+        <ion-avatar item-start>
+          <img *ngIf="user.photoURL" src="{{user.photoURL}}">
+        </ion-avatar>
+        <h2>{{user.settings.displayName}}</h2>
+        <h3 *ngIf="user.settings.country">{{user.settings.country}}</h3>
+        <button
+          *ngIf="!user.buddies || !user.buddies[currentUser.uid]"
+          ion-button clear item-end icon-only
+          (click)="sendFriendRequest(user.$key, user.oneSignalid, user.settings.displayName)" >
+          <ion-icon name="add-circle"></ion-icon>
+        </button>
+      </ion-item>
+    </ng-container>
 
 
   </ion-list>

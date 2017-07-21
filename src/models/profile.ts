@@ -2,9 +2,13 @@ export interface Discipline {
   [index:number]:string;
 }
 
-export interface BuddiesArray {
-  [index:number]:string;
+export interface Buddy {
+  user_id: string; 
+  oneSignalId: string;
+  pending: boolean;
 }
+
+interface Buddies extends Array<Buddy>{}
 
 export interface SettingsObject {
   age?: string;
@@ -26,5 +30,5 @@ export interface Profile {
   settings?: any;
   providerId?: string;
   oneSignalId?: string;
-  buddies?: BuddiesArray
+  buddies?: Buddies
 }

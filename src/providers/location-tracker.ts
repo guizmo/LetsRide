@@ -99,6 +99,8 @@ export class LocationTrackerProvider {
         settings.lat = position.coords.latitude;
         settings.lng = position.coords.longitude;
 
+        console.log(position);
+
         this.trackers.subscribe(data => {
           if(data){
 
@@ -141,7 +143,7 @@ export class LocationTrackerProvider {
 
       })
       .catch((error) => {
-        reject({status: 'error', message: 'Can\'t get user location infos'});
+        reject(error);
       })
 
     });// Promise

@@ -15,10 +15,10 @@
   <h4>Current Latitude: {{locationTracker.lat}}</h4>
   <h4>Current Longitude: {{locationTracker.lng}}</h4>
   <button ion-button full primary (click)="findPeopleAround()">Get riders around</button>
-  <button ion-button full primary (click)="test()">redirect</button>
+  <button ion-button full primary (click)="fakeCloseBywithRedirect()">fakeCloseBywithRedirect</button>
 
   <ion-list>
-    <ion-item *ngFor="let people of peopleAround; let i = index" (click)="sendMessage(i)">
+    <ion-item *ngFor="let people of peopleAround; let i = index" (click)="sendMessageCloseBy(i)">
       <ion-avatar item-start>
         <img *ngIf="!people.photoURL" src="./assets/img/man.svg" />
         <img *ngIf="people.photoURL" [src]="people.photoURL" />

@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { UserProvider, NotificationsProvider } from '../../providers';
+
+import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 
 /**
@@ -18,6 +20,8 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 export class BuddiesPage {
 
   public users:FirebaseListObservable<any[]>;
+  public currentUser;
+  public userSettings;
 
   public limit:BehaviorSubject<number> = new BehaviorSubject<number>(10); // import 'rxjs/BehaviorSubject';
   public lastKey: string;
@@ -29,6 +33,7 @@ export class BuddiesPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public afdb: AngularFireDatabase,
+    public afAuth: AngularFireAuth,
     public userProvider: UserProvider,
     private notifications: NotificationsProvider
   ) {
@@ -36,6 +41,12 @@ export class BuddiesPage {
   }
 
   ionViewDidLoad() {
+    this.afAuth.authState.subscribe((user) => {
+      if(user){
+        this.currentUser = user.toJSON();
+        this.userProvider.userData.subscribe((settings) => this.userSettings = settings);
+      }
+    });
     console.log('ionViewDidLoad BuddiesPage');
     this.getAllUsers();
     this.getLastUser();
@@ -74,8 +85,6 @@ export class BuddiesPage {
       console.log(data);
 
       if (data.length > 0) {
-        console.log(data[data.length - 1].$key);
-        console.log(this.lastKey);
         // If the last key in the list equals the last key in the database
         if (data[data.length - 1].$key === this.lastKey) {
           this.queryable = false;
@@ -99,17 +108,24 @@ export class BuddiesPage {
   }
 
 
-  sendFrienRequest(key){
-    this.friendSelected = this.afdb.object(`/users/${key}`);
-    this.friendSelected.subscribe(user => {
-      let data = {
-        displayName: user.settings.displayName,
-        from: user.aFuid,
-        friendRequest: true
-      }
-      console.log(data)
-      this.notifications.sendMessage(user.oneSignalId, data);
-    });
+  sendFriendRequest(key, oneSignalId, name){
+    //this.friendSelected = this.afdb.object(`/users/${key}`);
+    let data = {
+      type: 'friendRequest',
+      from: {
+        oneSignalId: this.userSettings.oneSignalId,
+        user_id: this.userSettings.aFuid,
+        pending: true,
+      },
+      displayName: name
+    };
+    console.log(data);
+    this.notifications.sendMessage([oneSignalId], data)
+      .then((res) => {
+        this.afdb.list(`/users/${key}/buddies`).update(this.userSettings.aFuid, data.from);
+      })
+      .catch((err) => console.log(err))
+
   }
 
 

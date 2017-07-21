@@ -31,15 +31,17 @@ var sendNotification = function(data) {
 
 var message = {
   app_id: "1b28e204-835f-4462-9c10-5b8eb31bfcc9",
-  contents: {"en": "English Message"},
+  //contents: {"en": "My body in English"},
+  //headings: {"en": "My title in English"},
   //included_segments: ["All"]
   include_player_ids: ['337092a2-4fa9-46df-9116-94fa3d701148'],
   data: {
     friendRequest:true,
-    from: '337092a2-4fa9-46df-9116-94fa3d701148', 
+    from: '337092a2-4fa9-46df-9116-94fa3d701148',
     displayName:'Toto'
   },
-  url: 'www.google.com'
+  //url: 'www.google.com',
+  template_id: '549bdde4-45ea-4197-8161-4255483695f0'
 
 };
 

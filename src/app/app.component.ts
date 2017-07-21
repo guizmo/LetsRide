@@ -12,7 +12,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 
 @Component({
   templateUrl: 'app.html',
-  providers: [NotificationsProvider]
+  //providers: [NotificationsProvider]
 })
 export class LetsRide {
   @ViewChild(Nav) nav: Nav;
@@ -58,7 +58,7 @@ export class LetsRide {
       if(this.platform.is('cordova')){
         this.statusBar.styleDefault();
         this.splashScreen.hide();
-        this.notifications.init()
+        this.notifications.init(this.nav);
       }
     })
   }

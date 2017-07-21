@@ -40,10 +40,12 @@ export class MainPage {
     console.log(this);
 
     this.afAuth.authState.subscribe((user) => {
-      this.currentUser = user.toJSON();
+      if(user){
+        this.currentUser = user.toJSON();
+        this.userProvider.userData.subscribe((settings) => this.userSettings = settings);
+      }
     });
 
-    //this.userProvider.userData.subscribe((settings) => this.userSettings = settings);
 
 
 
@@ -90,13 +92,31 @@ export class MainPage {
     this.navCtrl.push(page);
   }
 
-  sendMessage(index){
+  sendMessageCloseBy(index){
     let oneSignalId = this.peopleAround[index].oneSignalId;
-    this.notifications.sendMessage(oneSignalId, {friendRequest:false, from: '1234-1223-3383-34-34', displayName:this.userSettings.displayName});
+    let data = {
+      type: 'closeBy',
+      from: {
+        oneSignalId: this.userSettings.oneSignalId,
+        user_id: this.userSettings.aFuid
+      },
+      displayName: this.userSettings.displayName
+    };
+    this.notifications.sendMessage([oneSignalId], data);
   }
 
-  test(){
-    this.notifications.handleData({friendRequest:true, from: '1234-1223-3383-34-34', displayName:'tata'})
+
+
+  fakeCloseBywithRedirect(){
+    //redirect on web
+    this.notifications.handleNotificationOpened({
+      type: 'closeBy',
+      from: {
+        oneSignalId: this.userSettings.oneSignalId,
+        user_id: this.userSettings.aFuid
+      },
+      displayName: this.userSettings.displayName
+    })
   }
 
 }
