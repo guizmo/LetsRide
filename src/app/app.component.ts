@@ -22,7 +22,7 @@ export class LetsRide {
     { title: 'Home', component: 'MainPage' },
     { title: 'Profile', component: 'ProfilePage' },
     { title: 'Places', component: 'PlacesPage' },
-    { title: 'Buddies', component: 'BuddiesPage' },
+    { title: 'Buddies', component: 'BuddiesTabsPage' },
     { title: 'List', component: ListPage },
     { title: 'settings', component: ListPage }
   ]

@@ -1,12 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
-/**
- * Generated class for the SearchPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
 @IonicPage()
 @Component({
   selector: 'page-search',
@@ -14,11 +8,25 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class SearchPage {
 
+  userData:any;
+  currentUser:any;
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SearchPage');
+    if(this.navParams.data){
+      this.navParams.data.subscribe(
+        value => {
+          if(value){
+            let key = Object.keys(value)[0];
+            this[key] = value[key];
+          }
+        },
+        error => console.log('error'),
+        () => console.log('finished')
+      );
+    }
   }
 
 }

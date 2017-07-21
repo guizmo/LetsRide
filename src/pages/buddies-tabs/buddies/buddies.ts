@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { UserProvider, NotificationsProvider } from '../../providers';
+import { UserProvider, NotificationsProvider } from '../../../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
