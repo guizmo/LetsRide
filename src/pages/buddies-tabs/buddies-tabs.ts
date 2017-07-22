@@ -30,28 +30,29 @@ export class BuddiesTabsPage {
     private afAuth: AngularFireAuth,
     private userProvider: UserProvider
   ) {
-    let count = 0;
+
     this.afAuth.authState.subscribe((user) => {
       if(user){
-
-        this.tabsParams.next({currentUser: user.toJSON()});
-        count++;
-
         this.userProvider.userData.subscribe((settings) => {
-          count++;
-
           if(settings){
-            this.tabsParams.next({userData: settings});
+            console.log('this.tabsParams.next({userData: settings,currentUser: user.toJSON()});');
+            this.tabsParams.next({userData: settings,currentUser: user.toJSON()});
             this.tabsParams.complete();
           }
-
         });
       }
     });
   }
 
   ionViewDidEnter() {
-    this.tabRef.select(2);
+    console.log('tabs ionViewDidLoad');
+    let _self = this;
+    setTimeout(function(){
+      _self.tabRef.select(2);
+    }, 500)
+
   }
+
+
 
 }

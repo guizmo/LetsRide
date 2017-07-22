@@ -24,7 +24,7 @@ export class SearchPage {
           }
         },
         error => console.log('error'),
-        () => console.log('finished')
+        () => console.log('search finished')
       );
     }
   }

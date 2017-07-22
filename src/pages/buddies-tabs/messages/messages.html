@@ -16,16 +16,41 @@
 </ion-header>
 
 
-<ion-content padding>
-  <h3>friend Request</h3>
+<ion-content class='has-header' padding>
+  <h3 *ngIf="buddies && buddies.length">friend Request pending</h3>
+  <h3 *ngIf="!buddies || !buddies.length">No friend request pending</h3>
   <ion-list>
-    <ion-item *ngFor="let people of buddies" (click)="acceptFriendRequest(people.aFuid, people.displayName)">
-      <ion-avatar item-start>
-        <img *ngIf="!people.photoURL" src="./assets/img/man.svg" />
-        <img *ngIf="people.photoURL" [src]="people.photoURL" />
-      </ion-avatar>
-      <h2>{{people.displayName}}</h2>
-    </ion-item>
+    <ng-container *ngFor="let people of buddies; let i = index">
+      <ion-item *ngIf="people.pending" >
+        <ion-avatar item-start>
+          <img *ngIf="!people.photoURL" src="./assets/img/man.svg" />
+          <img *ngIf="people.photoURL" [src]="people.photoURL" />
+        </ion-avatar>
+        <h2>{{people.displayName}}</h2>
+        <button
+          ion-button clear item-end icon-right
+          (click)="acceptFriendRequest(i)" >
+          Accept
+          <ion-icon name="add-circle"></ion-icon>
+        </button>
+      </ion-item>
+    </ng-container>
   </ion-list>
+
+  <div *ngIf="requestAccepted.length ">
+    <h3>friend Request Accepted</h3>
+    <ion-list >
+      <ng-container *ngFor="let people of requestAccepted">
+        <ion-item *ngIf="!people.pending" >
+          <ion-avatar item-start>
+            <img *ngIf="!people.photoURL" src="./assets/img/man.svg" />
+            <img *ngIf="people.photoURL" [src]="people.photoURL" />
+          </ion-avatar>
+          <h2>{{people.displayName}}</h2>
+        </ion-item>
+      </ng-container>
+    </ion-list>
+  </div>
+
 
 </ion-content>

@@ -6,6 +6,8 @@ import {Observable} from 'rxjs/Observable';
 
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 
+import { UserProvider, NotificationsProvider} from '../../../providers';
+
 @IonicPage()
 @Component({
   selector: 'page-messages',
@@ -17,33 +19,47 @@ export class MessagesPage {
   currentUser;
   messagesFrom;
   buddies;
+  requestAccepted: any = [];
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private afdb: AngularFireDatabase
+    private afdb: AngularFireDatabase,
+    private userProvider: UserProvider,
+    private notifications: NotificationsProvider
   ) {
     console.log(this);
   }
+  //ionViewDidEnter = everytime
 
-  ionViewDidLoad() {
+  ionViewDidEnter() {
     console.log('ionViewDidLoad MessagesPage');
+    if(this.navParams.data.value){
+      let values = this.navParams.data.value;
+      for (let key in values) {
+        this[key] = values[key];
+      }
+      this.getMessages(this.currentUser.uid);
+      return;
+    }
 
-    if(this.navParams.data){
+    //if(this.navParams.data){
       this.navParams.data.subscribe(
-        value => {
-          if(value){
-            let key = Object.keys(value)[0];
-            this[key] = value[key];
-            if(key == 'currentUser'){
-              this.getMessages(this.currentUser.uid);
+        values => {
+          if(values){
+            console.log('this.navParams.data.subscribe');
+            console.log(values);
+            let key = Object.keys(values)[0];
+            for (let key in values) {
+              this[key] = values[key];
             }
+            this.getMessages(this.currentUser.uid);
           }
         },
         error => console.log('error'),
         () => { }
       );
-    }
+    //}
   }
 
 
@@ -72,8 +88,10 @@ export class MessagesPage {
                   displayName: snapshot.settings.displayName,
                   photoURL: snapshot.photoURL,
                   aFuid: snapshot.aFuid,
-                  oneSignalId: snapshot.oneSignalId
+                  oneSignalId: snapshot.oneSignalId,
+                  pending: true
                 }
+                console.log(buddy);
                 buddies.push(buddy);
               }
 
@@ -88,6 +106,40 @@ export class MessagesPage {
 
   }
 
-  //ionViewDidEnter = everytime
+  acceptFriendRequest(index){
+    let buddy = this.buddies[index];
+    let { aFuid, displayName, oneSignalId} = buddy;
+    console.log(`send notif to "${displayName}" from "${this.userData.displayName} - ${this.userData.aFuid}" @ "${oneSignalId}" after updating database for "${aFuid}"`);
+
+    this.userData.buddies[aFuid].pending = false;
+    let data = this.userData;
+
+    console.log(data);
+    //this.sendMessageFriendRequestAccepted(oneSignalId, displayName, index);
+    this.userProvider.updateUserData(data).subscribe((userData) => {
+      if(userData){
+        this.sendMessageFriendRequestAccepted(oneSignalId, displayName);
+        this.buddies[index].pending = false;
+        this.requestAccepted.push(this.buddies[index]);
+        this.buddies.splice(index, 1);
+      }
+    })
+  }
+
+
+  sendMessageFriendRequestAccepted(oneSignalId, name){
+    let data = {
+      type: 'friendRequestAccepted',
+      from: {
+        oneSignalId: this.userData.oneSignalId,
+        user_id: this.userData.aFuid
+      },
+      displayName: name
+    };
+    let contents = {
+      'en': `You are now connected to ${name}`
+    }
+    this.notifications.sendMessage([oneSignalId], data, contents);
+  }
 
 }

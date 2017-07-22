@@ -64,7 +64,7 @@ export class NotificationsProvider {
 
 
 
-  sendMessage(userIds: string[], payload){
+  sendMessage(userIds: string[], payload, contents:any = null){
 
     //let template = (payload.friendRequest) ? this.templates.friendRequest : (payload.friendRequestAccepted) ? this.templates.friendRequestAccepted : '' ;
 
@@ -81,10 +81,8 @@ export class NotificationsProvider {
       template_id: template
     };
 
-    if(!template){
-      notificationObj.contents = {
-        en: "Message to send",
-      }
+    if(contents){
+      notificationObj.contents = contents;
     }
 
     console.log(notificationObj);
