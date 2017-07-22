@@ -12,10 +12,40 @@
     </button>
     <ion-title>Search</ion-title>
   </ion-navbar>
-
+  <ion-searchbar
+    (ionInput)="searchUsers($event)"
+    [showCancelButton]="shouldShowCancel"
+    (ionCancel)="onCancel($event)"
+    [debounce]="500"
+    placeholder="Find a rider">
+  </ion-searchbar>
 </ion-header>
 
 
 <ion-content padding>
-<h2>SEARCH PAGE</h2>
+  <ion-list>
+    <!-- <ng-container *ngFor="let user of users | async"> -->
+    <ng-container *ngFor="let user of usersList; let i=index">
+      <ion-item *ngIf="is_searching && i<limit.value && currentUser && user.aFuid != currentUser.uid ">
+        <ion-avatar item-start>
+          <img *ngIf="user.photoURL" src="{{user.photoURL}}">
+        </ion-avatar>
+        <h2>{{i}} {{user.settings.displayName}}</h2>
+        <h3 *ngIf="user.settings.country">{{user.settings.country}}</h3>
+        <button
+          *ngIf="!user.buddies || !user.buddies[currentUser.uid]"
+          ion-button clear item-end icon-only
+          (click)="sendFriendRequest(user.$key, user.oneSignalId, user.settings.displayName)" >
+          <ion-icon name="add-circle"></ion-icon>
+        </button>
+      </ion-item>
+    </ng-container>
+
+
+  </ion-list>
+
+  <ion-infinite-scroll (ionInfinite)="scrolled($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
 </ion-content>

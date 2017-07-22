@@ -114,7 +114,8 @@ export class ProfilePage implements OnInit, OnDestroy {
     let { age, city, gender } = values;
     let tags = { age, city, gender, user_name:values.displayName, user_level:values.level };
     for (let discipline of this.disciplines) {
-      tags[discipline.alias] = values.disciplines.filter( disciplineVal => disciplineVal == discipline.name )[0] || '';
+      let _disciplines = (values.disciplines == '') ? [] : values.disciplines ;
+      tags[discipline.alias] = _disciplines.filter( disciplineVal => disciplineVal == discipline.name )[0] || '';
     }
     if(Object.keys(tags).length){
       this.notifications.tagUser(tags);

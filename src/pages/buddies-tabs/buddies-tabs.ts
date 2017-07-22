@@ -46,11 +46,12 @@ export class BuddiesTabsPage {
 
   ionViewDidEnter() {
     console.log('tabs ionViewDidLoad');
-    let _self = this;
+    //to redirect
+    /*let _self = this;
     setTimeout(function(){
       _self.tabRef.select(2);
     }, 500)
-
+    */
   }
 
 

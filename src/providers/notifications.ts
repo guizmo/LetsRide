@@ -53,7 +53,7 @@ export class NotificationsProvider {
 
 
     this.oneSignal.getIds().then((ids) => {
-      console.log(ids);
+      console.log('oneSignal.getIds', ids);
       this.one_id = ids.userId;
     });
 

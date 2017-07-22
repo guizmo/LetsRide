@@ -10,28 +10,24 @@
 
 
 <ion-content padding>
+  <h3>Buddies list</h3>
   <ion-list>
-    <ng-container *ngFor="let user of users | async">
-      <ion-item  *ngIf="currentUser && user.aFuid != currentUser.uid ">
+    <ng-container *ngFor="let buddy of buddies; let i = index">
+      <ion-item >
         <ion-avatar item-start>
-          <img *ngIf="user.photoURL" src="{{user.photoURL}}">
+          <img *ngIf="buddy.photoURL" src="{{buddy.photoURL}}">
         </ion-avatar>
-        <h2>{{user.settings.displayName}}</h2>
-        <h3 *ngIf="user.settings.country">{{user.settings.country}}</h3>
+        <h2 *ngIf="buddy.settings">{{buddy.settings.displayName}}</h2>
+        <h3 *ngIf="buddy.settings">{{buddy.settings.country}}</h3>
         <button
-          *ngIf="!user.buddies || !user.buddies[currentUser.uid]"
           ion-button clear item-end icon-only
-          (click)="sendFriendRequest(user.$key, user.oneSignalid, user.settings.displayName)" >
-          <ion-icon name="add-circle"></ion-icon>
+          (click)="removeFriend(i)" >
+          <ion-icon name="remove-circle"></ion-icon>
         </button>
       </ion-item>
     </ng-container>
 
-
   </ion-list>
 
-  <ion-infinite-scroll (ionInfinite)="scrolled($event)">
-    <ion-infinite-scroll-content></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
 
 </ion-content>

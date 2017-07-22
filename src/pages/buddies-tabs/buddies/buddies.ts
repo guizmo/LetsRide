@@ -1,17 +1,16 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
+import 'rxjs/add/observable/forkJoin';
+import {Observable} from 'rxjs/Observable';
+
 import { UserProvider, NotificationsProvider } from '../../../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 
-/**
- * Generated class for the BuddiesPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+
+
 @IonicPage()
 @Component({
   selector: 'page-buddies',
@@ -19,115 +18,79 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 })
 export class BuddiesPage {
 
-  public users:FirebaseListObservable<any[]>;
   public currentUser;
-  public userSettings;
+  public userData;
+  public buddiesId:FirebaseListObservable<any[]>;
+  public buddies: any = [] ;
 
-  public limit:BehaviorSubject<number> = new BehaviorSubject<number>(10); // import 'rxjs/BehaviorSubject';
-  public lastKey: string;
-  public queryable: boolean = true;
-  public scrollEvent = null;
-  private friendSelected = null;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public afdb: AngularFireDatabase,
-    public afAuth: AngularFireAuth,
-    public userProvider: UserProvider,
     private notifications: NotificationsProvider
   ) {
     console.log(this);
   }
 
   ionViewDidLoad() {
-    this.afAuth.authState.subscribe((user) => {
-      if(user){
-        this.currentUser = user.toJSON();
-        this.userProvider.userData.subscribe((settings) => this.userSettings = settings);
-      }
-    });
-    console.log('ionViewDidLoad BuddiesPage');
-    this.getAllUsers();
-    this.getLastUser();
-    this.setLimit();
+  }
+  ionViewDidEnter() {
+    this.getCurrentUser();
   }
 
-  getLastUser() {
-    this.afdb.list('/users', {
-      query: {
-        orderByChild: 'settings/displayName',
-        limitToLast: 1
+  getCurrentUser() {
+    console.log('getCurrentUser');
+    if(this.navParams.data.value){
+      let values = this.navParams.data.value;
+      for (let key in values) {
+        this[key] = values[key];
       }
-    }).subscribe((data) => {
-      // Found the last key
-      console.log(data);
-      if (data.length > 0) {
-        this.lastKey = data[0].$key;
-      } else {
-        this.lastKey = '';
-      }
-    });
-  }
-
-  getAllUsers() {
-    console.log(this.limit);
-    this.users = this.afdb.list('/users', {
-      query: {
-        orderByChild: 'settings/displayName',
-        limitToFirst: this.limit
-      }
-    })
-  }
-
-  setLimit(){
-    this.users.subscribe( (data) => {
-      console.log(data);
-
-      if (data.length > 0) {
-        // If the last key in the list equals the last key in the database
-        if (data[data.length - 1].$key === this.lastKey) {
-          this.queryable = false;
-        } else {
-          this.queryable = true;
-        }
-      }
-      if(this.scrollEvent){
-        this.scrollEvent.complete();
-        this.scrollEvent.enable(this.queryable);
-      }
-    });
-  }
-
-  scrolled(infiniteScroll) {
-    this.scrollEvent = infiniteScroll;
-    console.log('this.queryable', this.queryable);
-    if (this.queryable) {
-      this.limit.next( this.limit.getValue() + 10);
+      this.getBuddies(this.currentUser.uid);
+      return;
     }
-  }
 
-
-  sendFriendRequest(key, oneSignalId, name){
-    //this.friendSelected = this.afdb.object(`/users/${key}`);
-    let data = {
-      type: 'friendRequest',
-      from: {
-        oneSignalId: this.userSettings.oneSignalId,
-        user_id: this.userSettings.aFuid,
-        pending: true,
+    this.navParams.data.subscribe(
+      values => {
+        if(values){
+          let key = Object.keys(values)[0];
+          for (let key in values) {
+            this[key] = values[key];
+          }
+        }
       },
-      displayName: name
-    };
-    console.log(data);
-    this.notifications.sendMessage([oneSignalId], data)
-      .then((res) => {
-        this.afdb.list(`/users/${key}/buddies`).update(this.userSettings.aFuid, data.from);
-      })
-      .catch((err) => console.log(err))
-
+      error => console.log('error'),
+      () => { }
+    );
   }
 
+  getBuddies(uid:string){
+    this.buddiesId = this.afdb.list(`/users/${uid}/buddies`,{
+      query: {
+        orderByChild: 'pending',
+        equalTo: false
+      }
+    });
 
 
+    this.buddiesId.subscribe(
+      _buddies => {
+        if(_buddies){
+          let buddiesRequest = [];
+          for(let _buddy of _buddies){
+            buddiesRequest.push( this.afdb.object(`/users/${_buddy.$key}`).first() );
+          }
+          let buddies = [];
+          Observable.forkJoin(buddiesRequest).subscribe((res) => {
+            if(res){
+              this.buddies = res;
+            }
+          });
+        }
+      },
+      error => console.log('error'),
+      () => console.log('finished')
+    );
+
+  }
 }

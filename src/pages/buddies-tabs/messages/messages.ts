@@ -43,23 +43,21 @@ export class MessagesPage {
       return;
     }
 
-    //if(this.navParams.data){
-      this.navParams.data.subscribe(
-        values => {
-          if(values){
-            console.log('this.navParams.data.subscribe');
-            console.log(values);
-            let key = Object.keys(values)[0];
-            for (let key in values) {
-              this[key] = values[key];
-            }
-            this.getMessages(this.currentUser.uid);
+    this.navParams.data.subscribe(
+      values => {
+        if(values){
+          console.log('this.navParams.data.subscribe');
+          console.log(values);
+          let key = Object.keys(values)[0];
+          for (let key in values) {
+            this[key] = values[key];
           }
-        },
-        error => console.log('error'),
-        () => { }
-      );
-    //}
+          this.getMessages(this.currentUser.uid);
+        }
+      },
+      error => console.log('error'),
+      () => { }
+    );
   }
 
 
