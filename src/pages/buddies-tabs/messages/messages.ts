@@ -110,15 +110,17 @@ export class MessagesPage {
     console.log(`send notif to "${displayName}" from "${this.userData.displayName} - ${this.userData.aFuid}" @ "${oneSignalId}" after updating database for "${aFuid}"`);
 
     this.userData.buddies[aFuid].pending = false;
-    let data = this.userData;
+    //let data = this.userData;
 
-    console.log(data);
-    //this.sendMessageFriendRequestAccepted(oneSignalId, displayName, index);
-    this.userProvider.updateUserData(data).subscribe((userData) => {
-      if(userData){
+
+    this.userProvider.updateUserData(this.userData).subscribe((_userData) => {
+      if(_userData){
+        //add new buddie to the ASKER
+        this.afdb.object(`/users/${aFuid}/buddies/${_userData.aFuid}`).update({pending: false});
+        //send message to the ASKER
         this.sendMessageFriendRequestAccepted(oneSignalId, displayName);
-        this.buddies[index].pending = false;
-        this.requestAccepted.push(this.buddies[index]);
+        buddy.pending = false;
+        this.requestAccepted.push(buddy);
         this.buddies.splice(index, 1);
       }
     })

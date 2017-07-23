@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { UserProvider, NotificationsProvider } from '../../../providers';
 
@@ -14,20 +14,23 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
   templateUrl: 'search.html',
 })
 export class SearchPage {
-
+  @ViewChild('searchInput') searchInput:any;
+  @ViewChild('searchContent') content:Content;
 
   public users:FirebaseListObservable<any[]>;
   public currentUser;
   public userData;
+  public showSearchbar: boolean = false;
 
   public limit: BehaviorSubject<number> = new BehaviorSubject<number>(10); // import 'rxjs/BehaviorSubject';
   public lastKey: string;
   public queryable: boolean = true;
   public scrollEvent = null;
   private friendSelected = null;
-  public loadedUsers: Array<any>;
-  public usersList:Array<any>;
-  public is_searching = false;
+  public loadedUsers: Array<any>=[];
+  public usersList:Array<any>=[] ;
+  public is_searching = new BehaviorSubject<boolean>(false);
+
 
   constructor(
     public navCtrl: NavController,
@@ -41,7 +44,6 @@ export class SearchPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad BuddiesPage');
     this.getAllUsers();
     this.getLastUser();
     //this.setLimit();
@@ -51,25 +53,38 @@ export class SearchPage {
     this.getCurrentUser();
   }
 
-  onCancel(searchbar) {
-    console.log(searchbar);
-    this.is_searching = false;
+  toggleSearchbar() {
+    this.showSearchbar = !this.showSearchbar;
+    // if(!this.showSearchbar){
+    //   this.resetScrollEvent();
+    // }
+    this.content.resize();
   }
+
+  onCancel(searchbar) {
+    console.log('onCancel');
+    //this.is_searching = false;
+    this.resetScrollEvent();
+  }
+
+
   searchUsers(searchbar) {
-    console.log(searchbar);
+
     // Reset items back to all of the items
     //this.initializeItems();
     this.initializeUsers();
     // set q to the value of the searchbar
-    var q = searchbar.srcElement.value;
+    var q = (searchbar.srcElement != null ) ? searchbar.srcElement.value : searchbar;
 
 
     // if the value is an empty string don't filter the items
     if (!q) {
-      this.is_searching = false;
+      //this.is_searching = false;
+      this.resetScrollEvent();
       return;
     }
-    this.is_searching = true;
+    //this.is_searching = true;
+    this.is_searching.next(true);
 
     this.usersList = this.usersList.filter((v) => {
       if(v.settings.displayName && q) {
@@ -80,7 +95,6 @@ export class SearchPage {
       }
     });
 
-    console.log('compare lengths', this.limit.getValue(), this.usersList.length );
 
     this.checkListend();
 
@@ -89,12 +103,19 @@ export class SearchPage {
   }
 
 
+  resetScrollEvent(){
+    this.is_searching.next(false);
+    this.content.scrollToTop(0);
+    this.limit.next(10);
+    if(this.scrollEvent){
+      this.scrollEvent.enable(true);
+    }
+  }
 
   scrolled(infiniteScroll) {
     this.scrollEvent = infiniteScroll;
 
     this.checkListend();
-    console.log('this.queryable', this.queryable);
     if (this.queryable) {
       this.limit.next( this.limit.getValue() + 10);
     }
@@ -103,17 +124,13 @@ export class SearchPage {
   checkListend(){
     if ( this.limit.getValue() >= this.usersList.length ) {
       this.queryable = false;
-      console.log('this.queryable false', this.queryable);
     } else {
-      console.log('this.queryable true', this.queryable);
       this.queryable = true;
     }
     if(this.scrollEvent){
-      console.log('if this.scrollEvent');
       this.scrollEvent.complete();
       this.scrollEvent.enable(this.queryable);
     }
-
   }
 
   initializeUsers(){
@@ -121,7 +138,7 @@ export class SearchPage {
   }
 
   getAllUsers() {
-    console.log(this.limit);
+    console.log('this.limit', this.limit);
     this.users = this.afdb.list('/users', {
       query: {
         orderByChild: 'settings/displayName',
@@ -133,12 +150,14 @@ export class SearchPage {
       if(users){
         this.usersList = users;
         this.loadedUsers = users;
+        if(this.is_searching.getValue()){
+          this.searchUsers(this.searchInput.value);
+        }
       }
     })
   }
 
   getCurrentUser() {
-    console.log('getCurrentUser');
     if(this.navParams.data.value){
       let values = this.navParams.data.value;
       for (let key in values) {
@@ -169,7 +188,6 @@ export class SearchPage {
       }
     }).subscribe((data) => {
       // Found the last key
-      console.log(data);
       if (data.length > 0) {
         this.lastKey = data[0].$key;
       } else {
@@ -178,29 +196,8 @@ export class SearchPage {
     });
   }
 
-
-  setLimit(){
-    this.users.subscribe( (data) => {
-      this.loadedUsers = data;
-
-      if (data.length > 0) {
-        // If the last key in the list equals the last key in the database
-        if (data[data.length - 1].$key === this.lastKey) {
-          this.queryable = false;
-        } else {
-          this.queryable = true;
-        }
-      }
-      if(this.scrollEvent){
-        this.scrollEvent.complete();
-        this.scrollEvent.enable(this.queryable);
-      }
-    });
-  }
-
-
   sendFriendRequest(key, oneSignalId, name){
-    //this.friendSelected = this.afdb.object(`/users/${key}`);
+
     let data = {
       type: 'friendRequest',
       from: {
@@ -222,12 +219,33 @@ export class SearchPage {
           this.afdb.list(`/users/${key}/buddies`).update(this.userData.aFuid, data.from);
         }
       })
-
   }
 
 
 
 
 
+
+
+
+
+  /*setLimit(){
+    this.users.subscribe( (data) => {
+      this.loadedUsers = data;
+
+      if (data.length > 0) {
+        // If the last key in the list equals the last key in the database
+        if (data[data.length - 1].$key === this.lastKey) {
+          this.queryable = false;
+        } else {
+          this.queryable = true;
+        }
+      }
+      if(this.scrollEvent){
+        this.scrollEvent.complete();
+        this.scrollEvent.enable(this.queryable);
+      }
+    });
+  }*/
 
 }

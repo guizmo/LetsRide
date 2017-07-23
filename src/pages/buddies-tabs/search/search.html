@@ -11,22 +11,53 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>Search</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="toggleSearchbar()" >
+        <ion-icon name="search"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
-  <ion-searchbar
-    (ionInput)="searchUsers($event)"
-    [showCancelButton]="shouldShowCancel"
-    (ionCancel)="onCancel($event)"
-    [debounce]="500"
-    placeholder="Find a rider">
-  </ion-searchbar>
+
+
+  <ion-toolbar *ngIf="showSearchbar">
+    <ion-searchbar
+      (ionInput)="searchUsers($event)"
+      [showCancelButton]="shouldShowCancel"
+      (ionCancel)="onCancel($event)"
+      [debounce]="500"
+      placeholder="Find a rider"
+      #searchInput>
+    </ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
 
-<ion-content padding>
+<ion-content padding #searchContent>
+
+  <!-- <ng-container *ngIf="usersList">
+    <h2>test {{usersList.length}}</h2>
+    <ion-list [virtualScroll]="usersList" approxItemHeight="85px">
+      <ion-item *virtualItem="let user; let i=index" *ngIf="is_searching.value" >
+        <ion-avatar item-start>
+          <ion-img *ngIf="user.photoURL" [src]="user.photoURL"></ion-img>
+        </ion-avatar>
+        <h2>{{i}} {{user.settings.displayName}}</h2>
+        <h3 *ngIf="user.settings.country">{{user.settings.country}}</h3>
+        <button
+          *ngIf="!user.buddies || !user.buddies[currentUser.uid]"
+          ion-button clear item-end icon-only
+          (click)="sendFriendRequest(user.$key, user.oneSignalId, user.settings.displayName)" >
+          <ion-icon name="add-circle"></ion-icon>
+        </button>
+      </ion-item>
+    </ion-list>
+  </ng-container> -->
+
+
   <ion-list>
-    <!-- <ng-container *ngFor="let user of users | async"> -->
     <ng-container *ngFor="let user of usersList; let i=index">
-      <ion-item *ngIf="is_searching && i<limit.value && currentUser && user.aFuid != currentUser.uid ">
+      <!-- <ion-item *ngIf="is_searching.value && i<limit.value && currentUser && user.aFuid != currentUser.uid "> -->
+      <ion-item *ngIf="i<limit.value && currentUser && user.aFuid != currentUser.uid ">
         <ion-avatar item-start>
           <img *ngIf="user.photoURL" src="{{user.photoURL}}">
         </ion-avatar>
@@ -40,8 +71,6 @@
         </button>
       </ion-item>
     </ng-container>
-
-
   </ion-list>
 
   <ion-infinite-scroll (ionInfinite)="scrolled($event)">

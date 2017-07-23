@@ -10,7 +10,6 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 
 
-
 @IonicPage()
 @Component({
   selector: 'page-buddies',
@@ -28,7 +27,8 @@ export class BuddiesPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public afdb: AngularFireDatabase,
-    private notifications: NotificationsProvider
+    private notifications: NotificationsProvider,
+    private userProvider: UserProvider
   ) {
     console.log(this);
   }
@@ -91,6 +91,24 @@ export class BuddiesPage {
       error => console.log('error'),
       () => console.log('finished')
     );
-
   }
+
+
+  removeFriend(index){
+    let { aFuid, displayName, oneSignalId} = this.buddies[index];
+
+    //remove reference to request in currentUser
+    let removeFromCurrentUser = this.afdb.object(`/users/${this.userData.aFuid}/buddies/${aFuid}`).remove();
+    //remove reference to request from the ASKER
+    let removeFromAsker = this.afdb.object(`/users/${aFuid}/buddies/${this.userData.aFuid}`).remove();
+
+    removeFromCurrentUser
+      .then(_ => console.log('success removeFromCurrentUser'))
+      .catch(err => console.log(err, 'removeFromCurrentUser error!'));
+
+    removeFromAsker
+      .then(_ => console.log('success removeFromAsker'))
+      .catch(err => console.log(err, 'removeFromAsker error!'));
+  }
+
 }
