@@ -1,3 +1,12 @@
 .scroll-content {
   background: #f29300;
 }
+
+ion-modal.inset-modal {
+  background-color: rgba(0,0,0,.5)!important;
+  transition: opacity .25s ease-in-out;
+  padding: 20vh 10vw;
+  .content{
+    background: transparent!important;
+  }
+}

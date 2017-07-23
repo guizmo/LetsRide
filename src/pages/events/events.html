@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Events</ion-title>
+  </ion-navbar>
+  <ion-toolbar no-padding >
+    <button ion-button full icon-right no-margin (click)="presentEventModal()" >
+      Add an event (It's quick)
+      <ion-icon name="add-circle"></ion-icon>
+    </button>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content padding>
+  <p *ngIf="!events">No events yet</p>
+
+
+  <ion-list>
+    <ion-item *ngFor="let event of events | async; let i = index">
+      <h2>{{event.name}}</h2>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
