@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, List, ItemSliding } from 'ionic-angular';
 
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -12,6 +12,10 @@ import { UserProvider, NotificationsProvider} from '../../providers';
   templateUrl: 'events.html',
 })
 export class EventsPage {
+  @ViewChild(eventsList) eventsList: List;
+  @ViewChild(eventItemSliding) eventItemSliding: ItemSliding = null;
+
+//https://forum.ionicframework.com/t/click-to-slide-open-ion-item-sliding-instead-of-swiping/54642/5
   private userData;
   private currentUser;
 

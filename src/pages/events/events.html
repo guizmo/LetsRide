@@ -18,10 +18,47 @@
   <p *ngIf="!events">No events yet</p>
 
 
-  <ion-list>
-    <ion-item *ngFor="let event of events | async; let i = index">
-      <h2>{{event.name}}</h2>
-    </ion-item>
+  <ion-list #eventsList>
+    <ion-item-sliding #slidingItem *ngFor="let event of events | async; let i = index">
+      <ion-item>
+
+        <ion-buttons icon-only item-start>
+          <button ion-button icon-only>
+            <ion-icon name="pin"></ion-icon>
+          </button>
+        </ion-buttons>
+        <h2>{{event.name}}</h2>
+        <ion-buttons icon-only item-end>
+          <button ion-button icon-only>
+            <ion-icon name="trash"></ion-icon>
+          </button>
+        </ion-buttons>
+        <ion-buttons icon-only item-end>
+          <button ion-button icon-only>
+            <ion-icon name="information-circle"></ion-icon>
+          </button>
+        </ion-buttons>
+
+        <ion-item-options side="left">
+          <button ion-button color="primary">
+            <ion-icon name="text"></ion-icon>
+            Text
+          </button>
+          <button ion-button color="secondary">
+            <ion-icon name="call"></ion-icon>
+            Call
+          </button>
+        </ion-item-options>
+
+        <ion-item-options side="right">
+          <button ion-button color="primary">
+            <ion-icon name="mail"></ion-icon>
+            Email
+          </button>
+        </ion-item-options>
+
+      </ion-item>
+    </ion-item-sliding>
   </ion-list>
 
 </ion-content>
