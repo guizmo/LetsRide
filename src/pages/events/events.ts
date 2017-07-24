@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController, List, ItemSliding } from 'ionic-angular';
+import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { IonicPage, NavController, NavParams, ModalController, List, ItemSliding, Item } from 'ionic-angular';
 
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 import { UserProvider, NotificationsProvider} from '../../providers';
+
+//https://forum.ionicframework.com/t/click-to-slide-open-ion-item-sliding-instead-of-swiping/54642/5
+//http://blog.ihsanberahim.com/2017/05/trigger-ionitemsliding-using-click-event.html
 
 @IonicPage()
 @Component({
@@ -12,10 +15,10 @@ import { UserProvider, NotificationsProvider} from '../../providers';
   templateUrl: 'events.html',
 })
 export class EventsPage {
-  @ViewChild(eventsList) eventsList: List;
-  @ViewChild(eventItemSliding) eventItemSliding: ItemSliding = null;
+  @ViewChildren('eventsItem') eventsItem: QueryList<Item>;
+  @ViewChildren('eventsSliding') eventsSliding: QueryList<ItemSliding>;
 
-//https://forum.ionicframework.com/t/click-to-slide-open-ion-item-sliding-instead-of-swiping/54642/5
+  private activeItemSliding:boolean = false;
   private userData;
   private currentUser;
 
@@ -61,17 +64,49 @@ export class EventsPage {
     this.eventModal.onDidDismiss(data => {
       console.log(data);
       //Add or update
-      //this.addEvent(data);
+      this.addOrUpdateEvent(data);
       //this.updateEvent(data);
     });
   }
 
-  updateEvent(data){
-    this.events.update('myEvent1', data);
+
+  addOrUpdateEvent(data){
+    this.events.update('myEvent2', data);
   }
 
-  addEvent(data){
-    this.events.push({myEvent1:data});
+  // updateEvent(data){
+  //   this.events.update('myEvent1', data);
+  // }
+
+
+
+
+  openOptionRight() {
+    this.activeItemSliding = true;
+    let swipeAmount = 194; //set your required swipe amount
+
+    this.eventsSliding.forEach( (sliding, index)  => {
+      console.log(sliding);
+
+      sliding.startSliding(swipeAmount);
+      sliding.moveSliding(swipeAmount);
+
+      sliding.setElementClass('active-options-right', true);
+      sliding.setElementClass('active-swipe-right', true);
+
+    });
+    this.eventsItem.forEach( (item, index)  => {
+      console.log(item);
+      item.setElementStyle('transition', null);
+      item.setElementStyle('transform', 'translate3d(-'+swipeAmount+'px, 0px, 0px)');
+    });
+
+  }
+  closeOption() {
+    this.activeItemSliding = false;
+    this.eventsSliding.forEach( (sliding, index)  => {
+      sliding.close();
+    });
   }
 
 }

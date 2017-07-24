@@ -35,7 +35,7 @@ export class EventsModalPage {
       country: 'New caledonia',
       city: 'Nouméa',
       type: 'fooBar',
-      name: 'Netcha'
+      name: 'Tina'
     }
     this.dismiss(data);
   }
