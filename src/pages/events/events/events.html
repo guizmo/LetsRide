@@ -36,7 +36,7 @@
         </ion-buttons>
         <h2>{{event.name}}</h2>
         <ion-buttons icon-only item-end>
-          <button ion-button icon-only (click)="viewDetails(event)">
+          <button ion-button icon-only (click)="presentPopover(event)">
             <ion-icon name="information-circle"></ion-icon>
           </button>
         </ion-buttons>
@@ -55,10 +55,11 @@
           </button>
           <button ion-button color="light" icon-only>
             <ion-icon name="pin"></ion-icon>
+            Duplicate
           </button>
-          <button ion-button color="primary" icon-only>
+          <!-- <button ion-button color="primary" icon-only>
             <ion-icon name="information-circle"></ion-icon>
-          </button>
+          </button> -->
         </ion-item-options>
 
     </ion-item-sliding>
