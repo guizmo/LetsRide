@@ -21,6 +21,7 @@ export class EventsPage {
   private activeItemSliding:boolean = false;
   private userData;
   private currentUser;
+  private itemInUpdateMode;
 
   public eventModal;
   public events:FirebaseListObservable<any[]>;
@@ -38,7 +39,11 @@ export class EventsPage {
     this.afAuth.authState.subscribe((user) => {
       if(user){
         this.currentUser = user.toJSON();
-        this.events = this.afdb.list(`/events/${user.uid}`);
+        this.events = this.afdb.list(`/events/${user.uid}`, {
+          query: {
+            orderByChild: 'time'
+          }
+        });
         this.userProvider.userData.subscribe((settings) => {
           if(settings){
             this.userData = settings;
@@ -53,58 +58,64 @@ export class EventsPage {
   }
 
   presentPopover(event) {
-    console.log(event);
     let popover = this.popoverCtrl.create('EventPage', {
       values: event
     });
-    console.log(popover);
     popover.present();
   }
 
-  presentEventModal(){
-    this.eventModal = this.modalCtrl.create('EventsModalPage', null, { cssClass: 'inset-modal' })
+  presentEventModal(event:any = null){
+
+    if(event){
+      this.itemInUpdateMode = event.$key;
+    }
+    this.eventModal = this.modalCtrl.create('EventsModalPage', {values: event}, { cssClass: 'inset-modal' })
     this.eventModal.present();
 
     this.onDismiss();
   }
 
   onDismiss(){
-    this.eventModal.onDidDismiss(data => {
-      console.log(data);
-      //Add or update
-      this.addOrUpdateEvent(data);
-      //this.updateEvent(data);
+    this.eventModal.onDidDismiss(event => {
+      if(event != null && event != 'cancel'){
+        //Add or update
+        if(this.itemInUpdateMode){
+          this.updateEvent(this.itemInUpdateMode, event);
+        }else{
+          this.addEvent(event);
+        }
+
+        this.itemInUpdateMode = null;
+      }
     });
   }
 
 
-  addOrUpdateEvent(data){
-    this.events.update('myEvent2', data);
+  updateEvent(key, data){
+    this.events.update(key, data);
   }
 
-  // updateEvent(data){
-  //   this.events.update('myEvent1', data);
-  // }
+  addEvent(data){
+    this.events.push(data);
+  }
 
+  deleteEvent(key){
+    this.events.remove(key);
+  }
 
 
 
   openOptionRight() {
     this.activeItemSliding = true;
-    let swipeAmount = 194; //set your required swipe amount
+    let swipeAmount = 160; //set your required swipe amount
 
     this.eventsSliding.forEach( (sliding, index)  => {
-      console.log(sliding);
-
       sliding.startSliding(swipeAmount);
       sliding.moveSliding(swipeAmount);
-
       sliding.setElementClass('active-options-right', true);
       sliding.setElementClass('active-swipe-right', true);
-
     });
     this.eventsItem.forEach( (item, index)  => {
-      console.log(item);
       item.setElementStyle('transition', null);
       item.setElementStyle('transform', 'translate3d(-'+swipeAmount+'px, 0px, 0px)');
     });

@@ -85,7 +85,7 @@ export class ProfileEditModalPage {
   }
 
   editProfileFormSubmit(){
-  if (!this.editProfileForm.valid) {
+    if (!this.editProfileForm.valid) {
       //NOT VALID
       return
     } else {

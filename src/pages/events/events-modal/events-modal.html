@@ -5,14 +5,41 @@
     Cancel
     <ion-icon name="close-circle"></ion-icon>
   </button>
-  <ion-row class="align-center" style="margin-left:10px">
-    <p>Sign up now to get the most out of this app!</p>
-  </ion-row>
-  <ion-row class="align-center">
-    <ion-col>
-      <button ion-button full (click)="addEvent()">
-            addEvent
-      </button>
-    </ion-col>
-  </ion-row>
+  <form [formGroup]="eventForm" (ngSubmit)="onSave()">
+    <ion-list>
+      <!-- NAME -->
+      <ion-item>
+        <ion-label>Where</ion-label>
+        <ion-input type="text" formControlName="name" name="name"></ion-input>
+      </ion-item>
+
+      <!-- TIME -->
+      <ion-item>
+        <ion-label>Time</ion-label>
+        <ion-datetime displayFormat="DD/MMM/YY H:mm" min="{{currentYear}}" max="{{maxYear}}" pickerFormat="D MMM YYYY H mm" formControlName="time" name="time"></ion-datetime>
+      </ion-item>
+
+      <!-- DISCIPLINE -->
+      <ion-item>
+        <ion-label>Disciplines</ion-label>
+        <ion-select
+          formControlName="disciplines"
+          name="disciplines"
+          okText="Okay"
+          cancelText="Dismiss"
+          >
+          <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <button type="submit" ion-button [disabled]="!eventForm.valid" >
+          <ion-icon></ion-icon>
+          Save
+        </button>
+      </ion-item>
+
+    </ion-list>
+  </form>
+
+
 </ion-content>

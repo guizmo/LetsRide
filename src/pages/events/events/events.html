@@ -42,25 +42,17 @@
         </ion-buttons>
       </ion-item>
 
-        <ion-item-options side="left">
-          <button ion-button color="primary">
-            <ion-icon name="text"></ion-icon>
-            Text
-          </button>
-        </ion-item-options>
-
-        <ion-item-options side="right">
-          <button ion-button color="danger" icon-only>
-            <ion-icon name="trash"></ion-icon>
-          </button>
-          <button ion-button color="light" icon-only>
-            <ion-icon name="pin"></ion-icon>
-            Duplicate
-          </button>
-          <!-- <button ion-button color="primary" icon-only>
-            <ion-icon name="information-circle"></ion-icon>
-          </button> -->
-        </ion-item-options>
+      <ion-item-options side="right">
+        <button ion-button color="danger" icon-only (click)="deleteEvent(event.$key)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+        <button ion-button color="light" icon-only>
+          <ion-icon name="fa-copy"></ion-icon>
+        </button>
+        <button ion-button color="primary" icon-only (click)="presentEventModal(event)">
+          <ion-icon name="create"></ion-icon>
+        </button>
+      </ion-item-options>
 
     </ion-item-sliding>
   </ion-list>
