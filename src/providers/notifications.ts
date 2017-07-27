@@ -18,7 +18,8 @@ export class NotificationsProvider {
   public templates = {
     friendRequest: 'e4732e1a-6463-4291-b4ab-c6fcb05ef22d',
     friendRequestAccepted: '549bdde4-45ea-4197-8161-4255483695f0',
-    closeBy: 'a54afeb9-5ef1-4c7b-a226-cddb8a8e83df'
+    closeBy: 'a54afeb9-5ef1-4c7b-a226-cddb8a8e83df',
+    newEvent: '01bda817-8355-4ff7-86e0-6e340a4bb75e'
   }
 
 
@@ -64,7 +65,7 @@ export class NotificationsProvider {
 
 
 
-  sendMessage(userIds: string[], payload, contents:any = null){
+  sendMessage(userIds: string[], payload, contents:any = null, headings:any = null){
 
     //let template = (payload.friendRequest) ? this.templates.friendRequest : (payload.friendRequestAccepted) ? this.templates.friendRequestAccepted : '' ;
 
@@ -83,6 +84,9 @@ export class NotificationsProvider {
 
     if(contents){
       notificationObj.contents = contents;
+    }
+    if(headings){
+      notificationObj.headings = headings;
     }
 
     console.log(notificationObj);

@@ -5,12 +5,8 @@ import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { Discipline } from '../../../models';
 import { DisciplinesProvider } from '../../../providers';
 
-/**
- * Generated class for the EventsModalPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+import * as moment  from 'moment';
+
 @IonicPage()
 @Component({
   selector: 'page-events-modal',
@@ -20,10 +16,9 @@ export class EventsModalPage {
 
   private eventForm: FormGroup;
   private disciplines: ReadonlyArray<Discipline>;
-  public date = new Date();
-  public currentYear = this.date.getFullYear();
-  public currentDate: string = this.date.toISOString();
-  public maxYear = this.currentYear + 1;
+  public currentYear = moment().format('YYYY');
+  public currentDate= moment().format();
+  public maxYear = moment().add(1, 'year').format('YYYY');
 
   constructor(
     private formBuilder: FormBuilder,

@@ -116,9 +116,14 @@ export class MessagesPage {
     this.userProvider.updateUserData(this.userData).subscribe((_userData) => {
       if(_userData){
         //add new buddie to the ASKER
-        this.afdb.object(`/users/${aFuid}/buddies/${_userData.aFuid}`).update({pending: false});
+        let asker = {
+          pending: false,
+          oneSignalId: _userData.oneSignalId,
+          user_id: _userData.aFuid
+        }
+        this.afdb.object(`/users/${aFuid}/buddies/${_userData.aFuid}`).update(asker);
         //send message to the ASKER
-        this.sendMessageFriendRequestAccepted(oneSignalId, displayName);
+        this.sendMessageFriendRequestAccepted(oneSignalId, this.userData.settings.displayName);
         buddy.pending = false;
         this.requestAccepted.push(buddy);
         this.buddies.splice(index, 1);

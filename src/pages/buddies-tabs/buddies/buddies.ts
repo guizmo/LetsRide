@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import 'rxjs/add/observable/forkJoin';
 import {Observable} from 'rxjs/Observable';
 
-import { UserProvider, NotificationsProvider } from '../../../providers';
+import { UserProvider } from '../../../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
@@ -27,7 +27,6 @@ export class BuddiesPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public afdb: AngularFireDatabase,
-    private notifications: NotificationsProvider,
     private userProvider: UserProvider
   ) {
     console.log(this);

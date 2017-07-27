@@ -9,6 +9,7 @@ import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { Geolocation } from '@ionic-native/geolocation';
 import { OneSignal } from '@ionic-native/onesignal';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MomentModule } from 'angular2-moment';
 
 import 'web-animations-js/web-animations.min';
 
@@ -114,7 +115,8 @@ export function provideSettings(storage: Storage) {
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
     AngularFireAuthModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MomentModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

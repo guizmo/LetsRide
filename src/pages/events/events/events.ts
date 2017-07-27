@@ -3,6 +3,8 @@ import { IonicPage, NavController, NavParams, ModalController, PopoverController
 
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { MomentModule } from 'angular2-moment';
+import * as moment  from 'moment';
 
 import { UserProvider, NotificationsProvider} from '../../../providers';
 
@@ -25,6 +27,8 @@ export class EventsPage {
 
   public eventModal;
   public events:FirebaseListObservable<any[]>;
+  public buddies:FirebaseListObservable<any[]>;
+  public oneSignalBuddiesId: any = [] ;
 
   constructor(
     public navCtrl: NavController,
@@ -36,6 +40,7 @@ export class EventsPage {
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController
   ) {
+    moment.locale('en-gb');
     this.afAuth.authState.subscribe((user) => {
       if(user){
         this.currentUser = user.toJSON();
@@ -49,6 +54,8 @@ export class EventsPage {
             this.userData = settings;
           }
         });
+
+        this.getBuddies(user.uid);
       }
     });
   }
@@ -78,14 +85,30 @@ export class EventsPage {
   onDismiss(){
     this.eventModal.onDidDismiss(event => {
       if(event != null && event != 'cancel'){
+        let name = this.userData.settings.displayName;
+        let message = null ;
+        let time = moment(event.time).format('lll');
+        let contents = `Let's ride @ "${event.name}" -- ${time}`;
         //Add or update
+
         if(this.itemInUpdateMode){
           this.updateEvent(this.itemInUpdateMode, event);
+          message = {
+            headings: `${name} has changed an event`
+          }
         }else{
           this.addEvent(event);
+          message = {
+            headings: `${name} has created an event`
+          }
+        }
+        if(this.oneSignalBuddiesId.length && message){
+          message.contents = contents;
+          this.sendEventToBuddies(message);
         }
 
         this.itemInUpdateMode = null;
+
       }
     });
   }
@@ -126,6 +149,59 @@ export class EventsPage {
     this.eventsSliding.forEach( (sliding, index)  => {
       sliding.close();
     });
+  }
+
+
+
+
+  getBuddies(uid:string){
+    this.buddies = this.afdb.list(`/users/${uid}/buddies`,{
+      query: {
+        orderByChild: 'pending',
+        equalTo: false
+      }
+    });
+
+    this.buddies.subscribe(
+      _buddies => {
+        if(_buddies){
+          console.log(_buddies);
+          this.oneSignalBuddiesId = _buddies.map(buddie => buddie.oneSignalId);
+        }
+      },
+      error => console.log('error'),
+      () => console.log('finished')
+    );
+  }
+
+
+  sendEventToBuddies(message){
+    let name = this.userData.settings.displayName;
+    let data = {
+      type: 'newEvent',
+      from: {
+        oneSignalId: this.userData.oneSignalId,
+        user_id: this.userData.aFuid
+      },
+      displayName: name
+    };
+
+    let contents = {
+      'en': message.contents
+    }
+    let headings = {
+      'en': message.headings
+    }
+
+    this.notifications.sendMessage(this.oneSignalBuddiesId, data, contents, headings)
+      .then((res) => {
+        console.log('message sent');
+      })
+      .catch((err) => {
+        if(err == 'cordova_not_available'){
+          console.log('message sent');
+        }
+      })
   }
 
 }
