@@ -11,3 +11,4 @@ export { PlacesProvider } from './places';
 export { ConnectivityService } from './connectivity-service';
 export { LocationTrackerProvider } from './location-tracker';
 export { NotificationsProvider } from './notifications';
+export { BuddiesProvider } from './buddies';

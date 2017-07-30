@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import 'rxjs/add/observable/forkJoin';
 import {Observable} from 'rxjs/Observable';
 
-import { UserProvider } from '../../../providers';
+import { UserProvider, BuddiesProvider } from '../../../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
@@ -21,12 +21,14 @@ export class BuddiesPage {
   public userData;
   public buddiesId:FirebaseListObservable<any[]>;
   public buddies: any = [] ;
+  public buddiesPromise: any = [] ;
 
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public afdb: AngularFireDatabase,
+    private buddiesProvider: BuddiesProvider,
     private userProvider: UserProvider
   ) {
     console.log(this);
@@ -64,32 +66,11 @@ export class BuddiesPage {
   }
 
   getBuddies(uid:string){
-    this.buddiesId = this.afdb.list(`/users/${uid}/buddies`,{
-      query: {
-        orderByChild: 'pending',
-        equalTo: false
-      }
-    });
-
-
-    this.buddiesId.subscribe(
-      _buddies => {
-        if(_buddies){
-          let buddiesRequest = [];
-          for(let _buddy of _buddies){
-            buddiesRequest.push( this.afdb.object(`/users/${_buddy.$key}`).first() );
-          }
-          let buddies = [];
-          Observable.forkJoin(buddiesRequest).subscribe((res) => {
-            if(res){
-              this.buddies = res;
-            }
-          });
-        }
-      },
-      error => console.log('error'),
-      () => console.log('finished')
-    );
+    this.buddiesProvider.getBuddies(uid);
+    this.buddiesProvider.buddies.subscribe((buddies) => {
+      console.log(buddies);
+      this.buddies = buddies;
+    })
   }
 
 

@@ -6,7 +6,7 @@ import {Observable} from 'rxjs/Observable';
 
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 
-import { UserProvider, NotificationsProvider} from '../../../providers';
+import { UserProvider, NotificationsProvider, BuddiesProvider} from '../../../providers';
 
 @IonicPage()
 @Component({
@@ -20,12 +20,14 @@ export class MessagesPage {
   messagesFrom;
   buddies;
   requestAccepted: any = [];
+  messages: string = "requests";
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     private afdb: AngularFireDatabase,
     private userProvider: UserProvider,
+    private buddiesProvider: BuddiesProvider,
     private notifications: NotificationsProvider
   ) {
     console.log(this);
@@ -40,6 +42,7 @@ export class MessagesPage {
         this[key] = values[key];
       }
       this.getMessages(this.currentUser.uid);
+      this.getBuddiesEvents(this.currentUser.uid);
       return;
     }
 
@@ -60,6 +63,13 @@ export class MessagesPage {
     );
   }
 
+  getBuddiesEvents(uid:string){
+    this.buddiesProvider.getBuddiesEvents(uid);
+    this.buddiesProvider.buddiesEvents.subscribe((events) => {
+      console.log(events);
+      //this.buddiesEvents = events;
+    })
+  }
 
   getMessages(uid:string){
     this.messagesFrom = this.afdb.list(`/users/${uid}/buddies`,{

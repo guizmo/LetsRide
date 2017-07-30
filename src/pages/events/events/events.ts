@@ -152,8 +152,6 @@ export class EventsPage {
   }
 
 
-
-
   getBuddies(uid:string){
     this.buddies = this.afdb.list(`/users/${uid}/buddies`,{
       query: {

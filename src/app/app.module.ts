@@ -41,7 +41,8 @@ import {
   PlacesProvider,
   ConnectivityService,
   LocationTrackerProvider,
-  NotificationsProvider
+  NotificationsProvider,
+  BuddiesProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -148,7 +149,8 @@ export function provideSettings(storage: Storage) {
     BackgroundGeolocation,
     Geolocation,
     OneSignal,
-    NotificationsProvider
+    NotificationsProvider,
+    BuddiesProvider
   ]
 })
 export class AppModule {}

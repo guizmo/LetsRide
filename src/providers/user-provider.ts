@@ -5,7 +5,6 @@ import { Storage } from '@ionic/storage';
 import { Facebook } from '@ionic-native/facebook';
 import { GooglePlus } from '@ionic-native/google-plus';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject'
 import { Observable } from "rxjs/Rx";
 
 
