@@ -22,6 +22,7 @@ export class BuddiesPage {
   public buddiesId:FirebaseListObservable<any[]>;
   public buddies: any = [] ;
   public buddiesPromise: any = [] ;
+  private buddiesSubcription;
 
 
   constructor(
@@ -33,15 +34,22 @@ export class BuddiesPage {
   ) {
     console.log(this);
   }
+  ionViewDidLeave(){
+  }
+  ionViewWillUnload(){
+    this.buddiesSubcription.unsubscribe();
+  }
 
   ionViewDidLoad() {
-  }
-  ionViewDidEnter() {
+    //fFired only when a view is stored in memory. This event is NOT fired on entering a view that is already cached. It’s a nice place for init related tasks.
     this.getCurrentUser();
   }
 
+  ionViewDidEnter() {
+  }
+
   getCurrentUser() {
-    console.log('getCurrentUser');
+    //console.log('getCurrentUser');
     if(this.navParams.data.value){
       let values = this.navParams.data.value;
       for (let key in values) {
@@ -67,7 +75,8 @@ export class BuddiesPage {
 
   getBuddies(uid:string){
     this.buddiesProvider.getBuddies(uid);
-    this.buddiesProvider.buddies.subscribe((buddies) => {
+    console.log('buddies subscription');
+    this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((buddies) => {
       console.log(buddies);
       this.buddies = buddies;
     })

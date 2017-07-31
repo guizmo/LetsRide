@@ -62,7 +62,7 @@ export class SearchPage {
   }
 
   onCancel(searchbar) {
-    console.log('onCancel');
+    //console.log('onCancel');
     //this.is_searching = false;
     this.resetScrollEvent();
   }
@@ -98,7 +98,7 @@ export class SearchPage {
 
     this.checkListend();
 
-    console.log(q, this.usersList.length);
+    //console.log(q, this.usersList.length);
 
   }
 
@@ -138,7 +138,7 @@ export class SearchPage {
   }
 
   getAllUsers() {
-    console.log('this.limit', this.limit);
+    //console.log('this.limit', this.limit);
     this.users = this.afdb.list('/users', {
       query: {
         orderByChild: 'settings/displayName',
@@ -207,7 +207,7 @@ export class SearchPage {
       },
       displayName: name
     };
-    console.log(data);
+    //console.log(data);
 
 
     this.notifications.sendMessage([oneSignalId], data)

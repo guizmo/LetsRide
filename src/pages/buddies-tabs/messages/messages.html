@@ -29,7 +29,7 @@
       <h3 *ngIf="!buddies || !buddies.length">No friend request pending</h3>
       <ion-list>
         <ng-container *ngFor="let people of buddies; let i = index">
-          <ion-item *ngIf="people.pending" >
+          <ion-item >
             <ion-avatar item-start>
               <img *ngIf="!people.photoURL" src="./assets/img/man.svg" />
               <img *ngIf="people.photoURL" [src]="people.photoURL" />
@@ -61,9 +61,26 @@
         </ion-list>
       </div>
 
+
+
+
     </div><!-- requests -->
     <div *ngSwitchCase="'events'">
       <h3>Events</h3>
+
+      <ion-list>
+        <ng-container *ngFor="let buddyEvents of buddiesEvents">
+          <ion-item *ngIf="buddyEvents.$value == 'undefined'">
+            <h2>{{buddyEvents.$key}}</h2>
+            <div *ngFor="let event of buddyEvents">
+              {{event.disciplines}} - {{event.name}} - {{event.time}}
+            </div>
+          </ion-item>
+        </ng-container>
+      </ion-list>
+
+
+
     </div><!-- events -->
   </div><!-- END SWITCH -->
 

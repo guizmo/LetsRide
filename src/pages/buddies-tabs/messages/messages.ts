@@ -15,12 +15,15 @@ import { UserProvider, NotificationsProvider, BuddiesProvider} from '../../../pr
 })
 export class MessagesPage {
 
-  userData;
-  currentUser;
-  messagesFrom;
-  buddies;
-  requestAccepted: any = [];
-  messages: string = "requests";
+  public userData;
+  public currentUser;
+  public messagesFrom;
+  public buddies: any = [];
+  public buddiesEvents: any = [];
+  public requestAccepted: any = [];
+  public messages: string = "requests";
+  private buddiesEventsSubscription;
+  private buddiesRequestSubscription;
 
   constructor(
     public navCtrl: NavController,
@@ -34,28 +37,33 @@ export class MessagesPage {
   }
   //ionViewDidEnter = everytime
 
-  ionViewDidEnter() {
-    console.log('ionViewDidLoad MessagesPage');
+  ionViewDidLoad() {
+    //console.log('ionViewDidLoad MessagesPage');
     if(this.navParams.data.value){
       let values = this.navParams.data.value;
       for (let key in values) {
         this[key] = values[key];
       }
-      this.getMessages(this.currentUser.uid);
+      console.log('if value', this.currentUser.uid);
+      this.buddiesProvider.getBuddies(this.currentUser.uid);
+
+      //this.getMessages(this.currentUser.uid);
       this.getBuddiesEvents(this.currentUser.uid);
+      this.getBuddiesRequest(this.currentUser.uid);
       return;
     }
 
     this.navParams.data.subscribe(
       values => {
+        console.log('subscribe navParams message', this.currentUser.uid);
         if(values){
-          console.log('this.navParams.data.subscribe');
-          console.log(values);
+          //console.log('this.navParams.data.subscribe');
+          //console.log(values);
           let key = Object.keys(values)[0];
           for (let key in values) {
             this[key] = values[key];
           }
-          this.getMessages(this.currentUser.uid);
+          //this.getMessages(this.currentUser.uid);
         }
       },
       error => console.log('error'),
@@ -63,14 +71,26 @@ export class MessagesPage {
     );
   }
 
+  ionViewWillUnload(){
+    this.buddiesEventsSubscription.unsubscribe();
+    this.buddiesRequestSubscription.unsubscribe();
+  }
+
   getBuddiesEvents(uid:string){
-    this.buddiesProvider.getBuddiesEvents(uid);
-    this.buddiesProvider.buddiesEvents.subscribe((events) => {
-      console.log(events);
-      //this.buddiesEvents = events;
+    this.buddiesEventsSubscription = this.buddiesProvider.buddiesEvents.subscribe((events) => {
+      console.log('events', events);
+      this.buddiesEvents = events;
     })
   }
 
+  getBuddiesRequest(uid:string){
+    this.buddiesRequestSubscription = this.buddiesProvider.buddiesRequest.subscribe((friendRequests) => {
+      console.log(friendRequests);
+      this.buddies = friendRequests;
+    })
+  }
+
+  /*
   getMessages(uid:string){
     this.messagesFrom = this.afdb.list(`/users/${uid}/buddies`,{
       query: {
@@ -90,7 +110,7 @@ export class MessagesPage {
           Observable.forkJoin(buddiesRequest).subscribe((snapshots) => {
             if(snapshots){
               let snapshotsMaped:any = snapshots.map( (snap:any) => snap.val() );
-              console.log('snapshots', snapshotsMaped)
+              //console.log('snapshots', snapshotsMaped)
               for (let snapshot of snapshotsMaped) {
                 let buddy = {
                   displayName: snapshot.settings.displayName,
@@ -99,11 +119,11 @@ export class MessagesPage {
                   oneSignalId: snapshot.oneSignalId,
                   pending: true
                 }
-                console.log(buddy);
+                //console.log(buddy);
                 buddies.push(buddy);
               }
 
-              this.buddies = buddies;
+              //this.buddies1 = buddies;
             }
           });
         }
@@ -113,11 +133,12 @@ export class MessagesPage {
     );
 
   }
+  */
 
   acceptFriendRequest(index){
     let buddy = this.buddies[index];
     let { aFuid, displayName, oneSignalId} = buddy;
-    console.log(`send notif to "${displayName}" from "${this.userData.displayName} - ${this.userData.aFuid}" @ "${oneSignalId}" after updating database for "${aFuid}"`);
+    //console.log(`send notif to "${displayName}" from "${this.userData.displayName} - ${this.userData.aFuid}" @ "${oneSignalId}" after updating database for "${aFuid}"`);
 
     this.userData.buddies[aFuid].pending = false;
     //let data = this.userData;

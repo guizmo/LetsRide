@@ -4,7 +4,7 @@ import { IonicPage, NavController, Tabs } from 'ionic-angular';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { AngularFireAuth } from 'angularfire2/auth';
 
-import { UserProvider} from '../../providers';
+import { UserProvider, BuddiesProvider} from '../../providers';
 
 @Component({
   selector: 'page-buddies-tabs',
@@ -28,6 +28,7 @@ export class BuddiesTabsPage {
   constructor(
     public navCtrl: NavController,
     private afAuth: AngularFireAuth,
+    private buddiesProvider: BuddiesProvider,
     private userProvider: UserProvider
   ) {
 
@@ -54,6 +55,13 @@ export class BuddiesTabsPage {
     */
   }
 
-
+  ionViewDidLeave(){
+    console.log('tabs ionViewDidLeave');
+    //this.buddiesProvider.buddies.complete();
+  }
+  ionViewWillUnload(){
+    console.log('tabs ionViewWillUnload');
+    //this.buddiesProvider.buddies.complete();
+  }
 
 }
