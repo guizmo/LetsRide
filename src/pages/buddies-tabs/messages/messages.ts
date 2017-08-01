@@ -18,12 +18,15 @@ export class MessagesPage {
   public userData;
   public currentUser;
   public messagesFrom;
-  public buddies: any = [];
+  public buddies: any = [] ;
+  public buddiesRequest: any = [] ;
   public buddiesEvents: any = [];
   public requestAccepted: any = [];
-  public messages: string = "requests";
   private buddiesEventsSubscription;
   private buddiesRequestSubscription;
+  private buddiesSubcription;
+
+  public messages: string = "requests";
 
   constructor(
     public navCtrl: NavController,
@@ -47,7 +50,7 @@ export class MessagesPage {
       console.log('if value', this.currentUser.uid);
       this.buddiesProvider.getBuddies(this.currentUser.uid);
 
-      //this.getMessages(this.currentUser.uid);
+      this.getBuddies(this.currentUser.uid);
       this.getBuddiesEvents(this.currentUser.uid);
       this.getBuddiesRequest(this.currentUser.uid);
       return;
@@ -71,69 +74,53 @@ export class MessagesPage {
     );
   }
 
-  ionViewWillUnload(){
-    this.buddiesEventsSubscription.unsubscribe();
-    this.buddiesRequestSubscription.unsubscribe();
+  getBuddies(uid:string){
+    this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((buddies) => {
+      console.log(buddies);
+      this.buddies = buddies;
+    })
   }
+
 
   getBuddiesEvents(uid:string){
     this.buddiesEventsSubscription = this.buddiesProvider.buddiesEvents.subscribe((events) => {
-      console.log('events', events);
-      this.buddiesEvents = events;
+      console.log('getBuddiesEvents', events);
+      let _events = [];
+      let buddyEvents = events.filter((event) => event.$exists()).map((event) => {
+        let bud = this.buddies.filter((_bud) => _bud.$key === event.$key)[0];
+        let buddy = {
+          displayName: bud.settings.displayName,
+          oneSignalId: bud.oneSignalId,
+          aFuid: bud.$key
+        };
+
+        for (let key in event) {
+          _events.push(Object.assign(event[key], buddy));
+        }
+        //event.map((ev) => console.log(ev))
+        return _events;
+      })
+      _events.sort(function(a,b) {
+        return new Date(a.time).getTime() - new Date(b.time).getTime();
+      });
+      this.buddiesEvents = _events;
     })
   }
 
   getBuddiesRequest(uid:string){
     this.buddiesRequestSubscription = this.buddiesProvider.buddiesRequest.subscribe((friendRequests) => {
-      console.log(friendRequests);
-      this.buddies = friendRequests;
+      console.log('getBuddiesRequest', friendRequests);
+      this.buddiesRequest = friendRequests;
     })
   }
 
-  /*
-  getMessages(uid:string){
-    this.messagesFrom = this.afdb.list(`/users/${uid}/buddies`,{
-      query: {
-        orderByChild: 'pending',
-        equalTo: true
-      }
-    });
-
-    this.messagesFrom.subscribe(
-      messages => {
-        if(messages){
-          let buddiesRequest = [];
-          for(let persone of messages){
-            buddiesRequest.push( this.afdb.object(`/users/${persone.$key}`, { preserveSnapshot: true }).first() );
-          }
-          let buddies = [];
-          Observable.forkJoin(buddiesRequest).subscribe((snapshots) => {
-            if(snapshots){
-              let snapshotsMaped:any = snapshots.map( (snap:any) => snap.val() );
-              //console.log('snapshots', snapshotsMaped)
-              for (let snapshot of snapshotsMaped) {
-                let buddy = {
-                  displayName: snapshot.settings.displayName,
-                  photoURL: snapshot.photoURL,
-                  aFuid: snapshot.aFuid,
-                  oneSignalId: snapshot.oneSignalId,
-                  pending: true
-                }
-                //console.log(buddy);
-                buddies.push(buddy);
-              }
-
-              //this.buddies1 = buddies;
-            }
-          });
-        }
-      },
-      error => console.log('error'),
-      () => console.log('finished')
-    );
-
+  ionViewWillUnload(){
+    this.buddiesSubcription.unsubscribe();
+    this.buddiesEventsSubscription.unsubscribe();
+    this.buddiesRequestSubscription.unsubscribe();
   }
-  */
+
+
 
   acceptFriendRequest(index){
     let buddy = this.buddies[index];
@@ -142,8 +129,6 @@ export class MessagesPage {
 
     this.userData.buddies[aFuid].pending = false;
     //let data = this.userData;
-
-
     this.userProvider.updateUserData(this.userData).subscribe((_userData) => {
       if(_userData){
         //add new buddie to the ASKER

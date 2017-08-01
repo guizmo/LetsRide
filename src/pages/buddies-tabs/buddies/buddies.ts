@@ -21,7 +21,6 @@ export class BuddiesPage {
   public userData;
   public buddiesId:FirebaseListObservable<any[]>;
   public buddies: any = [] ;
-  public buddiesPromise: any = [] ;
   private buddiesSubcription;
 
 
