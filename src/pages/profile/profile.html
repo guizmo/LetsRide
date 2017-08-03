@@ -28,13 +28,14 @@
   <div class="list card" *ngIf="currentUser">
 
     <div class="profile">
-      <img *ngIf="currentUser.photoURL" src="{{currentUser.photoURL}}" tappable  />
-      <img *ngIf="!currentUser.photoURL" src="./assets/img/man.svg" tappable  />
+      <img *ngIf="currentUser.photoURL" src="{{currentUser.photoURL}}" tappable (click)="changeProfileImg()" />
+      <img *ngIf="userData.profileImg" src="{{userData.profileImg.url}}" tappable (click)="changeProfileImg()" />
+      <img *ngIf="!currentUser.photoURL && !userData.profileImg" src="./assets/img/man.svg" tappable (click)="changeProfileImg()"  />
     </div>
 
 
       <!-- Show icon of logged in provider -->
-      <h4>
+      <h4 (click)="getProfileImg()">
         <span>{{displayName}}</span><br>
         <span>currentUser emailVerified [[{{currentUser.emailVerified}}]]</span>
         <ion-icon name="md-flame" class="firebase"></ion-icon>

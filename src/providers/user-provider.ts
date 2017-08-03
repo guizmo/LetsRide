@@ -71,7 +71,8 @@ export class UserProvider {
     this.userData.set(data);
   }
 
-  updateUserData(data: Profile) {
+  //updateUserData(data: Profile) {
+  updateUserData(data:any) {
     this.userData.update(data);
     return this.userData;
   }

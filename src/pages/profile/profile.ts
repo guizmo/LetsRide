@@ -5,10 +5,10 @@ import { Observable } from "rxjs/Rx";
 
 import { UserProvider, AlertProvider } from '../../providers';
 import { Profile } from '../../models/profile';
-import { DisciplinesProvider, NotificationsProvider } from '../../providers';
+import { DisciplinesProvider, NotificationsProvider, FileProvider } from '../../providers';
 
 import * as firebase from 'firebase/app';
-
+import * as moment  from 'moment';
 /**
  * Generated class for the ProfilePage page.
  *
@@ -35,7 +35,8 @@ export class ProfilePage implements OnInit, OnDestroy {
     public modalCtrl: ModalController,
     public alertProvider: AlertProvider,
     public disciplinesProvider: DisciplinesProvider,
-    private notifications: NotificationsProvider
+    private notifications: NotificationsProvider,
+    private fileProvider: FileProvider
   ) {
     console.log('profile', this)
     this.userAuth();
@@ -70,6 +71,29 @@ export class ProfilePage implements OnInit, OnDestroy {
   ngOnDestroy(){
   }
 
+  changeProfileImg(){
+    let fileName = moment().valueOf()+Math.floor((Math.random() * 100) + 1);
+    console.log(fileName);
+
+    this.fileProvider.openGallery(fileName)
+      .then((res) => {
+        let data = {
+          profileImg:{
+            name: fileName + '.jpg',
+            url: res
+          }
+        }
+        this.userProvider.updateUserData(data);
+      })
+      .catch((err) => console.log(err));
+  }
+
+  uploadProfileImg(){
+    //this.fileProvider.uploadImage('default.png');
+  }
+  getProfileImg(){
+    this.fileProvider.getUrl('default.png');
+  }
 
 
   presentProfileModal() {
