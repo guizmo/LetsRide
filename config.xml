@@ -3,7 +3,7 @@
     <name>LetsRide</name>
     <description>Tinder for riders</description>
     <author email="guillaumebartolini@gmail" href="https://www.facebook.com/guillaume.bartolini">Guillaume Bartolini</author>
-    <content original-src="index.html" src="http://192.168.1.9:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-navigation href="http://ionic.local/*" />
     <allow-navigation href="http://172.16.36.8:8100" />
@@ -109,11 +109,11 @@
         <variable name="CONTENT_AUTHORITY" value="$PACKAGE_NAME" />
         <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app requires background location tracking" />
     </plugin>
-    <plugin name="cordova-plugin-native-spinner" spec="^1.1.3" />
     <plugin name="cordova-plugin-network-information" spec="~1.3.3" />
     <plugin name="cordova-plugin-splashscreen" spec="~4.0.1" />
     <plugin name="cordova-plugin-statusbar" spec="2.2.2" />
     <plugin name="cordova-plugin-whitelist" spec="1.3.1" />
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
     <plugin name="onesignal-cordova-plugin" spec="^2.1.2" />
+    <plugin name="cordova-plugin-native-spinner" spec="^1.1.3" />
 </widget>
