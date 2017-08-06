@@ -3,8 +3,14 @@ export interface Discipline {
 }
 
 export interface Buddy {
-  user_id: string; 
+  user_id: string;
   oneSignalId: string;
+  pending: boolean;
+}
+
+export interface ProfileImg {
+  url: string;
+  name: string;
   pending: boolean;
 }
 
@@ -30,5 +36,6 @@ export interface Profile {
   settings?: any;
   providerId?: string;
   oneSignalId?: string;
+  profileImg?: ProfileImg;
   buddies?: Buddies
 }

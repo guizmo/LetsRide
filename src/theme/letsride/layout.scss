@@ -1,5 +1,8 @@
-.scroll-content {
-  background: #f29300;
+.ion-page {
+  background: #394264;
+  & > ion-content {
+    background: transparent;
+  }
 }
 
 ion-modal.inset-modal {

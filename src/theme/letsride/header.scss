@@ -1,3 +1,30 @@
-.toolbar-background{
-  background: #f0bf00;
+body ion-menu{
+
+  &.show-menu .menu-inner{
+    width: 100vw;
+  }
+
+  .menu-inner{
+    ion-content{
+
+      ion-item.item-block{
+        background-color: $background-color;
+        border-bottom: 1px solid #1c2135 !important;
+        color: #fff;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        ion-icon{
+          color: $iconLight;
+        }
+      }
+    }
+
+    ion-item.item-block.selected{
+      background-color: #50597b;
+      ion-icon{
+        color: #fff;
+      }
+    }
+
+  }
 }

@@ -1,15 +1,16 @@
 page-profile {
-
-  .profile {
-    position: relative;
-    overflow: hidden;
-    height: 24vh;
-    margin-bottom: -0.625em;
+  //background: url('../../assets/img/background/background-5.jpg') no-repeat #fff;
+  //background-size: contain;
+  & > .content{
+    //background-color: transparent;
   }
 
-  .profile img {
-    width: 28vw;
-    height: 28vw;
+  #profile-image {
+    display: block;
+    padding: 5px;
+    background-color: #50597c;
+    width: 32vw;
+    height: 32vw;
     border-radius: 100%;
     position: absolute;
     top: 0;
@@ -20,43 +21,53 @@ page-profile {
     object-fit: cover;
   }
 
-  .profile img.activated {
-    opacity: 0.5;
+  .profile {
+    position: relative;
+    overflow: hidden;
+    height: 24vh;
+    margin-bottom: -0.625em;
+
+    .spinner{
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
   }
-  h4,
-  p {
+
+  #content{
+    display: flex;
+    flex-direction: column;
+    min-height: 101%;
+  }
+
+  #profile-info {
+    width: 100%;
     text-align: center;
   }
-
-  h4 {
-    margin: 0;
-    padding: 0 0 0.75em;
-    color: #fff;
+  #profile-name {
+    margin-bottom: 2em;
+  }
+  .profile-description {
+    font-size: 15px;
+    color: #888;
   }
 
-  p {
-    color: #c3c3c3;
+
+  .userData{
+    background: #fff;
+    flex-grow: 1
   }
 
-  h4 span.activated,
-  p.activated {
-    opacity: 0.5;
-  }
-
-  .divider {
-    width: 12vw;
-    border-bottom: solid 0.2em #ffca28;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  ion-icon {
-    color: #fff;
-    font-size: 1.4em;
+  ion-content ion-icon {
+    color: $iconDark;
   }
 
   ion-icon.facebook {
-    color: #3052a8;
+    //color: #3052a8;
+    color: #fff;
   }
 
   ion-icon.google {

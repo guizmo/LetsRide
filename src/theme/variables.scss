@@ -24,11 +24,12 @@ $font-path: "../assets/fonts";
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    #488aff,
+  primary:    #3468af,
   secondary:  #32db64,
-  danger:     #f53d3d,
+  danger:     #e64c65,
   light:      #f4f4f4,
-  dark:       #222,
+  dark:       #444,
+  warning:    #fcb150,
   facebook:   #324d8f,
   google:     #dd4b3e
 );
@@ -78,3 +79,26 @@ $colors: (
 
 @import "roboto";
 @import "noto-sans";
+
+
+// LETSRIDE variable
+// --------------------------------------------------
+$text-color: #fff;
+
+// ICONS
+// --------------------------------------------------
+$iconDark : #444;
+$iconLight: #9099b7;
+
+// HEADER
+// --------------------------------------------------
+$toolbar-background: #11a8ab;
+
+// LIST
+// --------------------------------------------------
+//$item-md-padding-left: 0;
+//$item-ios-padding-left: 0;
+
+// LAYOUT
+// --------------------------------------------------
+$background-color: #394264;

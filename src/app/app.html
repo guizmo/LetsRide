@@ -1,15 +1,28 @@
-<ion-menu [content]="content">
+<ion-menu [content]="content" type="overlay">
   <ion-header>
     <ion-toolbar>
-      <ion-title>Menu</ion-title>
+      <ion-title>Let's Ride</ion-title>
+
+      <ion-buttons end>
+        <button menuClose ion-button icon-only>
+          <ion-icon name="ios-close-circle-outline"></ion-icon>
+        </button>
+      </ion-buttons>
+
     </ion-toolbar>
   </ion-header>
 
   <ion-content>
     <ion-list>
-      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p.component)">
-        {{p.title}}
-      </button>
+      <ng-container *ngFor="let p of pages">
+        <ion-item no-lines
+        menuClose
+        tappable
+        [class.selected]="p.component === is_active"
+        (click)="openPage(p.component)" >
+          <ion-icon [name]="p.icon" item-start></ion-icon> {{p.title}}
+        </ion-item>
+      </ng-container>
     </ion-list>
 
     <ion-item *ngFor="let user of users | async">
@@ -17,6 +30,12 @@
     </ion-item>
 
   </ion-content>
+
+
+
+
+
+
   <ion-footer  class="bar-stable" style="left:0;right:0;margin:0; width: 100%;position: fixed;bottom:0;">
 
       <ion-item
@@ -29,7 +48,7 @@
         color="primary"
         no-margin
       >
-        <ion-icon item-start large ios="ios-log-in" md="md-log-in"></ion-icon> Login
+        <ion-icon item-start large name="md-log-in"></ion-icon> Login
       </ion-item>
       <ion-item
         *ngIf="currentUser && currentUser.providerId == 'password'"
@@ -41,7 +60,7 @@
         color="primary"
         no-margin
       >
-        <ion-icon item-start large ios="ios-log-in" md="md-log-in"></ion-icon> AccountPage
+        <ion-icon item-start large name="md-log-in"></ion-icon> AccountPage
       </ion-item>
       <gb-logout-button *ngIf="currentUser && currentUser.providerId != 'password'" nav-clear ></gb-logout-button>
   </ion-footer>

@@ -23,3 +23,10 @@
 }
 
 @include makeIcon(fa-copy, '\f0c5');
+@include makeIcon(fa-signal, '\f012');
+
+
+ion-icon {
+  color: #fff;
+  font-size: 1.2em;
+}

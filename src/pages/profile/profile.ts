@@ -22,11 +22,13 @@ import * as moment  from 'moment';
 })
 export class ProfilePage implements OnInit, OnDestroy {
 
-  private userData: any;
-  private displayName: string = null;
-  private currentUser: firebase.User;
-  private emailVerified: boolean = false;
-  private disciplines: ReadonlyArray<any>;
+  private userData:any;
+  private profileImg:string = null;
+  private profileImgLoaded:boolean = false;
+  private displayName:string = null;
+  private currentUser:firebase.User;
+  private emailVerified:boolean = false;
+  private disciplines:ReadonlyArray<any>;
 
   constructor(
     public navCtrl: NavController,
@@ -72,18 +74,20 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
   changeProfileImg(){
-    let fileName = moment().valueOf()+Math.floor((Math.random() * 100) + 1);
-    console.log(fileName);
-
-    this.fileProvider.openGallery(fileName)
+    let profileImgName = this.userData.profileImg.fileName || null;
+    let timestamp = moment().valueOf()+Math.floor((Math.random() * 100) + 1);
+    this.fileProvider.openGallery(timestamp, this.userData.settings.displayName)
       .then((res) => {
         let data = {
           profileImg:{
-            name: fileName + '.jpg',
-            url: res
+            fileName: res.fileName,
+            url: res.url
           }
         }
         this.userProvider.updateUserData(data);
+        if(profileImgName){
+          this.fileProvider.delete(profileImgName);
+        }
       })
       .catch((err) => console.log(err));
   }
@@ -116,18 +120,28 @@ export class ProfilePage implements OnInit, OnDestroy {
     profileModal.present();
   }
 
+  imageHasLoaded(){
+    console.log('onload');
+    this.profileImgLoaded = true;
+  }
 
   userAuth(){
-
     this.userProvider.afAuth.authState.subscribe((_user: firebase.User) => {
       if (_user) {
         this.userProvider.userData.subscribe((data) => {
           this.userData = data;
           this.displayName = (data.settings && data.settings.displayName) ? data.settings.displayName : _user.displayName;
+
+          if(data.profileImg && data.profileImg.url){
+            this.profileImg = data.profileImg.url;
+          }else if(_user.photoURL){
+            this.profileImg = _user.photoURL;
+          }else{
+            this.profileImg = './assets/img/man.svg';
+          }
+
         });
-
         this.emailVerified =  (_user.providerData[0].providerId == 'facebook.com') ? true : _user.emailVerified;
-
         this.currentUser = _user;
       }
     });

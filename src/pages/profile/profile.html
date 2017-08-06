@@ -1,85 +1,82 @@
-<!--
-  Generated template for the ProfilePage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
-<ion-header>
-  <ion-navbar >
+<ion-header no-shadow no-border class="no-shadow">
+  <ion-navbar transparent>
     <ion-buttons *ngIf="emailVerified" start>
       <button ion-button menuToggle icon-only>
         <ion-icon name="menu"></ion-icon>
       </button>
     </ion-buttons>
 
-    <ion-title>Profile</ion-title>
-
-    <ion-buttons end icon-only>
+    <ion-buttons end>
       <button ion-button (click)="presentProfileModal()" >
-        <ion-icon name="create"></ion-icon>
+        <ion-icon name="md-create"></ion-icon>
       </button>
     </ion-buttons>
 
   </ion-navbar>
 </ion-header>
 
+<ion-content fullscreen>
+  <div id="content" *ngIf="currentUser && userData">
+    <div id="profile-info">
 
-<ion-content padding>
-  <div class="list card" *ngIf="currentUser">
-
-    <div class="profile">
-      <img *ngIf="currentUser.photoURL" src="{{currentUser.photoURL}}" tappable (click)="changeProfileImg()" />
-      <img *ngIf="userData.profileImg" src="{{userData.profileImg.url}}" tappable (click)="changeProfileImg()" />
-      <img *ngIf="!currentUser.photoURL && !userData.profileImg" src="./assets/img/man.svg" tappable (click)="changeProfileImg()"  />
-    </div>
-
-
-      <!-- Show icon of logged in provider -->
-      <h4 (click)="getProfileImg()">
-        <span>{{displayName}}</span><br>
-        <span>currentUser emailVerified [[{{currentUser.emailVerified}}]]</span>
-        <ion-icon name="md-flame" class="firebase"></ion-icon>
-        <!-- <ion-icon name="logo-facebook" *ngIf="user.provider == 'Facebook'" class="facebook"></ion-icon>
-        <ion-icon name="logo-google" *ngIf="user.provider == 'Google'" class="google"></ion-icon> -->
-      </h4>
-      <div class="divider"></div>
-
-      <div *ngIf="userData">
-        <div>
-          City - {{userData.settings.city}}
-          <ion-icon name="md-trash" item-right></ion-icon>
-        </div>
-
-        <div>
-          Country - {{userData.settings.country}}
-          <ion-icon name="md-trash" item-right></ion-icon>
-        </div>
-
-        <div>
-          Age - {{userData.settings.age}}
-          <ion-icon name="md-trash" item-right></ion-icon>
-        </div>
-
-        <div >
-          Gender - {{userData.settings.gender}}
-          <ion-icon name="md-trash" item-right></ion-icon>
-        </div>
-
-        <div>
-          Disciplines -
-          <ul *ngIf="userData.settings.disciplines">
-            <li class="text" *ngFor="let discipline of userData.settings.disciplines">
-        			{{discipline}}
-        		</li>
-          </ul>
-        </div>
-
-        <div>
-          Level - {{userData.settings.level}}
-          <ion-icon name="md-trash" item-right></ion-icon>
-        </div>
+      <div class="profile">
+        <ion-spinner *ngIf="!profileImgLoaded"></ion-spinner>
+        <img id="profile-image" [hidden]="!profileImgLoaded" (load)="imageHasLoaded()" [src]="profileImg" tappable (click)="changeProfileImg()"  />
       </div>
 
 
-  </div>
-</ion-content>
+        <!-- Show icon of logged in provider -->
+        <h3 id="profile-name">
+          <span>{{displayName}}</span>
+          <ng-container [ngSwitch]="userData.providerId">
+            <ion-icon *ngSwitchCase="'password'" name="md-flame" class="firebase"></ion-icon>
+            <ion-icon *ngSwitchCase="'facebook.com'" name="logo-facebook" class="facebook"></ion-icon>
+            <ion-icon *ngSwitchCase="'google.com'" name="logo-google" class="google"></ion-icon>
+          </ng-container>
+        </h3>
+      </div>
+
+      <div class="userData">
+
+        <ion-list>
+          <ion-item *ngIf="userData.settings.city || userData.settings.country">
+            <ion-icon name="pin" item-start></ion-icon>
+            {{userData.settings.city}}
+            <ng-container *ngIf="userData.settings.city && userData.settings.country"> | </ng-container>
+            {{userData.settings.country}}
+          </ion-item><!--userData -->
+
+          <ion-item *ngIf="userData.settings.age || userData.settings.gender">
+            <ng-container *ngIf="userData.settings.gender" [ngSwitch]="userData.settings.gender" item-start>
+              <ion-icon *ngSwitchCase="'Male'" name="man" item-start></ion-icon>
+              <ion-icon *ngSwitchCase="'Female'" name="woman" item-start></ion-icon>
+            </ng-container>
+            {{userData.settings.age | amDateFormat: 'DD/MM/YY'}}
+          </ion-item>
+        </ion-list>
+
+        <ion-list>
+          <ion-item-group *ngIf="userData.settings.disciplines">
+            <ion-list-header><h4>Sports</h4></ion-list-header>
+            <ion-item *ngFor="let discipline of userData.settings.disciplines">
+        			{{discipline}}
+            </ion-item>
+          </ion-item-group>
+        </ion-list>
+
+        <ion-list no-margin *ngIf="userData.settings.level">
+          <ion-item>
+            <ion-icon name="fa-signal" item-start></ion-icon>
+            <ng-container [ngSwitch]="userData.settings.level">
+              <span *ngSwitchCase="'1'">Novice</span>
+              <span *ngSwitchCase="'2'">Intermediate</span>
+              <span *ngSwitchCase="'3'">Strong intermediate</span>
+              <span *ngSwitchCase="'4'">Advanced</span>
+              <span *ngSwitchCase="'5'">Expert</span>
+            </ng-container>
+          </ion-item>
+        </ion-list>
+      </div><!--userData -->
+
+    </div> <!-- #content -->
+  </ion-content>

@@ -18,14 +18,15 @@ export class LetsRide {
   @ViewChild(Nav) nav: Nav;
 
   rootPage: any = 'MainPage';
+  is_active = 'MainPage';
   pages: any[] = [
-    { title: 'Home', component: 'MainPage' },
-    { title: 'Profile', component: 'ProfilePage' },
-    { title: 'Places', component: 'PlacesPage' },
-    { title: 'Buddies', component: 'BuddiesTabsPage' },
-    { title: 'Events', component: 'EventsPage' },
-    { title: 'List', component: ListPage },
-    { title: 'settings', component: ListPage }
+    { title: 'Home', component: 'MainPage', icon: 'home', is_active: true },
+    { title: 'Profile', component: 'ProfilePage', icon: 'person', is_active: false },
+    { title: 'Places', component: 'PlacesPage', icon: 'map', is_active: false },
+    { title: 'Buddies', component: 'BuddiesTabsPage', icon: 'people', is_active: false },
+    { title: 'Events', component: 'EventsPage', icon: 'calendar', is_active: false }
+    //{ title: 'List', component: ListPage, icon: 'home' },
+    //{ title: 'settings', component: ListPage, icon: 'home' }
   ]
 
   currentUser: any = null;
@@ -53,7 +54,6 @@ export class LetsRide {
     this.initializeApp();
   }
 
-
   initializeApp() {
     this.platform.ready().then(() => {
       if(this.platform.is('cordova')){
@@ -70,5 +70,6 @@ export class LetsRide {
     // we wouldn't want the back button to show in this scenario
 
     this.nav.setRoot(page);
+    this.is_active = page;
   }
 }

@@ -73,7 +73,7 @@ export class SignupPage {
             true
           ).present();
 
-          let providerData = {...user.providerData[0], ...{'aFuid':user.uid} };
+          let providerData = {...user.providerData[0], ...{ aFuid: user.uid, profileImg: {}, settings : { displayName : user.displayName } } };
 
           this.userProvider.addUserData(providerData).subscribe((data) => {
             if(data.aFuid){

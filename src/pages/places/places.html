@@ -9,16 +9,45 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Places</ion-title>
+    <button ion-button icon-left color="light" (click)="presentModal('create')">Add a new place</button>
   </ion-navbar>
 </ion-header>
 
 
-<ion-content padding>
-  <div text-center>
-    <button ion-button icon-left color="light" round (click)="presentModal('create')">Add a new place</button>
-  </div>
+<ion-content>
   <ion-list>
+    <ng-container *ngFor="let place of places" >
+      <ion-card>
+        <img src="assets/img/background/advance-card-map-madison.png">
+        <ion-fab right top>
+          <button ion-fab (click)="presentModal('update', place.$key)">
+            <ion-icon name="pin"></ion-icon>
+          </button>
+        </ion-fab>
+
+        <ion-item>
+          <ion-icon name="pin" color="dark" item-start large></ion-icon>
+          <h2>{{place.name}}</h2>
+          <p>{{place.city}} - {{place.country}}</p>
+        </ion-item>
+
+        <ion-item>
+          <button ion-button icon-left item-left color="danger" (click)="presentModal('update', place.$key)">
+            <ion-icon name="md-trash"></ion-icon>
+            Delete
+          </button>
+          <button ion-button icon-left item-end color="primary" (click)="delete(place.$key)">
+            <ion-icon name="md-create"></ion-icon>
+            Edit
+          </button>
+
+        </ion-item>
+
+      </ion-card>
+    </ng-container>
+  </ion-list>
+
+  <!-- <ion-list>
     <ion-item-sliding *ngFor="let place of places" >
       <ion-item  (click)="presentModal('update', place.$key)" >
         <ion-icon name="pin" item-start></ion-icon>
@@ -35,6 +64,6 @@
     </ion-item-sliding>
 
 
-  </ion-list>
+  </ion-list> -->
 
 </ion-content>

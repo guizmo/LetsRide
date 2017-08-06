@@ -57,7 +57,7 @@ export class LoginPage {
             if(data.$exists()){
               this.navCtrl.setRoot('MainPage');
             }else{
-              let providerData = {...user.providerData[0], ...{'aFuid':user.uid} , ...{settings : { displayName : user.displayName } } };
+              let providerData = {...user.providerData[0], ...{ aFuid: user.uid, profileImg:{}, settings : { displayName : user.displayName } } };
               this.userProvider.addUserData(providerData).subscribe((data) => {
                 if(data.aFuid){
                   this.navCtrl.setRoot('ProfilePage', {...providerData, ...{'emailVerified': true} } );
