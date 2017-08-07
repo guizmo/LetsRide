@@ -11,6 +11,8 @@ import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { Geolocation } from '@ionic-native/geolocation';
 import { OneSignal } from '@ionic-native/onesignal';
 import { Camera } from '@ionic-native/camera';
+import { File } from '@ionic-native/file';
+import { FilePath } from '@ionic-native/file-path';
 
 import { MomentModule } from 'angular2-moment';
 
@@ -45,7 +47,9 @@ import {
   ConnectivityService,
   LocationTrackerProvider,
   NotificationsProvider,
-  BuddiesProvider
+  BuddiesProvider,
+  FileProvider,
+  CaptureProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -62,7 +66,6 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 
 import { GbLogoutButtonModule } from '../components/gb-logout-button/gb-logout-button.module';
-import { FileProvider } from '../providers/file';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyBvmBNw3scf3o1dSZGQRGjFUGfhlOQw0a0",
@@ -156,7 +159,10 @@ export function provideSettings(storage: Storage) {
     NotificationsProvider,
     BuddiesProvider,
     FileProvider,
-    Camera
+    File,
+    Camera,
+    FilePath,
+    CaptureProvider,
   ]
 })
 export class AppModule {}

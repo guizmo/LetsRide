@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 
 
-import { UserProvider, AlertProvider, PlacesProvider} from '../../providers';
+import { UserProvider, AlertProvider, PlacesProvider, CaptureProvider} from '../../providers';
 
 /**
  * Generated class for the PlacesPage page.
@@ -19,13 +19,15 @@ export class PlacesPage {
 
   places;
   user;
+  images: Array<any>=[];
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public modalCtrl: ModalController,
     public userProvider: UserProvider,
-    public placesProvider: PlacesProvider
+    public placesProvider: PlacesProvider,
+    private capture: CaptureProvider
   ) {
   }
 
@@ -40,6 +42,10 @@ export class PlacesPage {
       }
     });
 
+  }
+
+  pathForImage(img){
+    return this.capture.pathForImage('letsride/'+this.user.uid+'/'+img);
   }
 
 

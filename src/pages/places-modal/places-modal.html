@@ -60,6 +60,13 @@
         <ion-item>
           <ion-input type="text" placeholder="Longitude" formControlName="lng" name="lng" ></ion-input>
         </ion-item>
+        <ion-item tappable block (click)="setImage()">
+          Set image
+        </ion-item>
+
+        <ion-item>
+          <ion-input type="text" formControlName="image" name="image" ></ion-input>
+        </ion-item>
 
         <ion-item tappable block (click)="setGeolocation()">
           Set geolocation
@@ -76,4 +83,6 @@
 
     </ion-list>
   </form>
+
+  <!-- <img src="{{capture.pathForImage(capture.imageName)}}" style="width: 100%" [hidden]="capture.imageName === null"> -->
 </ion-content>

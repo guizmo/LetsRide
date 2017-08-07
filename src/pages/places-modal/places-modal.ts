@@ -4,24 +4,16 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 
-import { DisciplinesProvider, CountriesProvider } from '../../providers';
-import { Discipline, Country } from '../../models';
+import { DisciplinesProvider, CountriesProvider, CaptureProvider } from '../../providers';
+import { Discipline, Country, Place } from '../../models';
 
 
-interface place {
-  lat?: number;
-  lng?: number;
-  disciplines?: any;
-  name?: string;
-  city?: string;
-  country?: string;
-  postal_code?: string;
-}
 
 @IonicPage()
 @Component({
   selector: 'page-places-modal',
   templateUrl: 'places-modal.html',
+  providers : [CaptureProvider]
 })
 export class PlacesModalPage {
 
@@ -30,8 +22,9 @@ export class PlacesModalPage {
   private placeForm: FormGroup;
   private modalNavParams: any;
   public state: string = '';
-
-  public place: place = {};
+  private userId: string = null;
+  public image: string = null;
+  public place: Place = {};
   //public place: any;
 
   constructor(
@@ -40,17 +33,22 @@ export class PlacesModalPage {
     public disciplinesProvider: DisciplinesProvider,
     public countriesProvider: CountriesProvider,
     public modalNavPage: ModalNavPage,
-    public navParams: NavParams
+    public navParams: NavParams,
+    private capture: CaptureProvider
   ) {
-    console.log(this);
+
     this.modalNavParams = this.modalNavPage.navParams;
     this.state = this.modalNavParams.get('state');
     if(this.modalNavParams.get('values') || this.navParams.get('values')){
       let values = this.modalNavParams.get('values') || this.navParams.get('values');
-      let {name ,disciplines ,country ,city ,lat ,lng } = values;
-      this.place = {name ,disciplines:[disciplines] ,country ,city ,lat ,lng };
+      let {name ,disciplines ,country ,city ,lat ,lng, image } = values;
+      this.place = {name ,disciplines:[disciplines] ,country ,city ,lat ,lng, image };
+      this.userId = values.userId;
+
+      this.image = this.capture.pathForImage('letsride/'+this.userId+'/'+values.image);
+
     }else{
-      this.place = {name:'',disciplines:'',country:'',city:'',lat:null,lng:null};
+      this.place = {name:'',disciplines:'',country:'',city:'',image:'',lat:null,lng:null};
     }
     this.placeForm = formBuilder.group(this.place);
   }
@@ -77,8 +75,29 @@ export class PlacesModalPage {
     );
   }
 
-  dismiss() {
+  dismiss(){
     this.modalNavPage.dismissModal({state: 'cancel'});
+  }
+
+  setImage(){
+    this.capture.userKey = this.userId;
+    let actionSheet = this.capture.presentActionSheet();
+    actionSheet.present();
+    actionSheet.onDidDismiss(() => {
+      console.log('onDidDismiss');
+      this.capture.imageName.subscribe(
+        (image) => {
+          console.log('setImage res', image);
+          this.placeForm.controls['image'].setValue(image) ;
+        },
+        (err) => {
+          console.log(err);
+        },
+        () => console.log('finished')
+      )
+
+    });
+    console.log(this.capture);
   }
 
   placeFormSubmit(){

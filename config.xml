@@ -98,6 +98,8 @@
         <variable name="APP_ID" value="1906644369591674" />
         <variable name="APP_NAME" value="Let's Ride" />
     </plugin>
+    <plugin name="cordova-plugin-file" spec="^4.3.3" />
+    <plugin name="cordova-plugin-filepath" spec="^1.0.2" />
     <plugin name="cordova-plugin-geolocation" spec="~2.4.3">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="GEOLOCATION_USAGE_DESCRIPTION a definir text" />
     </plugin>

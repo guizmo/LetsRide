@@ -18,7 +18,8 @@
   <ion-list>
     <ng-container *ngFor="let place of places" >
       <ion-card>
-        <img src="assets/img/background/advance-card-map-madison.png">
+        <img *ngIf="place.image" [src]="pathForImage(place.image)">
+        <img *ngIf="!place.image" src="assets/img/background/advance-card-map-madison.png">
         <ion-fab right top>
           <button ion-fab (click)="presentModal('update', place.$key)">
             <ion-icon name="pin"></ion-icon>
@@ -32,11 +33,11 @@
         </ion-item>
 
         <ion-item>
-          <button ion-button icon-left item-left color="danger" (click)="presentModal('update', place.$key)">
+          <button ion-button icon-left item-left color="danger" (click)="delete(place.$key)">
             <ion-icon name="md-trash"></ion-icon>
             Delete
           </button>
-          <button ion-button icon-left item-end color="primary" (click)="delete(place.$key)">
+          <button ion-button icon-left item-end color="primary" (click)="presentModal('update', place.$key)">
             <ion-icon name="md-create"></ion-icon>
             Edit
           </button>

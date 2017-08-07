@@ -13,3 +13,4 @@ export { LocationTrackerProvider } from './location-tracker';
 export { NotificationsProvider } from './notifications';
 export { BuddiesProvider } from './buddies';
 export { FileProvider } from './file';
+export { CaptureProvider } from './capture';
