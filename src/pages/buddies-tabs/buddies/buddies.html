@@ -1,31 +1,49 @@
-<ion-header>
-  <ion-navbar>
+<ion-header no-shadow no-border class="no-shadow">
+  <ion-navbar transparent>
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Buddies</ion-title>
+    <!-- <ion-title>Friends</ion-title> -->
   </ion-navbar>
 </ion-header>
 
 
 
-<ion-content padding>
-  <h3>Buddies list</h3>
-  <ion-list>
-    <ng-container *ngFor="let buddy of buddies; let i = index">
-      <ion-item >
-        <ion-avatar item-start>
-          <img *ngIf="buddy.photoURL" src="{{buddy.photoURL}}">
-        </ion-avatar>
-        <h2 *ngIf="buddy.settings">{{buddy.settings.displayName}}</h2>
-        <h3 *ngIf="buddy.settings">{{buddy.settings.country}}</h3>
-        <button
-          ion-button clear item-end icon-only
-          (click)="removeFriend(i)" >
-          <ion-icon name="remove-circle"></ion-icon>
+<ion-content fullscreen>
+  <div id="content" class="block-content">
+    <div class="block-top" v-height="30" vertical-center>
+      <div class="body-text" padding text-center f-width>
+        <h1>{{buddies.length}} <span>Friends</span></h1>
+        <p>The more the better ! Tell your friends about Let's Ride</p>
+        <!-- <button ion-button (click)="goto('ContactPage')">Invite them</button> -->
+        <button color="facebook" ion-button icon-right (click)="appInvite()">
+          Send invites
+          <ion-icon color="white" name="logo-facebook"></ion-icon>
         </button>
-      </ion-item>
-    </ng-container>
+      </div>
+    </div>
 
-  </ion-list>
+    <div id="friend-list" class="block-bottom">
+      <ion-list>
+        <ion-item-sliding *ngFor="let buddy of buddies | orderBy : ['sortByName']; let i = index">
+          <ion-item >
+            <ion-avatar item-start>
+              <img src="{{buddy.avatar}}">
+            </ion-avatar>
+            <h2 *ngIf="buddy.settings">{{buddy.settings.displayName}}</h2>
+            <h3 *ngIf="buddy.settings">{{buddy.settings.country}}</h3>
+          </ion-item>
+
+          <ion-item-options side="right">
+            <button ion-button color="danger" icon-only (click)="removeFriend(i)">
+              <ion-icon name="remove-circle"></ion-icon>
+            </button>
+          </ion-item-options>
+
+        </ion-item-sliding>
+
+      </ion-list>
+    </div>
+
+  </div>
 </ion-content>

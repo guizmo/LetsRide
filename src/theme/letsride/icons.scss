@@ -7,8 +7,20 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/MaterialIcons-Regular.eot'); /* For IE6-8 */
+  src: local('../assets/fonts/Material Icons'),
+       local('../assets/fonts/MaterialIcons-Regular'),
+       url('../assets/fonts/MaterialIcons-Regular.woff2') format('woff2'),
+       url('../assets/fonts/MaterialIcons-Regular.woff') format('woff'),
+       url('../assets/fonts/MaterialIcons-Regular.ttf') format('truetype');
+}
 
-@mixin makeIcon($arg, $val) {
+
+@mixin makeIcon($arg, $val, $family) {
     .ion-ios-#{$arg}:before ,
     .ion-ios-#{$arg}-circle:before ,
     .ion-ios-#{$arg}-circle-outline:before ,
@@ -17,16 +29,43 @@
     .ion-md-#{$arg}-circle:before ,
     .ion-md-#{$arg}-circle-outline:before ,
     .ion-md-#{$arg}-outline:before  {
-        font-family: "FontAwesome" !important;
+        font-family: $family !important;
         content: $val;
     }
 }
 
-@include makeIcon(fa-copy, '\f0c5');
-@include makeIcon(fa-signal, '\f012');
 
 
 ion-icon {
   color: #fff;
   font-size: 1.2em;
 }
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+@include makeIcon(fa-copy, '\f0c5', 'FontAwesome');
+@include makeIcon(fa-signal, '\f012', 'FontAwesome');
+
+@include makeIcon(lr-add-location, '\e567', 'Material Icons');
+@include makeIcon(lr-style, '\e41d', 'Material Icons');

@@ -1,45 +1,55 @@
-<!--
-  Generated template for the MapPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-
   <ion-navbar>
-
     <ion-buttons *ngIf="state == 'create'" start>
-      <button ion-button icon-only color="royal" (click)="dismiss()">
+      <button ion-button icon-left (click)="dismiss()">
         <ion-icon name="arrow-back"></ion-icon>
         Cancel
       </button>
     </ion-buttons>
-
-    <ion-title>Map</ion-title>
-
-  <ion-buttons end>
-    <button ion-button icon-only color="royal" (click)="onSave()">
-      Save
-      <ion-icon name="add-circle"></ion-icon>
-    </button>
-  </ion-buttons>
-</ion-navbar>
+    <!-- <ion-title>Map</ion-title> -->
+    <ion-buttons end>
+      <button ion-button icon-right (click)="onSave()">
+        Save
+        <ion-icon name="lr-add-location"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
-  <ion-fab left bottom>
-    <button ion-fab class="fab-map" (click)="setCurrentPosition()">
-      <ion-icon name="navigate"></ion-icon>
+<ion-content no-padding>
+
+  <div class="searchblock">
+    <ion-toolbar [hidden]="!mapAPI_loaded" no-padding transparent >
+      <ion-searchbar
+        color="dark"
+        (ionInput)="searchAutocomplete($event)"
+        [showCancelButton]=true
+        (ionCancel)="onCancelSearch($event)"
+        (ionClear)="onCancelSearch($event)"
+        [debounce]="500"
+        placeholder="search for location"
+        name="search"
+        animated=true
+        cancelButtonText="cancel"
+        #search>
+      </ion-searchbar>
+      <ion-list no-margin>
+        <ion-item tappable *ngFor="let item of autocompleteItems; let i = index" (click)="geocodePlaceId(item.place_id)">
+          {{ item.description }}
+        </ion-item>
+      </ion-list>
+    </ion-toolbar>
+
+  </div>
+
+
+  <ion-fab [hidden]="!mapAPI_loaded" bottom right>
+    <button color="brand" ion-fab class="fab-map" mini (click)="setCurrentPosition()">
+      <ion-icon name="ios-navigate-outline"></ion-icon>
     </button>
   </ion-fab>
-
-  <form [formGroup]="searchControlForm" id="autocomplete-item">
-    <ion-item no-padding >
-        <ion-input placeholder="search for location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control" #search name="search" formControlName="search"></ion-input>
-    </ion-item>
-  </form>
 
 
   <agm-map
@@ -48,6 +58,9 @@
     [longitude]="map.lng"
     [zoom]="map.zoom"
     (mapClick)="mapClicked($event)"
+    [streetViewControl]="false"
+    [zoomControlOptions]="zoomControlOptions"
+    [styles]="mapStyle"
     >
     <!-- [disableDefaultUI]="false"
     [zoomControl]="false" -->
@@ -58,48 +71,16 @@
         [latitude]="marker.lat"
         [longitude]="marker.lng"
         [markerDraggable]="true"
-        (dragEnd)="markerDragEnd(marker, $event)">
+        (dragEnd)="markerDragEnd(marker, $event)"
+        [iconUrl]="'assets/img/pin.png'"
+        >
         <!-- [label]="marker.label" -->
 
-      <agm-info-window>
+      <agm-info-window *ngIf="marker.name">
         <strong>{{marker.name}}</strong>
       </agm-info-window>
 
     </agm-marker>
 
-    <!-- <agm-marker
-        *ngFor="let m of markers; let i = index"
-        (markerClick)="clickedMarker(m.label, i)"
-        [latitude]="m.lat"
-        [longitude]="m.lng"
-        [label]="m.label"
-        [markerDraggable]="m.draggable"
-        (dragEnd)="markerDragEnd(m, $event)">
-
-      <agm-info-window>
-        <strong>InfoWindow content</strong>
-      </agm-info-window>
-
-    </agm-marker> -->
-    <!-- <agm-marker
-        (markerClick)="clickedMarker(map.title)"
-        [latitude]="map.lat"
-        [longitude]="map.lng"
-        [label]="map.label"
-        [markerDraggable]="true"
-        (dragEnd)="markerDragEnd(map, $event)">
-
-      <agm-info-window>
-        <strong>InfoWindow content</strong>
-      </agm-info-window>
-
-    </agm-marker> -->
-
-
-    <!-- <agm-marker [latitude]="map.lat" [longitude]="map.lng">
-      <agm-info-window>
-          <strong>{{title}}</strong>
-      </agm-info-window>
-    </agm-marker> -->
   </agm-map>
 </ion-content>

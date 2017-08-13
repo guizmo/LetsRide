@@ -5,13 +5,19 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-  <ion-navbar >
+  <ion-navbar>
+    <ion-buttons start>
+      <button ion-button icon-left (click)="dismiss()">
+        <ion-icon name="arrow-back"></ion-icon>
+        Cancel
+      </button>
+    </ion-buttons>
 
-    <ion-title>Edit profile</ion-title>
+    <ion-title>Profile</ion-title>
 
-    <ion-buttons end icon-only>
-      <button ion-button (click)="dismiss()" >
-        <ion-icon name="close-circle"></ion-icon>
+    <ion-buttons end >
+      <button ion-button (click)="editProfileFormSubmit()" [disabled]="!editProfileForm.valid" >
+        Save
       </button>
     </ion-buttons>
 
@@ -19,13 +25,11 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
 
-<form [formGroup]="editProfileForm" (submit)="editProfileFormSubmit()" padding-bottom>
+<form [formGroup]="editProfileForm"  >
 
   <ion-list>
-
-
     <!-- DISPLAYNAME -->
     <ion-item>
       <ion-label>Name</ion-label>
@@ -37,6 +41,7 @@
       <ion-label>City</ion-label>
       <ion-input type="text" formControlName="city" name="city"></ion-input>
     </ion-item>
+
     <!-- COUNTRIE -->
     <ion-item>
       <ion-label>Countrie</ion-label>
@@ -49,37 +54,36 @@
         <ion-option *ngFor="let country of countries" [value]="code">{{country.name}}</ion-option>
       </ion-select>
     </ion-item>
-
-    <!-- GENDER -->
-    <ion-row radio-group formControlName="gender" name="gender">
-      <ion-col width-50>
-        <ion-item no-lines>
-          <ion-label>
-            <ion-icon icon-left name="man" large></ion-icon>
-          </ion-label>
-          <ion-radio value="Male" checked></ion-radio>
-        </ion-item>
-      </ion-col>
-      <ion-col width-50>
-        <ion-item no-border no-lines>
-          <ion-label>
-            <ion-icon icon-left name="woman" large></ion-icon>
-          </ion-label>
-          <ion-radio value="Female"></ion-radio>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-
     <!-- AGE -->
     <ion-item>
       <ion-label>Age</ion-label>
       <ion-datetime displayFormat="DD/MM/YYYY" pickerFormat="DD MM YYYY" formControlName="age" name="age"></ion-datetime>
     </ion-item>
-
-    <ion-item-divider color="light">Rider profile</ion-item-divider>
-    <!-- DISCIPLINE -->
+  </ion-list>
+  <ion-list radio-group formControlName="gender" name="gender">
+    <!-- GENDER -->
     <ion-item>
-      <ion-label>Disciplines</ion-label>
+      <ion-label>
+        <ion-icon color="dark" icon-left name="man" large></ion-icon>
+      </ion-label>
+      <ion-radio value="Male" checked></ion-radio>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>
+        <ion-icon color="dark" icon-left name="woman" large></ion-icon>
+      </ion-label>
+      <ion-radio value="Female"></ion-radio>
+    </ion-item>
+  </ion-list>
+
+  <ion-list no-margin>
+
+    <!-- DISCIPLINE -->
+
+
+    <ion-item>
+      <ion-label>Styles</ion-label>
       <ion-select
         formControlName="disciplines"
         name="disciplines"
@@ -96,24 +100,13 @@
     <ion-item>
       <ion-label>Level</ion-label>
       <ion-range min="1" max="5" step="1" snaps="true" formControlName="level" name="level">
-        <ion-icon range-left small name="stats-outline"></ion-icon>
+        <ion-icon range-left small ios="stats-outline" md="md-stats"></ion-icon>
         <ion-icon range-right name="stats"></ion-icon>
       </ion-range>
     </ion-item>
 
-
-    <ion-item>
-      <button type="button" ion-button color="danger" icon-start (click)="dismiss()">
-        <ion-icon name='close'></ion-icon>
-        Cancel
-      </button>
-      <button type="submit" ion-button [disabled]="!editProfileForm.valid" >
-        <ion-icon></ion-icon>
-        Submit
-      </button>
-    </ion-item>
-
   </ion-list>
+
 </form>
 
 </ion-content>

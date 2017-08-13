@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, AlertController, FabContainer } from 'ionic-angular';
 
 
 import { UserProvider, AlertProvider, PlacesProvider, CaptureProvider} from '../../providers';
@@ -27,7 +27,8 @@ export class PlacesPage {
     public modalCtrl: ModalController,
     public userProvider: UserProvider,
     public placesProvider: PlacesProvider,
-    private capture: CaptureProvider
+    private capture: CaptureProvider,
+    private alertCtrl: AlertController
   ) {
   }
 
@@ -49,7 +50,8 @@ export class PlacesPage {
   }
 
 
-  presentModal(state: string, key: string = null){
+  presentModal(state: string, key: string = null, fab: FabContainer){
+
     let page = 'PlacesModalPage';
     if(state == 'create'){
       page = 'MapPage';
@@ -58,7 +60,8 @@ export class PlacesPage {
       state: state,
       key: key,
       values: (key) ? this.places.filter( place => place.$key === key)[0] : null,
-      page: page
+      page: page,
+      userId: this.user.uid
     })
 
     modal.onDidDismiss(data => {
@@ -73,10 +76,6 @@ export class PlacesPage {
               this.update(data.key, data.value)
               break;
             }
-            default: {
-              console.log("canceled");
-              break;
-            }
           }
 
 
@@ -85,6 +84,9 @@ export class PlacesPage {
 
 
     modal.present();
+    if(fab){
+      fab.close();
+    }
   }
 
   add(item: any) {
@@ -94,9 +96,29 @@ export class PlacesPage {
     //props = { name: 'new name' }
     this.placesProvider.update(key, props);
   }
-  delete(key: string) {
-    this.placesProvider.delete(key);
+  delete(key: string, fab: FabContainer) {
+
+    let confirm = this.alertCtrl.create({
+      title: 'Deleting !',
+      message: 'You are going to permanently delete this place !',
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: () => {
+            fab.close();
+          }
+        },
+        {
+          text: 'Delete',
+          handler: () => {
+            this.placesProvider.delete(key);
+          }
+        }
+      ]
+    });
+    confirm.present();
   }
+
   deleteEverything() {
     this.placesProvider.deleteEverything();
   }

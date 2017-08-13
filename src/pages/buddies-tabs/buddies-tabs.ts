@@ -14,15 +14,12 @@ import { UserProvider, BuddiesProvider} from '../../providers';
 export class BuddiesTabsPage {
   @ViewChild('buddiesTabs') tabRef: Tabs;
 
-  /*tabsParams: {
-    currentUser: Observable<any>;
-    userData: Observable<any>;
-  };*/
+  userLoaded = false;
   tabsParams = new BehaviorSubject<any>(null);
 
-  searchRoot = 'SearchPage'
-  buddiesRoot = 'BuddiesPage'
-  messagesRoot = 'MessagesPage'
+  searchRoot = 'SearchPage';
+  buddiesRoot = 'BuddiesPage';
+  messagesRoot = 'MessagesPage';
 
 
   constructor(
@@ -36,6 +33,7 @@ export class BuddiesTabsPage {
       if(user){
         this.userProvider.userData.subscribe((settings) => {
           if(settings){
+            this.userLoaded = true;
             console.log('this.tabsParams.next({userData: settings,currentUser: user.toJSON()});');
             this.tabsParams.next({userData: settings,currentUser: user.toJSON()});
             this.tabsParams.complete();

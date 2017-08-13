@@ -1,3 +1,27 @@
 page-buddies {
 
+  &.ion-page ion-content{
+    background: $brand;
+  }
+
+  .block-top{
+    background: $brand;
+
+    h1{
+      font-size: 5rem;
+      font-weight: bold;
+      span{
+        font-size: 1.7rem;
+        font-weight: bold;
+      }
+    }
+  }
+  .block-bottom{
+    padding-bottom: 5rem;
+  }
+  
+  .block-content{
+    background: #fff;
+    min-height: 100%;
+  }
 }

@@ -22,16 +22,29 @@ $font-path: "../assets/fonts";
 // to match your app's branding. Ionic uses a Sass map of
 // colors so you can add, rename and remove colors as needed.
 // The "primary" color is the only required color in the map.
-
+$brand: #11a8ab;
+$brand_back: #394264;
+$brand_light: #4cbdbf;
+$primary:    #3468af;
+$secondary:  #32db64;
+$danger:     #e64c65;
+$light:      #f4f4f4;
+$dark:       #444;
+$warning:    #fcb150;
+$facebook:   #324d8f;
+$google:     #dd4b3e;
 $colors: (
-  primary:    #3468af,
-  secondary:  #32db64,
-  danger:     #e64c65,
-  light:      #f4f4f4,
-  dark:       #444,
-  warning:    #fcb150,
-  facebook:   #324d8f,
-  google:     #dd4b3e
+  primary:    $primary,
+  secondary:  $secondary,
+  danger:     $danger,
+  light:      $light,
+  dark:       $dark,
+  warning:    $warning,
+  facebook:   $facebook,
+  google:     $google,
+  brand:      $brand,
+  brand_back: $brand,
+  brand_light: $brand_light
 );
 
 
@@ -93,6 +106,8 @@ $iconLight: #9099b7;
 // HEADER
 // --------------------------------------------------
 $toolbar-background: #11a8ab;
+$toolbar-border-color: $brand_light;
+$toolbar-ios-border-color: $toolbar-border-color;
 
 // LIST
 // --------------------------------------------------
@@ -102,3 +117,11 @@ $toolbar-background: #11a8ab;
 // LAYOUT
 // --------------------------------------------------
 $background-color: #394264;
+
+// TABS
+// --------------------------------------------------
+$tabs-background: $toolbar-background;
+$tabs-border-color: $toolbar-border-color;
+$tabs-ios-border-color: $tabs-border-color;
+$tabs-ios-tab-color-inactive: #fff;
+$tabs-ios-tab-color-active: #fff;

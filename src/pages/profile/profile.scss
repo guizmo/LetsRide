@@ -5,10 +5,14 @@ page-profile {
     //background-color: transparent;
   }
 
+  &.ion-page ion-content{
+    background-color: $brand;
+  }
+
   #profile-image {
     display: block;
-    padding: 5px;
-    background-color: #50597c;
+    border: 5px solid rgba(250, 250, 250, 0.25);
+    //background-color: #50597c;
     width: 32vw;
     height: 32vw;
     border-radius: 100%;
@@ -37,19 +41,12 @@ page-profile {
     }
   }
 
-  #content{
-    display: flex;
-    flex-direction: column;
-    min-height: 101%;
-  }
 
   #profile-info {
     width: 100%;
     text-align: center;
   }
-  #profile-name {
-    margin-bottom: 2em;
-  }
+
   .profile-description {
     font-size: 15px;
     color: #888;
@@ -58,7 +55,6 @@ page-profile {
 
   .userData{
     background: #fff;
-    flex-grow: 1
   }
 
   ion-content ion-icon {

@@ -110,6 +110,18 @@ export class MessagesPage {
   getBuddiesRequest(uid:string){
     this.buddiesRequestSubscription = this.buddiesProvider.buddiesRequest.subscribe((friendRequests) => {
       console.log('getBuddiesRequest', friendRequests);
+      friendRequests.map((_buddy) => {
+        _buddy.sortByName = _buddy.settings.displayName;
+
+        if(_buddy.profileImg && _buddy.profileImg.url != ''){
+          _buddy.avatar = _buddy.profileImg.url;
+        }else if(_buddy.photoURL){
+          _buddy.avatar = _buddy.photoURL;
+        }else{
+          _buddy.avatar = './assets/img/man.svg';
+        }
+
+      });
       this.buddiesRequest = friendRequests;
     })
   }
@@ -123,7 +135,7 @@ export class MessagesPage {
 
 
   acceptFriendRequest(index){
-    let buddy = this.buddies[index];
+    let buddy = this.buddiesRequest[index];
     let { aFuid, displayName, oneSignalId} = buddy;
     //console.log(`send notif to "${displayName}" from "${this.userData.displayName} - ${this.userData.aFuid}" @ "${oneSignalId}" after updating database for "${aFuid}"`);
 

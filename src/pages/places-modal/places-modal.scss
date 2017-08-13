@@ -1,3 +1,38 @@
 page-places-modal {
+  .content-block{
+    box-sizing: border-box;
+  }
+  #content{
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .block-top{
+    height: 35vh;
+    width: 100vw;
+    background: $brand;
+
+    ion-grid, ion-row{
+      height: 100%;
+    }
+  }
+  .block-bottom{
+    flex-grow: 1;
+    background: #fff;
+  }
+
+  .col-left{
+    border-right: 1px solid $brand_light;
+  }
+
+  .button-div{
+    ion-icon{
+      font-size: 45px;
+    }
+  }
+
+
+
 
 }

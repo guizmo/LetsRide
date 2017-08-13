@@ -1,27 +1,42 @@
+<ion-header no-shadow no-border class="no-shadow">
+  <ion-navbar>
+    <ion-buttons start>
+      <button ion-button icon-left (click)="dismiss()">
+        <ion-icon name="arrow-back"></ion-icon>
+        Cancel
+      </button>
+    </ion-buttons>
+
+    <ion-buttons end>
+      <button ion-button icon-right (click)="onSave()" [disabled]="!eventForm.valid" >
+        Save
+        <ion-icon name="ios-calendar-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
 
 
 <ion-content>
-  <button ion-button full icon-right no-margin (click)="dismiss()" >
-    Cancel
-    <ion-icon name="close-circle"></ion-icon>
-  </button>
+
   <form [formGroup]="eventForm" (ngSubmit)="onSave()">
     <ion-list>
       <!-- NAME -->
       <ion-item>
         <ion-label>Where</ion-label>
-        <ion-input type="text" formControlName="name" name="name"></ion-input>
+        <ion-input placeholder="Where" type="text" formControlName="name" name="name"></ion-input>
       </ion-item>
 
       <!-- TIME -->
       <ion-item>
-        <ion-label>Time</ion-label>
+        <ion-label>When</ion-label>
         <ion-datetime displayFormat="DD/MMM/YY HH:mm" min="{{currentYear}}" max="{{maxYear}}" pickerFormat="D MMM YYYY H mm" formControlName="time" name="time"></ion-datetime>
       </ion-item>
 
       <!-- DISCIPLINE -->
       <ion-item>
-        <ion-label>Disciplines</ion-label>
+        <ion-label>What</ion-label>
         <ion-select
           formControlName="disciplines"
           name="disciplines"
@@ -30,12 +45,6 @@
           >
           <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
         </ion-select>
-      </ion-item>
-      <ion-item>
-        <button type="submit" ion-button [disabled]="!eventForm.valid" >
-          <ion-icon></ion-icon>
-          Save
-        </button>
       </ion-item>
 
     </ion-list>

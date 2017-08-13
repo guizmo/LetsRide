@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import 'rxjs/add/observable/forkJoin';
 import {Observable} from 'rxjs/Observable';
 
-import { UserProvider, BuddiesProvider } from '../../../providers';
+import { UserProvider, BuddiesProvider, FacebookProvider } from '../../../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
@@ -29,7 +29,8 @@ export class BuddiesPage {
     public navParams: NavParams,
     public afdb: AngularFireDatabase,
     private buddiesProvider: BuddiesProvider,
-    private userProvider: UserProvider
+    private userProvider: UserProvider,
+    private fb: FacebookProvider
   ) {
     console.log(this);
   }
@@ -40,15 +41,22 @@ export class BuddiesPage {
   }
 
   ionViewDidLoad() {
-    //fFired only when a view is stored in memory. This event is NOT fired on entering a view that is already cached. It’s a nice place for init related tasks.
+    //Fired only when a view is stored in memory. This event is NOT fired on entering a view that is already cached. It’s a nice place for init related tasks.
     this.getCurrentUser();
   }
 
   ionViewDidEnter() {
   }
 
+  goto(page){
+    this.navCtrl.push(page);
+  }
+  appInvite(){
+    this.fb.appInvite();
+  }
+
   getCurrentUser() {
-    //console.log('getCurrentUser');
+
     if(this.navParams.data.value){
       let values = this.navParams.data.value;
       for (let key in values) {
@@ -56,6 +64,16 @@ export class BuddiesPage {
       }
       this.getBuddies(this.currentUser.uid);
       return;
+    }else{
+      this.navParams.data.subscribe((values) => {
+        if(values){
+          for (let key in values) {
+            this[key] = values[key];
+          }
+          this.getBuddies(this.currentUser.uid);
+          return;
+        }
+      });
     }
 
     this.navParams.data.subscribe(
@@ -74,9 +92,20 @@ export class BuddiesPage {
 
   getBuddies(uid:string){
     this.buddiesProvider.getBuddies(uid);
-    console.log('buddies subscription');
     this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((buddies) => {
-      console.log(buddies);
+
+      buddies.map((_buddy) => {
+        _buddy.sortByName = _buddy.settings.displayName;
+
+        if(_buddy.profileImg && _buddy.profileImg.url != ''){
+          _buddy.avatar = _buddy.profileImg.url;
+        }else if(_buddy.photoURL){
+          _buddy.avatar = _buddy.photoURL;
+        }else{
+          _buddy.avatar = './assets/img/man.svg';
+        }
+
+      });
       this.buddies = buddies;
     })
   }

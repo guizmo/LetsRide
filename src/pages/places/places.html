@@ -9,7 +9,12 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <button ion-button icon-left color="light" (click)="presentModal('create')">Add a new place</button>
+    <ion-title>My Trails</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-left color="light" icon-only (click)="presentModal('create')">
+        <ion-icon name="ios-add" ></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
@@ -18,30 +23,24 @@
   <ion-list>
     <ng-container *ngFor="let place of places" >
       <ion-card>
-        <img *ngIf="place.image" [src]="pathForImage(place.image)">
-        <img *ngIf="!place.image" src="assets/img/background/advance-card-map-madison.png">
-        <ion-fab right top>
-          <button ion-fab (click)="presentModal('update', place.$key)">
-            <ion-icon name="pin"></ion-icon>
-          </button>
+        <img *ngIf="place.image && pathForImage(place.image)" [src]="pathForImage(place.image)">
+        <img *ngIf="!place.image || !pathForImage(place.image)" src="assets/img/background/advance-card-map-madison.png">
+        <ion-fab right top #fab>
+          <button ion-fab mini><ion-icon name="ios-add"></ion-icon></button>
+          <ion-fab-list side="left">
+            <button ion-fab color="primary" (click)="presentModal('update', place.$key, fab)">
+              <ion-icon name="md-create"></ion-icon>
+            </button>
+            <button ion-fab color="danger" (click)="delete(place.$key, fab)">
+              <ion-icon name="md-trash"></ion-icon>
+            </button>
+          </ion-fab-list>
         </ion-fab>
 
         <ion-item>
-          <ion-icon name="pin" color="dark" item-start large></ion-icon>
+          <ion-icon name="pin" color="brand" item-start large></ion-icon>
           <h2>{{place.name}}</h2>
-          <p>{{place.city}} - {{place.country}}</p>
-        </ion-item>
-
-        <ion-item>
-          <button ion-button icon-left item-left color="danger" (click)="delete(place.$key)">
-            <ion-icon name="md-trash"></ion-icon>
-            Delete
-          </button>
-          <button ion-button icon-left item-end color="primary" (click)="presentModal('update', place.$key)">
-            <ion-icon name="md-create"></ion-icon>
-            Edit
-          </button>
-
+          <p>{{place.city}} <span *ngIf="place.city && place.country">-</span> {{place.country}}</p>
         </ion-item>
 
       </ion-card>

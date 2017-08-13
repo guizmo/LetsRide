@@ -13,3 +13,66 @@ ion-modal.inset-modal {
     background: transparent!important;
   }
 }
+
+.ion-page ion-content{
+  background-color: #f2f2f2;
+}
+
+
+// HELPERS
+// --------------------------------------------------
+[bottom-shadow="true"]{
+  position: relative;
+  &:after {
+    content:" ";
+    position:absolute;
+    width:100%;
+    height: 10px;
+    bottom:0;
+    z-index:-1;
+    transform:scaleX(1.4);
+    box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.4);
+  }
+}
+
+[show-tabbar="false"]{
+  .tabbar {
+    display: none;
+  }
+}
+
+[vertical-center]{
+	display: -webkit-flex;
+	display: flex;
+
+	-ms-flex-align: center;
+	-webkit-align-items: center;
+	-webkit-box-align: center;
+
+	align-items: center;
+}
+
+[f-height]{ height: 100%; }
+[f-width]{ width: 100%; }
+
+[v-height="30"]{ height: 30vh; }
+[v-height="70"]{ height: 70vh; }
+[v-height="35"]{ height: 35vh; }
+[v-height="65"]{ height: 65vh; }
+[v-height="40"]{ height: 40vh; }
+[v-height="60"]{ height: 60vh; }
+
+vertical-center
+
+// BLOCKS
+// --------------------------------------------------
+.block-content{
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+
+.block-bottom{
+  flex-grow: 1;
+}

@@ -148,6 +148,18 @@ export class SearchPage {
 
     this.users.subscribe((users) => {
       if(users){
+        users.map((_user) => {
+          _user.sortByName = _user.settings.displayName;
+
+          if(_user.profileImg && _user.profileImg.url != ''){
+            _user.avatar = _user.profileImg.url;
+          }else if(_user.photoURL){
+            _user.avatar = _user.photoURL;
+          }else{
+            _user.avatar = './assets/img/man.svg';
+          }
+
+        });
         this.usersList = users;
         this.loadedUsers = users;
         if(this.is_searching.getValue()){
@@ -221,31 +233,5 @@ export class SearchPage {
       })
   }
 
-
-
-
-
-
-
-
-
-  /*setLimit(){
-    this.users.subscribe( (data) => {
-      this.loadedUsers = data;
-
-      if (data.length > 0) {
-        // If the last key in the list equals the last key in the database
-        if (data[data.length - 1].$key === this.lastKey) {
-          this.queryable = false;
-        } else {
-          this.queryable = true;
-        }
-      }
-      if(this.scrollEvent){
-        this.scrollEvent.complete();
-        this.scrollEvent.enable(this.queryable);
-      }
-    });
-  }*/
 
 }

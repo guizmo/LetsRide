@@ -5,29 +5,74 @@
     </button>
     <ion-title>Events</ion-title>
     <ion-buttons icon-only end>
+      <button ion-button icon-only (click)="presentEventModal()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+    <!-- <ion-buttons icon-only end>
       <button *ngIf="!activeItemSliding" ion-button icon-only (click)="openOptionRight()">
         <ion-icon name="add-circle"></ion-icon>
       </button>
       <button *ngIf="activeItemSliding" ion-button icon-only (click)="closeOption()">
         <ion-icon name="close-circle"></ion-icon>
       </button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-navbar>
-  <ion-toolbar no-padding >
-    <button ion-button full icon-right no-margin (click)="presentEventModal()" >
-      Add an event (It's quick)
+  <!-- <ion-toolbar no-padding >
+    <button color="brand" ion-button full icon-right no-margin (click)="presentEventModal()" >
+      Create a new event
       <ion-icon name="add-circle"></ion-icon>
     </button>
-  </ion-toolbar>
+  </ion-toolbar> -->
 </ion-header>
 
 
 <ion-content >
-  <p *ngIf="!events">No events yet</p>
-
+  <ion-spinner *ngIf="!events"></ion-spinner>
 
   <ion-list #eventsList>
-    <ion-item-sliding #eventsSliding *ngFor="let event of events | async; let i = index">
+
+    <ng-container *ngFor="let event of events | async">
+      <ion-card>
+        <ion-card-content color="dark">
+          <div class="date">
+            <h2 class="day" icon-left float-left>
+              <ion-icon ios="ios-calendar-outline" md="md-calendar"></ion-icon>
+              {{event.time | amDateFormat: 'DD/MM/YY'}}
+            </h2>
+            <h2 class="time" icon-left float-left>
+              <ion-icon ios="ios-time-outline" md="md-time"></ion-icon>
+              {{event.time | amDateFormat: 'HH:mm'}}
+            </h2>
+            <div float-right>{{event.disciplines}}</div>
+          </div>
+
+          <p class="where" icon-left>
+            <ion-icon name="ios-map-outline"></ion-icon>
+            {{event.name}}
+          </p>
+        </ion-card-content>
+
+        <ion-row>
+          <ion-col text-right>
+            <button ion-button color="danger" icon-left clear small (click)="deleteEvent(event.$key)">
+              <ion-icon color="dark" name="ios-trash-outline"></ion-icon>
+              <div>Delete</div>
+            </button>
+            <button  ion-button color="brand" icon-left clear small (click)="presentEventModal(event)">
+              <ion-icon color="dark" name="ios-create-outline"></ion-icon>
+              <div>Edit</div>
+            </button>
+          </ion-col>
+        </ion-row>
+
+      </ion-card>
+    </ng-container>
+
+
+
+
+    <!-- <ion-item-sliding #eventsSliding *ngFor="let event of events | async; let i = index">
       <ion-item #eventsItem >
         <ion-buttons icon-only item-start>
           <button ion-button (click)="viewOnMap(event)" icon-only>
@@ -53,8 +98,9 @@
           <ion-icon name="create"></ion-icon>
         </button>
       </ion-item-options>
+    </ion-item-sliding> -->
 
-    </ion-item-sliding>
+
   </ion-list>
 
 </ion-content>

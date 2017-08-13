@@ -6,7 +6,7 @@
       </button>
     </ion-buttons>
 
-    <ion-buttons end>
+    <ion-buttons *ngIf="currentUser && userData" end>
       <button ion-button (click)="presentProfileModal()" >
         <ion-icon name="md-create"></ion-icon>
       </button>
@@ -16,8 +16,8 @@
 </ion-header>
 
 <ion-content fullscreen>
-  <div id="content" *ngIf="currentUser && userData">
-    <div id="profile-info">
+  <div id="content" class="block-content" *ngIf="currentUser && userData">
+    <div id="profile-info" class="block-top" v-height="35">
 
       <div class="profile">
         <ion-spinner *ngIf="!profileImgLoaded"></ion-spinner>
@@ -25,18 +25,18 @@
       </div>
 
 
-        <!-- Show icon of logged in provider -->
-        <h3 id="profile-name">
-          <span>{{displayName}}</span>
-          <ng-container [ngSwitch]="userData.providerId">
-            <ion-icon *ngSwitchCase="'password'" name="md-flame" class="firebase"></ion-icon>
-            <ion-icon *ngSwitchCase="'facebook.com'" name="logo-facebook" class="facebook"></ion-icon>
-            <ion-icon *ngSwitchCase="'google.com'" name="logo-google" class="google"></ion-icon>
-          </ng-container>
-        </h3>
-      </div>
+      <!-- Show icon of logged in provider -->
+      <h3 id="profile-name">
+        <span>{{displayName}}</span>
+        <ng-container [ngSwitch]="userData.providerId">
+          <ion-icon *ngSwitchCase="'password'" name="md-flame" class="firebase"></ion-icon>
+          <ion-icon *ngSwitchCase="'facebook.com'" name="logo-facebook" class="facebook"></ion-icon>
+          <ion-icon *ngSwitchCase="'google.com'" name="logo-google" class="google"></ion-icon>
+        </ng-container>
+      </h3>
+    </div>
 
-      <div class="userData">
+    <div class="userData block-bottom">
 
         <ion-list>
           <ion-item *ngIf="userData.settings.city || userData.settings.country">
@@ -78,5 +78,5 @@
         </ion-list>
       </div><!--userData -->
 
-    </div> <!-- #content -->
-  </ion-content>
+  </div> <!-- #content -->
+</ion-content>

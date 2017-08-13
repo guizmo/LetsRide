@@ -10,19 +10,14 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Search</ion-title>
-    <ion-buttons end>
-      <button ion-button icon-only (click)="toggleSearchbar()" >
-        <ion-icon name="search"></ion-icon>
-      </button>
-    </ion-buttons>
+    <ion-title>Find riders</ion-title>
   </ion-navbar>
 
 
-  <ion-toolbar *ngIf="showSearchbar">
+  <ion-toolbar>
     <ion-searchbar
       (ionInput)="searchUsers($event)"
-      [showCancelButton]="shouldShowCancel"
+      [showCancelButton]=true
       (ionCancel)="onCancel($event)"
       [debounce]="500"
       placeholder="Find a rider"
@@ -32,42 +27,22 @@
 </ion-header>
 
 
-<ion-content padding #searchContent>
-
-  <!-- <ng-container *ngIf="usersList">
-    <h2>test {{usersList.length}}</h2>
-    <ion-list [virtualScroll]="usersList" approxItemHeight="85px">
-      <ion-item *virtualItem="let user; let i=index" *ngIf="is_searching.value" >
-        <ion-avatar item-start>
-          <ion-img *ngIf="user.photoURL" [src]="user.photoURL"></ion-img>
-        </ion-avatar>
-        <h2>{{i}} {{user.settings.displayName}}</h2>
-        <h3 *ngIf="user.settings.country">{{user.settings.country}}</h3>
-        <button
-          *ngIf="!user.buddies || !user.buddies[currentUser.uid]"
-          ion-button clear item-end icon-only
-          (click)="sendFriendRequest(user.$key, user.oneSignalId, user.settings.displayName)" >
-          <ion-icon name="add-circle"></ion-icon>
-        </button>
-      </ion-item>
-    </ion-list>
-  </ng-container> -->
-
+<ion-content #searchContent>
 
   <ion-list>
-    <ng-container *ngFor="let user of usersList; let i=index">
-      <!-- <ion-item *ngIf="is_searching.value && i<limit.value && currentUser && user.aFuid != currentUser.uid "> -->
+    <ng-container *ngFor="let user of usersList | orderBy : ['sortByName']; let i=index">
       <ion-item *ngIf="i<limit.value && currentUser && user.aFuid != currentUser.uid ">
         <ion-avatar item-start>
-          <img *ngIf="user.photoURL" src="{{user.photoURL}}">
+          <img src="{{user.avatar}}">
         </ion-avatar>
-        <h2>{{i}} {{user.settings.displayName}}</h2>
+        <h2>{{user.settings.displayName}}</h2>
         <h3 *ngIf="user.settings.country">{{user.settings.country}}</h3>
         <button
           *ngIf="!user.buddies || !user.buddies[currentUser.uid]"
-          ion-button clear item-end icon-only
+          ion-button clear item-end icon-right
           (click)="sendFriendRequest(user.$key, user.oneSignalId, user.settings.displayName)" >
-          <ion-icon name="add-circle"></ion-icon>
+          Add rider
+          <ion-icon color="dark" name="person-add"></ion-icon>
         </button>
       </ion-item>
     </ng-container>

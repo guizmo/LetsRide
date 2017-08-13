@@ -44,12 +44,12 @@ export class PlacesModalPage {
       let {name ,disciplines ,country ,city ,lat ,lng, image } = values;
       this.place = {name ,disciplines:[disciplines] ,country ,city ,lat ,lng, image };
       this.userId = values.userId;
-
       this.image = this.capture.pathForImage('letsride/'+this.userId+'/'+values.image);
 
     }else{
       this.place = {name:'',disciplines:'',country:'',city:'',image:'',lat:null,lng:null};
     }
+
     this.placeForm = formBuilder.group(this.place);
   }
 
@@ -84,7 +84,6 @@ export class PlacesModalPage {
     let actionSheet = this.capture.presentActionSheet();
     actionSheet.present();
     actionSheet.onDidDismiss(() => {
-      console.log('onDidDismiss');
       this.capture.imageName.subscribe(
         (image) => {
           console.log('setImage res', image);
@@ -92,12 +91,10 @@ export class PlacesModalPage {
         },
         (err) => {
           console.log(err);
-        },
-        () => console.log('finished')
+        }
       )
 
     });
-    console.log(this.capture);
   }
 
   placeFormSubmit(){

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { BuddiesPage } from './buddies';
+import { PipesModule } from '../../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -8,6 +9,7 @@ import { BuddiesPage } from './buddies';
   ],
   imports: [
     IonicPageModule.forChild(BuddiesPage),
+    PipesModule
   ],
   exports: [
     BuddiesPage

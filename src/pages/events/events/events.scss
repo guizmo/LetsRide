@@ -1,3 +1,27 @@
 page-events {
+  .spinner{
+    position: absolute;
+    top: 10vh;
+    //bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+  ion-card-content{
+
+    ion-icon{
+      color: $brand;
+    }
+
+    .date{
+      overflow: hidden;
+      h2{
+        margin-bottom: 1.5rem !important;
+        color: #444;
+        font-weight: 600 !important;
+        margin-right: 3rem !important;
+      }
+    }
+  }
 
 }

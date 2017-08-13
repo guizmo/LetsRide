@@ -46,21 +46,18 @@ export class CaptureProvider {
           text: 'Select from library',
           handler: () => {
             this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY);
-            //imageName.next('PHOTOLIBRARY');
           }
         },
         {
           text: 'Use Camera',
           handler: () => {
             this.takePicture(this.camera.PictureSourceType.CAMERA);
-            //imageName.next('CAMERA');
           }
         },
         {
           text: 'Cancel',
           role: 'cancel',
           handler: () => {
-            console.log('Cancel clicked');
             this.imageName.next('CANCEL');
             this.imageName.complete();
           }
@@ -116,19 +113,14 @@ export class CaptureProvider {
   private checkCustomDir(namePath, currentName, newFileName) {
     let customDir = 'letsride/' + this.userKey;
     let dest = cordova.file.dataDirectory + customDir;
-    console.log('places', dest);
     this.file.checkDir(this.file.dataDirectory, customDir).then( _ => {
-      console.log('Directory exists')
       this.copyFileToCustomDir(namePath, currentName, dest, newFileName);
     })
     .catch(err => {
-      console.log('Directory doesnt exist');
       this.imageName.next('Directory doesnt exist');
       this.file.createDir(this.file.dataDirectory, customDir, false).then( dir => {
-        console.log(dir);
         this.copyFileToCustomDir(namePath, currentName, dest, newFileName);
       }).catch(err => {
-        console.log(err);
         this.imageName.next('ERROR: createDir');
         this.imageName.complete();
       });
@@ -159,14 +151,11 @@ export class CaptureProvider {
 
   private createLetsrideDir(){
     this.file.checkDir(this.file.dataDirectory, 'letsride').then( _ => {
-      console.log('letsride Directory exists')
     })
     .catch(err => {
-      console.log('letsride Directory doesnt exist');
       this.file.createDir(this.file.dataDirectory, 'letsride', false).then( dir => {
-        console.log('letsride Directory is created');
       }).catch(err => {
-        console.log('letsride Directory creation error', err);
+        console.log(err);
       });
     });
 
