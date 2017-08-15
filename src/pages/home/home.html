@@ -7,11 +7,11 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content no-bounce>
 
-  <div #blockTop ion-fixed f-width>
-    <div class="block-top">
-      <div class="ripple" v-height="30">
+  <div class="block-content">
+    <div class="block-top" [class.hasResults]="peopleAround.length && !searching">
+      <div class="ripple" v-height="35">
         <ion-fab center middle edge>
           <button color="brand" ion-fab [disabled]="searching" (click)="findPeopleAround()">
             <ion-icon name="search"></ion-icon>
@@ -41,14 +41,10 @@
       </ion-list>
 
     </div>
-  </div><!-- ion-fixed -->
-
-  <div class="block-content" [style.paddingTop]="blockTopHeight">
 
     <div class="block-bottom" vertical-center *ngIf="!peopleAround.length" padding>
       <div class="text-wrapper" *ngIf="!searchState" f-width>
-        <h1>Riding is better with friends !</h1>
-        <h3>Hit the search <ion-icon color="brand" name="search"></ion-icon> button to see who's nearby !</h3><br><br>
+        <h4>Riding is better with friends&nbsp;! <br>Hit the search <ion-icon color="brand" name="search"></ion-icon> button to see who's nearby !</h4>
       </div>
       <div class="text-wrapper" *ngIf="searchState" f-width>
         <h3>There isn't anybody in this search perimeter</h3><br><br>

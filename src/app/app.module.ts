@@ -50,7 +50,8 @@ import {
   BuddiesProvider,
   FileProvider,
   CaptureProvider,
-  FacebookProvider
+  FacebookProvider,
+  PeopleProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -165,6 +166,7 @@ export function provideSettings(storage: Storage) {
     FilePath,
     CaptureProvider,
     FacebookProvider,
+    PeopleProvider
   ]
 })
 export class AppModule {}

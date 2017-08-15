@@ -127,3 +127,20 @@ $tabs-border-color: $toolbar-border-color;
 $tabs-ios-border-color: $tabs-border-color;
 $tabs-ios-tab-color-inactive: #fff;
 $tabs-ios-tab-color-active: #fff;
+
+// GRID
+// --------------------------------------------------
+$grid-breakpoints: (
+  xs: 0,
+  sm: 370px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px
+);
+
+$grid-max-widths: (
+  sm: 350px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px
+);

@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { NativePageTransitions, NativeTransitionOptions } from '@ionic-native/native-page-transitions';
@@ -14,7 +14,6 @@ import { UserProvider, LocationTrackerProvider, NotificationsProvider} from '../
   templateUrl: 'home.html'
 })
 export class MainPage {
-  @ViewChild('blockTop') blockTopContainerEl: ElementRef;
 
   private items: FirebaseListObservable<any[]>;
   private state: any;
@@ -23,7 +22,6 @@ export class MainPage {
   public peopleAround: any = [];
   public userSettings: any;
   public searching: boolean = false;
-  private blockTopHeight: string = '0px';
   private search: any = {
     radius: 5,
     friends: false
@@ -55,7 +53,6 @@ export class MainPage {
   }
 
   ionViewDidLoad(){
-    this.blockTopHeight = this.blockTopContainerEl.nativeElement.offsetHeight + 'px';
   }
 
   onToggleEnabled() {

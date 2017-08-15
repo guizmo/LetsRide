@@ -32,25 +32,25 @@
   <ion-list #eventsList>
     <ion-card *ngFor="let event of eventsListing">
       <ion-row>
-        <ion-col class="cover-img" col-4 no-padding>
+        <ion-col class="cover-img" col-12 col-sm-4 no-padding>
           <div *ngIf="event.backgroundImage" f-height f-width class="cover-style" [style.backgroundImage]="'url(' + event.backgroundImage + ')'"></div>
 
         </ion-col>
 
-        <ion-col col-8>
-          <ion-card-header>
-            <h1 text-wrap>{{event.name}}</h1>
-          </ion-card-header>
+        <ion-col col-sm-8 col-12 no-padding>
           <ion-card-content color="dark">
+            <ion-card-title>
+              {{event.name}}
+            </ion-card-title>
             <div class="date">
-              <h2 class="day" icon-left float-left>
+              <h3 class="day" icon-left float-left>
                 <ion-icon ios="ios-calendar-outline" md="md-calendar"></ion-icon>
                 {{event.time | amDateFormat: 'DD/MM/YY'}}
-              </h2>
-              <h2 class="time" icon-left float-left>
+              </h3>
+              <h3 class="time" icon-left float-left>
                 <ion-icon ios="ios-time-outline" md="md-time"></ion-icon>
                 {{event.time | amDateFormat: 'HH:mm'}}
-              </h2>
+              </h3>
 
             </div>
 

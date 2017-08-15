@@ -14,6 +14,7 @@ page-events {
   }
   .cover-img{
     background-color: #f9f9f9;
+    min-height: 15vh;
   }
   ion-card-content{
 
@@ -23,11 +24,11 @@ page-events {
 
     .date{
       overflow: hidden;
-      h2{
-        margin-bottom: 1.5rem !important;
-        color: #444;
-        font-weight: 600 !important;
-      }
+      // h2{
+      //   margin-bottom: 1.5rem !important;
+      //   color: #444;
+      //   font-weight: 600 !important;
+      // }
       .day{
         margin-right: 2rem !important;
       }

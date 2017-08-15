@@ -23,7 +23,6 @@ export class OrderByPipe implements PipeTransform {
   }
 
   transform(input:any, [config = '+']): any{
-    console.log(input);
 
       if(!Array.isArray(input)) return input;
 

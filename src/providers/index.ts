@@ -15,3 +15,4 @@ export { BuddiesProvider } from './buddies';
 export { FileProvider } from './file';
 export { CaptureProvider } from './capture';
 export { FacebookProvider } from './facebook';
+export { PeopleProvider } from './people';

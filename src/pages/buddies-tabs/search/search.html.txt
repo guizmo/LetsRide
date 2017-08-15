@@ -19,7 +19,7 @@
       (ionInput)="search($event)"
       [showCancelButton]=true
       (ionCancel)="onCancel($event)"
-      [debounce]="300"
+      [debounce]="500"
       placeholder="Find a rider"
       #searchInput>
     </ion-searchbar>
@@ -27,7 +27,26 @@
 </ion-header>
 
 
-<ion-content>
+<ion-content #searchContent>
+
+  <!-- <ion-list>
+    <ng-container *ngFor="let user of usersList | orderBy : ['sortByName']; let i=index">
+      <ion-item *ngIf="i<limit.value && currentUser && user.aFuid != currentUser.uid ">
+        <ion-avatar item-start>
+          <img src="{{user.avatar}}">
+        </ion-avatar>
+        <h2>{{user.settings.displayName}}</h2>
+        <h3 *ngIf="user.settings.country">{{user.settings.country}}</h3>
+        <button
+          *ngIf="!user.buddies || !user.buddies[currentUser.uid]"
+          ion-button clear item-end icon-right
+          (click)="sendFriendRequest(user.$key, user.oneSignalId, user.settings.displayName)" >
+          Add rider
+          <ion-icon color="dark" name="person-add"></ion-icon>
+        </button>
+      </ion-item>
+    </ng-container>
+  </ion-list> -->
   <ion-list>
     <ng-container *ngFor="let person of people">
       <ion-item>
@@ -47,5 +66,8 @@
     </ng-container>
   </ion-list>
 
+  <ion-infinite-scroll (ionInfinite)="scrolled($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 
 </ion-content>
