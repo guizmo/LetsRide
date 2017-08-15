@@ -21,6 +21,7 @@ export class LocationTrackerProvider {
   public lng: number = 0;
   public tracker: FirebaseObjectObservable<any>;
   public trackers: FirebaseListObservable<any>;
+  public trackerSubsciption;
 
 
   constructor(
@@ -98,18 +99,22 @@ export class LocationTrackerProvider {
       this.geolocation.getCurrentPosition().then((position) => {
         settings.lat = position.coords.latitude;
         settings.lng = position.coords.longitude;
+        let distanceMax = parseFloat(settings.distanceMax);
+        let userLocation = {
+          lat: settings.lat,
+          lng: settings.lng
+        };
 
-        console.log(position);
+        console.log(position, distanceMax);
 
-        this.trackers.subscribe(data => {
+        this.trackerSubsciption = this.trackers.subscribe(data => {
           if(data){
-
+            let key_distance_obj = {};
             let _trackers = data.filter( _tracker => _tracker.$key !== settings.uid);
-            let peopleAround = this.applyHaversine(_trackers);
-            peopleAround = peopleAround.filter( location => location.distance < settings.distanceMax)
-            peopleAround = peopleAround.sort((locationA, locationB) => {
-              return locationA.distance - locationB.distance;
-            });
+            let peopleAround = this.applyHaversine(_trackers, userLocation);
+            peopleAround = peopleAround.filter( location => location.distance < distanceMax);
+            peopleAround = peopleAround.sort((locationA, locationB) => locationA.distance - locationB.distance );
+            peopleAround.map( (obj) => key_distance_obj[obj.$key] = obj.distance );
 
             let buddiesRequest = [];
             for(let persone of peopleAround){
@@ -119,18 +124,23 @@ export class LocationTrackerProvider {
             Observable.forkJoin(buddiesRequest).subscribe((snapshots) => {
               if(snapshots){
                 let snapshotsMaped:any = snapshots.map( (snap:any) => snap.val() );
-                console.log('snapshots', snapshotsMaped)
                 for (let snapshot of snapshotsMaped) {
-                  let buddy = {
-                    displayName: snapshot.settings.displayName,
-                    photoURL: snapshot.photoURL,
-                    aFuid: snapshot.aFuid,
-                    oneSignalId: snapshot.oneSignalId
+                  if(snapshot){
+                    let profileImg = (snapshot.profileImg && snapshot.profileImg.url) ? snapshot.profileImg.url : null;
+                    let buddy = {
+                      displayName: snapshot.settings.displayName,
+                      aFuid: snapshot.aFuid,
+                      oneSignalId: snapshot.oneSignalId || null,
+                      buddies: snapshot.buddies || null,
+                      photoURL: snapshot.photoURL || profileImg || null,
+                      distance: key_distance_obj[snapshot.aFuid]
+                    }
+                    buddies.push(buddy);
                   }
-                  buddies.push(buddy);
                 }
 
                 resolve(buddies);
+                this.trackerSubsciption.unsubscribe();
               }else{
                 resolve([]);
               }
@@ -153,18 +163,14 @@ export class LocationTrackerProvider {
 
 
 
-  applyHaversine(locations){
-    let usersLocation = {
-      lat: -22.2490039,
-      lng: 166.4764235
-    };
+  applyHaversine(locations, userLocation){
     locations.map((location) => {
       let placeLocation = {
         lat: location.lat,
         lng: location.lng
       };
       location.distance = this.getDistanceBetweenPoints(
-        usersLocation,
+        userLocation,
         placeLocation,
         'km'
       ).toFixed(2);

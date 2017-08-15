@@ -6,7 +6,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { MomentModule } from 'angular2-moment';
 import * as moment  from 'moment';
 
-import { UserProvider, NotificationsProvider} from '../../../providers';
+import { UserProvider, NotificationsProvider, DisciplinesProvider} from '../../../providers';
 
 //https://forum.ionicframework.com/t/click-to-slide-open-ion-item-sliding-instead-of-swiping/54642/5
 //http://blog.ihsanberahim.com/2017/05/trigger-ionitemsliding-using-click-event.html
@@ -28,9 +28,12 @@ export class EventsPage {
   public eventModal;
   public events:FirebaseListObservable<any[]>;
   public buddies:FirebaseListObservable<any[]>;
-  public oneSignalBuddiesId: any = [] ;
+  public oneSignalBuddiesId: any = [];
+  public eventsListing: any = [];
+  private disciplines:ReadonlyArray<any>;
 
   constructor(
+    public disciplinesProvider: DisciplinesProvider,
     public navCtrl: NavController,
     public navParams: NavParams,
     private afdb: AngularFireDatabase,
@@ -41,6 +44,9 @@ export class EventsPage {
     private popoverCtrl: PopoverController
   ) {
     moment.locale('en-gb');
+    this.disciplinesProvider.findAll().subscribe(
+      data => this.disciplines = data
+    );
     this.afAuth.authState.subscribe((user) => {
       if(user){
         this.currentUser = user.toJSON();
@@ -48,7 +54,26 @@ export class EventsPage {
           query: {
             orderByChild: 'time'
           }
+        })
+
+        this.events.map((events) => {
+          return events.map((event) => {
+            let style = 'default.png';
+            if(event.disciplines){
+              style = this.getRidingStyle(event.disciplines)+'.jpg';
+            }
+            event.backgroundImage = `./assets/img/styles/${style}`;
+            return event;
+          });
+        }).subscribe((events) => {
+          if(events){
+            console.log(events);
+            console.log(typeof(events));
+            this.eventsListing = events;
+          }
         });
+
+
         this.userProvider.userData.subscribe((settings) => {
           if(settings){
             this.userData = settings;
@@ -163,7 +188,6 @@ export class EventsPage {
     this.buddies.subscribe(
       _buddies => {
         if(_buddies){
-          console.log(_buddies);
           this.oneSignalBuddiesId = _buddies.map(buddie => buddie.oneSignalId);
         }
       },
@@ -200,6 +224,14 @@ export class EventsPage {
           console.log('message sent');
         }
       })
+  }
+
+  getRidingStyle(value: string){
+    // for (let discipline of this.disciplines) {
+    //   let _disciplines = (value == '') ? [] : values.disciplines ;
+    // }
+    let discipline = this.disciplines.filter( disciplineVal => disciplineVal.name == value )[0];
+    return discipline.alias;
   }
 
 }

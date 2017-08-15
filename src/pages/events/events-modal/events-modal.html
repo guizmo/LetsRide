@@ -24,14 +24,20 @@
     <ion-list>
       <!-- NAME -->
       <ion-item>
-        <ion-label>Where</ion-label>
-        <ion-input placeholder="Where" type="text" formControlName="name" name="name"></ion-input>
+        <ion-label>Name</ion-label>
+        <ion-input type="text" formControlName="name" name="name"></ion-input>
       </ion-item>
 
       <!-- TIME -->
       <ion-item>
         <ion-label>When</ion-label>
         <ion-datetime displayFormat="DD/MMM/YY HH:mm" min="{{currentYear}}" max="{{maxYear}}" pickerFormat="D MMM YYYY H mm" formControlName="time" name="time"></ion-datetime>
+      </ion-item>
+
+      <!-- WHERE -->
+      <ion-item>
+        <ion-label>Where</ion-label>
+        <ion-input type="text" formControlName="where" name="where"></ion-input>
       </ion-item>
 
       <!-- DISCIPLINE -->

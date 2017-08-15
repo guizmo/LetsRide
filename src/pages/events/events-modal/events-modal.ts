@@ -31,7 +31,7 @@ export class EventsModalPage {
       name: '',
       time: this.currentDate,
       disciplines: '',
-      //country: '',
+      where: '',
       //city: '',
       // coords: formBuilder.group({
       //   lat: '',
@@ -59,21 +59,6 @@ export class EventsModalPage {
     } else {
       this.dismiss(this.eventForm.value);
     }
-  }
-
-  addEvent(){
-    let data = {
-      time: 'bar',
-      coords: {
-        lat: -122,
-        lng: 166
-      },
-      country: 'New caledonia',
-      city: 'Nouméa',
-      type: 'fooBar',
-      name: 'Tina'
-    }
-    this.dismiss({state: 'update', data: data});
   }
 
   cancel(){

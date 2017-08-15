@@ -7,6 +7,14 @@ page-events {
     right: 0;
     margin: auto;
   }
+  .cover-style{
+    background-size: cover;
+    background-position: center center;
+    position: absolute;
+  }
+  .cover-img{
+    background-color: #f9f9f9;
+  }
   ion-card-content{
 
     ion-icon{
@@ -19,7 +27,9 @@ page-events {
         margin-bottom: 1.5rem !important;
         color: #444;
         font-weight: 600 !important;
-        margin-right: 3rem !important;
+      }
+      .day{
+        margin-right: 2rem !important;
       }
     }
   }

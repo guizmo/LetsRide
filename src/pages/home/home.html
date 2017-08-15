@@ -3,28 +3,84 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Home</ion-title>
-    <ion-buttons end>
-      <ion-toggle [(ngModel)]="state.enabled" (ionChange)="onToggleEnabled()" color="secondary" style="display:block;"></ion-toggle>
-    </ion-buttons>
+    <ion-title>Let's Ride</ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
 
-  <h4>Current Latitude: {{locationTracker.lat}}</h4>
-  <h4>Current Longitude: {{locationTracker.lng}}</h4>
-  <button ion-button full primary (click)="findPeopleAround()">Get riders around</button>
-  <button ion-button full primary (click)="fakeCloseBywithRedirect()">fakeCloseBywithRedirect</button>
+  <div #blockTop ion-fixed f-width>
+    <div class="block-top">
+      <div class="ripple" v-height="30">
+        <ion-fab center middle edge>
+          <button color="brand" ion-fab [disabled]="searching" (click)="findPeopleAround()">
+            <ion-icon name="search"></ion-icon>
+          </button>
+        </ion-fab>
+        <img [hidden]="!searching" src="./assets/img/ripple.svg" alt="">
+      </div>
+      <ion-list no-margin>
+        <ion-list-header>
+          Geolocation search settings
+        </ion-list-header>
+        <ion-item>
+          <ion-label>Maximum distance</ion-label>
+          <ion-select [(ngModel)]="search.radius" interface="action-sheet">
+            <ion-option value="5">5 km</ion-option>
+            <ion-option value="10">10 km</ion-option>
+            <ion-option value="15">15 km</ion-option>
+            <ion-option value="20">20 km</ion-option>
+            <ion-option value="25">25 km</ion-option>
+            <ion-option value="30">30 km</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label>Friends only</ion-label>
+          <ion-checkbox color="brand" [(ngModel)]="search.friends" checked="search.friends"></ion-checkbox>
+        </ion-item>
+      </ion-list>
 
-  <ion-list>
-    <ion-item *ngFor="let people of peopleAround; let i = index" (click)="sendMessageCloseBy(i)">
-      <ion-avatar item-start>
-        <img *ngIf="!people.photoURL" src="./assets/img/man.svg" />
-        <img *ngIf="people.photoURL" [src]="people.photoURL" />
-      </ion-avatar>
-      <h2>{{people.displayName}}</h2>
-    </ion-item>
-  </ion-list>
+    </div>
+  </div><!-- ion-fixed -->
 
+  <div class="block-content" [style.paddingTop]="blockTopHeight">
+
+    <div class="block-bottom" vertical-center *ngIf="!peopleAround.length" padding>
+      <div class="text-wrapper" *ngIf="!searchState" f-width>
+        <h1>Riding is better with friends !</h1>
+        <h3>Hit the search <ion-icon color="brand" name="search"></ion-icon> button to see who's nearby !</h3><br><br>
+      </div>
+      <div class="text-wrapper" *ngIf="searchState" f-width>
+        <h3>There isn't anybody in this search perimeter</h3><br><br>
+      </div>
+    </div>
+
+    <div class="block-bottom" *ngIf="peopleAround.length" >
+      <ion-list no-margin>
+        <ion-list-header>
+          Results
+        </ion-list-header>
+        <ion-item *ngFor="let people of peopleAround; let i = index">
+          <ion-avatar item-start>
+            <img *ngIf="!people.photoURL" src="./assets/img/man.svg" />
+            <img *ngIf="people.photoURL" [src]="people.photoURL" />
+          </ion-avatar>
+          <h2>{{people.displayName}}</h2>
+          <p>{{people.distance}} km</p>
+          <button item-end ion-button color="brand" icon-right (click)="sendMessageCloseBy(i)">
+            Notify <ion-icon name="send" ></ion-icon>
+          </button>
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-title>Start discovery mode</ion-title>
+    <ion-buttons end>
+      <ion-toggle [(ngModel)]="state.enabled" (ionChange)="onToggleEnabled()" color="secondary" style="display:block;"></ion-toggle>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

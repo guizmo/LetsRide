@@ -26,7 +26,7 @@
         <img *ngIf="place.image && pathForImage(place.image)" [src]="pathForImage(place.image)">
         <img *ngIf="!place.image || !pathForImage(place.image)" src="assets/img/background/advance-card-map-madison.png">
         <ion-fab right top #fab>
-          <button ion-fab mini><ion-icon name="ios-add"></ion-icon></button>
+          <button color="brand_dark" ion-fab mini><ion-icon name="ios-add"></ion-icon></button>
           <ion-fab-list side="left">
             <button ion-fab color="primary" (click)="presentModal('update', place.$key, fab)">
               <ion-icon name="md-create"></ion-icon>

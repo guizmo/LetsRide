@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { NativePageTransitions, NativeTransitionOptions } from '@ionic-native/native-page-transitions';
@@ -14,13 +14,20 @@ import { UserProvider, LocationTrackerProvider, NotificationsProvider} from '../
   templateUrl: 'home.html'
 })
 export class MainPage {
+  @ViewChild('blockTop') blockTopContainerEl: ElementRef;
+
   private items: FirebaseListObservable<any[]>;
-  public state: any;
+  private state: any;
+  private searchState: boolean = false;
   public currentUser: any;
   public peopleAround: any = [];
   public userSettings: any;
-
-
+  public searching: boolean = false;
+  private blockTopHeight: string = '0px';
+  private search: any = {
+    radius: 5,
+    friends: false
+  };
 
   constructor(
     private navCtrl: NavController,
@@ -45,10 +52,10 @@ export class MainPage {
         this.userProvider.userData.subscribe((settings) => this.userSettings = settings);
       }
     });
+  }
 
-
-
-
+  ionViewDidLoad(){
+    this.blockTopHeight = this.blockTopContainerEl.nativeElement.offsetHeight + 'px';
   }
 
   onToggleEnabled() {
@@ -60,17 +67,59 @@ export class MainPage {
   }
 
   findPeopleAround(){
+
+    this.searching = true;
+    let _peopleAround;
+    let subscribtion_is_done = false;
+    let timer_is_done = false;
+    let that = this;
+
+    console.log(this.search);
+
+    //Let time for animation before resolving data
+    setTimeout(function(){
+      timer_is_done = true;
+      if(subscribtion_is_done){
+        that.searching = false;
+        that.searchState = true;
+        that.peopleAround = _peopleAround;
+      }
+    },3000);
+
     this.locationTracker.findPeopleAround({
         uid: this.currentUser.uid,
-        distanceMax: 5,
+        distanceMax: this.search.radius,
       })
       .then((res) => {
-        console.log(res);
-        this.peopleAround = res;
+        subscribtion_is_done = true;
+
+        if(this.search.friends){
+          res = this.filterByBuddies(res);
+        }
+
+        if(timer_is_done){
+          this.searching = false;
+          this.peopleAround = res;
+          this.searchState = true;
+        }else{
+          _peopleAround = res;
+        }
       })
       .catch((err) => {
         console.error(err);
       })
+  }
+  filterByBuddies(users){
+
+    return users.filter((_user) => {
+      if(_user.buddies){
+        return Object.keys(_user.buddies).filter((key, index) => {
+          return this.currentUser.uid == key;
+        })
+      }else{
+        return false;
+      }
+    })
   }
 
   stop(){

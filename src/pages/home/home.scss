@@ -1,3 +1,36 @@
 page-home {
+  .ripple{
+    background: url('../assets/img/map.png') center center ;
+    background-size: cover;
+    position: relative;
+    width: 100%;
+    //height: 100%;
+    overflow: hidden;
+    border-bottom: 1px solid #cfd8d9;
+
+    img{
+      margin: auto;
+      width: 80%;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
+  }
+  .block-top{
+    ion-list{
+      background: $content_back;
+    }
+  }
+  .block-bottom{
+    //background-color: #fff;
+  }
+
+  .text-wrapper{
+    color: #bfbfbf;
+  }
+
+
 
 }
