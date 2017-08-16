@@ -1,5 +1,5 @@
 .ion-page {
-  background: $page_back;
+  //background: $page_back;
   & > ion-content {
     background: transparent;
   }
@@ -52,13 +52,20 @@ ion-modal.inset-modal {
 [f-height]{ height: 100%; }
 [f-width]{ width: 100%; }
 
-[v-height="30"]{ height: 30vh; }
-[v-height="70"]{ height: 70vh; }
-[v-height="35"]{ height: 35vh; }
-[v-height="65"]{ height: 65vh; }
-[v-height="40"]{ height: 40vh; }
-[v-height="60"]{ height: 60vh; }
+@for $i from 1 through 20 {
+  $height: $i*5;
+    [v-height="#{$height}"]{
+      height: #{$height}vh;
+    }
+}
 
+[no-shadow]{
+  box-shadow: none !important;
+}
+
+[no-radius]{
+  border-radius: 0 !important;
+}
 
 
 // BLOCKS
@@ -67,7 +74,7 @@ ion-modal.inset-modal {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  
+
   .block-bottom{
     flex-grow: 1;
   }

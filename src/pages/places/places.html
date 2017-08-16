@@ -20,32 +20,38 @@
 
 
 <ion-content>
-  <ion-list>
-    <ng-container *ngFor="let place of places" >
-      <ion-card>
-        <img *ngIf="place.image && pathForImage(place.image)" [src]="pathForImage(place.image)">
-        <img *ngIf="!place.image || !pathForImage(place.image)" src="assets/img/background/advance-card-map-madison.png">
-        <ion-fab right top #fab>
-          <button color="brand_dark" ion-fab mini><ion-icon name="ios-add"></ion-icon></button>
-          <ion-fab-list side="left">
-            <button ion-fab color="primary" (click)="presentModal('update', place.$key, fab)">
-              <ion-icon name="md-create"></ion-icon>
-            </button>
-            <button ion-fab color="danger" (click)="delete(place.$key, fab)">
-              <ion-icon name="md-trash"></ion-icon>
-            </button>
-          </ion-fab-list>
-        </ion-fab>
+  <!-- <ion-list no-margin> -->
+    <ng-container *ngFor="let place of places; let last = last" >
+      <ion-card no-margin f-width margin-bottom no-shadow no-radius [class.last-item]="last">
+        <div class="img-holder">
+          <div *ngIf="place.image && pathForImage(place.image)" class="img-wrapper" v-height="20" [style.backgroundImage]="'url(' + pathForImage(place.image) + ')'">
+            <!-- <img *ngIf="place.image && pathForImage(place.image)" [src]="pathForImage(place.image)"> -->
+          </div>
+          <div *ngIf="!place.image || !pathForImage(place.image)" class="img-wrapper" v-height="25" [style.backgroundImage]="'url(assets/img/background/advance-card-map-madison.png)'">
+            <!-- <img *ngIf="!place.image || !pathForImage(place.image)" src="assets/img/background/advance-card-map-madison.png"> -->
+          </div>
+          <ion-fab right bottom edge #fab>
+            <button class="open-edits" color="brand" ion-fab mini><ion-icon name="ios-add"></ion-icon></button>
+            <ion-fab-list side="left">
+              <button ion-fab color="brand_dark" (click)="presentModal('update', place.$key, fab)">
+                <ion-icon name="md-create"></ion-icon>
+              </button>
+              <button ion-fab color="danger" (click)="delete(place.$key, fab)">
+                <ion-icon name="md-trash"></ion-icon>
+              </button>
+            </ion-fab-list>
+          </ion-fab>
+        </div>
 
         <ion-item>
           <ion-icon name="pin" color="brand" item-start large></ion-icon>
-          <h2>{{place.name}}</h2>
+          <h2 text-wrap>{{place.name}}</h2>
           <p>{{place.city}} <span *ngIf="place.city && place.country">-</span> {{place.country}}</p>
         </ion-item>
 
       </ion-card>
     </ng-container>
-  </ion-list>
+  <!-- </ion-list> -->
 
   <!-- <ion-list>
     <ion-item-sliding *ngFor="let place of places" >

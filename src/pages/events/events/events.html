@@ -29,8 +29,8 @@
 
 <ion-content >
   <ion-spinner *ngIf="!eventsListing.length"></ion-spinner>
-  <ion-list #eventsList>
-    <ion-card *ngFor="let event of eventsListing">
+  <ng-container *ngFor="let event of eventsListing; let last = last" >
+    <ion-card no-margin f-width margin-bottom no-radius no-shadow [class.last-item]="last">
       <ion-row>
         <ion-col class="cover-img" col-12 col-sm-4 no-padding>
           <div *ngIf="event.backgroundImage" f-height f-width class="cover-style" [style.backgroundImage]="'url(' + event.backgroundImage + ')'"></div>
@@ -107,6 +107,6 @@
     </ion-item-sliding> -->
 
 
-  </ion-list>
+  </ng-container>
 
 </ion-content>

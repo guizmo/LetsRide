@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, ToastController } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { IonicPage, NavController, ToastController, Slides } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 
 
@@ -13,12 +13,20 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: 'login.html'
 })
 export class LoginPage {
-  // The account fields for the login form.
-  // If you're using the username field with or without email, make
-  // sure to add it to the type
+  @ViewChild(Slides) slides: Slides;
 
+  currentIndex:number = 0;
+  pushPage:any;
+  slideState: string = null;
+  slideOptions = {
+    pager: false,
+    speed: 500,
+    zoom: false,
+    centeredSlides:false,
+    direction: 'horizontal',
+    effect:'slide'
+  }
 
-  pushPage: any;
   public signInForm: FormGroup;
 
   // Our translated text strings
@@ -46,6 +54,22 @@ export class LoginPage {
 
   }
 
+  slideTo(index) {
+    if (!this.slideState) {
+      this.slides.lockSwipes(false);
+      this.slides.slideTo(index);
+      this.slideState = 'moving';
+      this.slides.lockSwipes(true);
+    }
+  }
+
+  slideChanged(){
+    this.slideState = null;
+    this.currentIndex = this.slides.getActiveIndex();
+  }
+  ionViewDidLoad(){
+    this.slides.lockSwipes(true);
+  }
 
   signInWithProvider(provider:string) {
     this.userProvider.signInWithProvider(provider)

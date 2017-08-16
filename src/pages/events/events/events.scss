@@ -16,6 +16,12 @@ page-events {
     background-color: #f9f9f9;
     min-height: 15vh;
   }
+  ion-card{
+    border-bottom: 1px solid #ddd;
+    &.last-item{
+      margin-bottom: 0 !important;
+    }
+  }
   ion-card-content{
 
     ion-icon{

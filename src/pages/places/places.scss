@@ -1,5 +1,33 @@
 page-places {
   ion-card{
+    border-bottom: 1px solid #ddd;
     position: relative;
+    &.last-item{
+      margin-bottom: 0 !important;
+    }
+
+    ion-label{
+        padding-right: 40px !important;
+
+    }
+  }
+
+  .img-holder{
+    position: relative;
+  }
+  .img-wrapper{
+    background-size: cover;
+    background-position: center center;
+  }
+  ion-fab{
+    button[ion-fab]{
+      border: 3px solid #fff;
+      box-shadow: none;
+    }
+  }
+  .open-edits{
+    .fab-close-icon{
+      top: -3px;
+    }
   }
 }

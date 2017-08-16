@@ -1,2 +1,17 @@
 page-login {
+  .scroll-content{
+    padding-bottom: 0 !important;
+  }
+  .block-top{
+    img{
+      display: block;
+      margin: auto;
+    }
+  }
+  ion-slide{
+    background-color: $content_back;
+    &.slide-2{
+      align-items: flex-start !important;
+    }
+  }
 }
