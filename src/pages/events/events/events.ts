@@ -1,5 +1,5 @@
 import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController, PopoverController, ItemSliding, Item } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, AlertController, PopoverController, ItemSliding, Item } from 'ionic-angular';
 
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -31,6 +31,8 @@ export class EventsPage {
   public oneSignalBuddiesId: any = [];
   public eventsListing: any = [];
   private disciplines:ReadonlyArray<any>;
+  private showSpinner:boolean = true;
+  private showNoResult:boolean = false;
 
   constructor(
     public disciplinesProvider: DisciplinesProvider,
@@ -41,6 +43,7 @@ export class EventsPage {
     private notifications: NotificationsProvider,
     private afAuth: AngularFireAuth,
     private modalCtrl: ModalController,
+    private alertCtrl: AlertController,
     private popoverCtrl: PopoverController
   ) {
     moment.locale('en-gb');
@@ -57,19 +60,28 @@ export class EventsPage {
         })
 
         this.events.map((events) => {
-          return events.map((event) => {
-            let style = 'default.png';
-            if(event.disciplines){
-              style = this.getRidingStyle(event.disciplines)+'.jpg';
-            }
-            event.backgroundImage = `./assets/img/styles/${style}`;
-            return event;
-          });
+          let now = moment();
+          return events
+            .filter((event) => {
+              let eventTime = moment(event.time);
+              return (eventTime.diff(now) >= 0);
+            })
+            .map((event) => {
+
+              let style = 'default.png';
+              if(event.disciplines){
+                style = this.getRidingStyle(event.disciplines)+'.jpg';
+              }
+              event.backgroundImage = `./assets/img/styles/${style}`;
+              return event;
+            });
         }).subscribe((events) => {
           if(events){
-            console.log(events);
-            console.log(typeof(events));
             this.eventsListing = events;
+            this.showSpinner = false;
+
+            this.showNoResult = (events.length < 1) ? true : false ;
+
           }
         });
 
@@ -148,7 +160,23 @@ export class EventsPage {
   }
 
   deleteEvent(key){
-    this.events.remove(key);
+
+    let confirm = this.alertCtrl.create({
+      title: 'Deleting !',
+      message: 'You are going to permanently delete this event !',
+      buttons: [
+        {
+          text: 'Cancel'
+        },
+        {
+          text: 'Delete',
+          handler: () => {
+            this.events.remove(key);
+          }
+        }
+      ]
+    });
+    confirm.present();
   }
 
 
@@ -227,9 +255,6 @@ export class EventsPage {
   }
 
   getRidingStyle(value: string){
-    // for (let discipline of this.disciplines) {
-    //   let _disciplines = (value == '') ? [] : values.disciplines ;
-    // }
     let discipline = this.disciplines.filter( disciplineVal => disciplineVal.name == value )[0];
     return discipline.alias;
   }

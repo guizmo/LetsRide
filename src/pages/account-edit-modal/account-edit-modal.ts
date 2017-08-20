@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup, FormControl, ValidationErrors } from '@angular/forms';
 
 import { CustomValidators } from 'ng2-validation';
-import { LoadingProvider } from '../../providers';
+import { EmailValidator } from '../../validators/email';
+
+import { LoadingProvider, AlertProvider } from '../../providers';
 
 /**
  * Generated class for the AccountEditModalPage page.
@@ -26,7 +28,8 @@ export class AccountEditModalPage {
     public navParams: NavParams,
     private formBuilder: FormBuilder,
     private viewCtrl: ViewController,
-    public loadingProvider: LoadingProvider
+    public loadingProvider: LoadingProvider,
+    public alertProvider: AlertProvider
   ) {
 
     let field = this.navParams.data.field;
@@ -34,7 +37,7 @@ export class AccountEditModalPage {
     let currentPassword = new FormControl('', Validators.required );
     let newPassword = new FormControl('', Validators.compose([Validators.required, Validators.minLength(6)]));
     let confirmPassword = new FormControl('', CustomValidators.equalTo(newPassword));
-    let email = new FormControl(this.navParams.data.user.email, Validators.compose([Validators.required, Validators.email]) );
+    let email = new FormControl('guillaume.bartolini+12@gmail.com', Validators.compose([EmailValidator.isValid, Validators.required]) );
     let group = {};
     if(field == 'password'){
       group = { currentPassword, newPassword, confirmPassword }
@@ -59,10 +62,21 @@ export class AccountEditModalPage {
   }
 
   editAccountFormSubmit(){
+    let errType;
 
     if (!this.editAccountForm.valid) {
-      //NOT VALID
-      return
+      Object.keys(this.editAccountForm.controls).forEach(key => {
+        const controlErrors: ValidationErrors = this.editAccountForm.get(key).errors;
+        if (controlErrors != null) {
+          console.log(controlErrors);
+          Object.keys(controlErrors).forEach(keyError => {
+            errType = '';
+            errType = 'field/'+keyError;
+          });
+        }
+      });
+      this.alertProvider.showErrorMessage(errType);
+      return;
     } else {
       this.viewCtrl.dismiss(this.editAccountForm.value);
     }

@@ -59,8 +59,6 @@ export class UserProvider {
   addUserData(data: Profile) {
     //Create new User with uid Key
     this.userData = this.afdb.object(`/users/${data.aFuid}`);
-    console.log(data);
-    console.log(this.notifications.one_id);
     data.oneSignalId = this.notifications.one_id;
     data.settings = {age: '', city: '', country: '', disciplines: '', displayName: '', gender: '',level: ''};
     this.userData.set(data);
@@ -147,7 +145,6 @@ export class UserProvider {
 
           return user;
         }).catch( (error) => {
-          console.error('ERROR', error);
           throw error ;
         });
       }else{
@@ -155,7 +152,6 @@ export class UserProvider {
         return res.user;
       }
     }).catch( (error) => {
-      console.error('ERROR', error);
       throw error ;
     });
 
@@ -239,7 +235,6 @@ export class UserProvider {
             this.loadingProvider.hide();
             let code = error["code"];
             this.alertProvider.showErrorMessage(code);
-            console.error(error)
           });
 
       })
@@ -248,7 +243,6 @@ export class UserProvider {
         this.loadingProvider.hide();
         let code = error["code"];
         this.alertProvider.showErrorMessage(code);
-        console.error( error)
       })
   }
 
@@ -266,20 +260,11 @@ export class UserProvider {
         return this.sendEmailVerification().then(() => {
           return this.afAuth.auth.currentUser;
         }).catch((error) => {
-          //this.error = err;
-          console.error(error)
           throw error;
         })
       })
       .catch((error) => {
-        //show error
         this.loadingProvider.hide();
-        let code = error["code"];
-        this.alertProvider.showErrorMessage(code);
-        console.error(error)
-        if (code == 'auth/requires-recent-login') {
-          this.afAuth.auth.signOut();
-        }
         throw error;
       });
 
@@ -297,7 +282,6 @@ export class UserProvider {
       //return this.afAuth.auth.currentUser;
     }).catch((error) => {
       //this.error = err;
-      console.error(error)
       throw error;
     })
   }
@@ -306,7 +290,7 @@ export class UserProvider {
     let that = this;
     return new Promise<boolean>((resolve, reject) => {
       let checkVerified = setInterval(function() {
-        console.log('ticking')
+        console.log('ticking');
         that.currentUser.reload();
         if (that.currentUser.emailVerified) {
           clearInterval(checkVerified);

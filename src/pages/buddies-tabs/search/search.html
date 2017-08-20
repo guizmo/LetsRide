@@ -10,29 +10,67 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Find riders</ion-title>
-  </ion-navbar>
-
-
-  <ion-toolbar>
     <ion-searchbar
       (ionInput)="search($event)"
       [showCancelButton]=true
       (ionCancel)="onCancel($event)"
       [debounce]="300"
-      placeholder="Find a rider"
+      placeholder="Find riders"
       #searchInput>
     </ion-searchbar>
+    <ion-buttons end >
+      <button ion-button icon-only (click)="showOptions()"  >
+        <ion-icon name="options"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+  <ion-toolbar>
+    <form [formGroup]="searchForm"  >
+      <div ion-button small color="light">
+        <ion-label>Sports</ion-label>
+        <ion-select
+          formControlName="disciplines"
+          name="disciplines"
+          multiple="true"
+          okText="Okay"
+          cancelText="Dismiss">
+          <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
+        </ion-select>
+      </div>
+      <div ion-button small color="light">
+        <ion-label>Countrie</ion-label>
+        <ion-select
+          formControlName="country"
+          name="country"
+          okText="Okay"
+          cancelText="Dismiss">
+          <ion-option *ngFor="let country of countries" [value]="code">{{country.name}}</ion-option>
+        </ion-select>
+      </div>
+      <button ion-button small color="light">Level</button>
+      <button ion-button small color="light">Gender</button>
+    </form>
   </ion-toolbar>
+
 </ion-header>
 
 
 <ion-content>
+
+  <ion-label *ngIf="isSearching" text-center color="dark">
+    <ion-spinner></ion-spinner><br>
+    Searching
+  </ion-label>
+
+
+
   <ion-list>
-    <ng-container *ngFor="let person of people">
+    <ng-container *ngFor="let person of people; let i = index">
       <ion-item>
         <ion-avatar item-start>
-          <img src="{{person.avatar}}">
+          <img [hidden]="!person.avatarLoaded" (load)="avatarLoaded(i)" src="{{person.avatar}}">
+          <ion-spinner *ngIf="!person.avatarLoaded"></ion-spinner>
         </ion-avatar>
         <h2>{{person.settings.displayName}}</h2>
         <h3 *ngIf="person.settings.country">{{person.settings.country}}</h3>
@@ -47,5 +85,7 @@
     </ng-container>
   </ion-list>
 
-
+  <h3 [style.color]="'#555'" text-center *ngIf="!isSearching && showNoResult && !people.length" class="no-result">
+    There is no result for this query...
+  </h3>
 </ion-content>

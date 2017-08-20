@@ -1,3 +1,20 @@
 page-signup {
+  &.ion-page ion-content{
+    background-color: $brand;
+  }
+  form{
+    ion-item{
+      background-color: transparent !important;
+      .item-inner{
+        border-color: $content_back !important;
+      }
+      ion-label{
+        color: #fff;
+      }
+      input{
+        color: $content_back;
+      }
+    }
+  }
 
 }

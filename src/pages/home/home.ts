@@ -17,11 +17,12 @@ export class MainPage {
 
   private items: FirebaseListObservable<any[]>;
   private state: any;
-  private searchState: boolean = false;
+  private searchDone: boolean = null;
+  private noResults: boolean = false;
   public currentUser: any;
   public peopleAround: any = [];
   public userSettings: any;
-  public searching: boolean = false;
+  public searching: boolean = null;
   private search: any = {
     radius: 5,
     friends: false
@@ -64,12 +65,17 @@ export class MainPage {
   }
 
   findPeopleAround(){
-
-    this.searching = true;
     let _peopleAround;
     let subscribtion_is_done = false;
     let timer_is_done = false;
     let that = this;
+
+    this.peopleAround = [];
+    //delay animation to reflow less dom elements
+    setTimeout(function(){
+      that.searching = true;
+      that.searchDone = false;
+    },50);
 
     console.log(this.search);
 
@@ -77,9 +83,9 @@ export class MainPage {
     setTimeout(function(){
       timer_is_done = true;
       if(subscribtion_is_done){
-        that.searching = false;
-        that.searchState = true;
-        that.peopleAround = _peopleAround;
+        //that.searching = false;
+        //that.peopleAround = _peopleAround;
+        that.setPeople(_peopleAround);
       }
     },3000);
 
@@ -95,9 +101,7 @@ export class MainPage {
         }
 
         if(timer_is_done){
-          this.searching = false;
-          this.peopleAround = res;
-          this.searchState = true;
+          this.setPeople(res);
         }else{
           _peopleAround = res;
         }
@@ -107,16 +111,47 @@ export class MainPage {
       })
   }
   filterByBuddies(users){
+    if(!this.userSettings.buddies && users.length < 1){
+      return [];
+    }
 
-    return users.filter((_user) => {
-      if(_user.buddies){
-        return Object.keys(_user.buddies).filter((key, index) => {
-          return this.currentUser.uid == key;
-        })
+    let myBuddies = this.userSettings.buddies;
+
+    return users.filter((_buddy) => {
+      let uid = _buddy.aFuid;
+      if(myBuddies[uid] && myBuddies[uid].pending === false){
+        return true;
       }else{
         return false;
       }
+
     })
+  }
+
+  setPeople(people){
+    let that = this;
+    this.searchDone = true;
+    this.searching = false;
+    //finish animation then print results
+    //to avoid reflow slugish animation
+
+    people.map((person) => {
+      person.avatarLoaded = false;
+
+      if(person.profileImg && person.profileImg.url != ''){
+        person.avatar = person.profileImg.url;
+      }else if(person.photoURL){
+        person.avatar = person.photoURL;
+      }else{
+        person.avatar = './assets/img/man.svg';
+        person.avatarLoaded = true;
+      }
+    })
+
+    setTimeout(function(){
+      that.noResults = (people.length == 0) ? true : false ;
+      that.peopleAround = people;
+    },300);
   }
 
   stop(){
@@ -124,17 +159,6 @@ export class MainPage {
   }
 
   openPage(page: any) {
-    let options: NativeTransitionOptions = {
-       direction: 'left',
-       duration: 200,
-       slowdownfactor: 3,
-       slidePixels: 0,
-       iosdelay: 100,
-       androiddelay: 150,
-       fixedPixelsTop: 0,
-       fixedPixelsBottom: 0
-      };
-    //this.nativePageTransitions.slide(options);
     this.navCtrl.push(page);
   }
 
@@ -163,6 +187,10 @@ export class MainPage {
       },
       displayName: this.userSettings.displayName
     })
+  }
+
+  avatarLoaded(index){
+    this.peopleAround[index].avatarLoaded = true;
   }
 
 }

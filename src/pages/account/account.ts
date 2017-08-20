@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, AlertController, MenuController } from 'ionic-angular';
 
 import { UserProvider, LoadingProvider, AlertProvider } from '../../providers';
 
+import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 
 /**
@@ -28,9 +29,11 @@ export class AccountPage {
     public navParams: NavParams,
     private userProvider: UserProvider,
     public loadingProvider: LoadingProvider,
+    public afAuth: AngularFireAuth,
     public modalCtrl: ModalController,
     public alertCtrl: AlertController,
-    public alertProvider: AlertProvider
+    public alertProvider: AlertProvider,
+    public menuCtrl: MenuController
   ) {
     this.userAuth();
 
@@ -50,6 +53,8 @@ export class AccountPage {
         }else{
           this.emailVerified = _user.emailVerified;
         }
+
+        this.menuCtrl.enable(this.emailVerified, 'mainMenu');
       }
     });
   }
@@ -88,15 +93,22 @@ export class AccountPage {
         {
           text: confirmMessages.emailUpdate.next,
           handler: data => {
+            this.emailVerified = false;
+            this.menuCtrl.enable(this.emailVerified, 'mainMenu');
+
             this.userProvider.updateEmail(email)
               .then((_user) => {
                 this.emailVerified = _user.emailVerified;
+                this.emailVerified = true;
+                this.menuCtrl.enable(this.emailVerified, 'mainMenu');
               })
               .catch((error) => {
-                console.error('onDidDismiss', error);
-                throw error;
+                let code = error["code"];
+                this.alertProvider.showErrorMessage(code);
+                if (code == 'auth/requires-recent-login') {
+                  this.afAuth.auth.signOut();
+                }
               });
-            this.emailVerified = false;
           }
         }
       ]

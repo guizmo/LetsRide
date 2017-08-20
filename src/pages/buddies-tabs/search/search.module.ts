@@ -9,7 +9,7 @@ import { PipesModule } from '../../../pipes/pipes.module';
   ],
   imports: [
     IonicPageModule.forChild(SearchPage),
-    PipesModule
+    PipesModule,
   ],
   exports: [
     SearchPage

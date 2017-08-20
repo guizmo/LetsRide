@@ -9,15 +9,15 @@
 
 <ion-content no-bounce>
 
-  <div class="block-content">
-    <div class="block-top" [class.hasResults]="peopleAround.length && !searching">
+  <div class="block-content" block-flex>
+    <div class="block-top" [class.smaller]="!searching && searchDone != null && searchDone !== false">
       <div class="ripple" v-height="35">
         <ion-fab center middle edge>
           <button color="brand" ion-fab [disabled]="searching" (click)="findPeopleAround()">
             <ion-icon name="search"></ion-icon>
           </button>
         </ion-fab>
-        <img [hidden]="!searching" src="./assets/img/ripple.svg" alt="">
+        <img *ngIf="searching" src="./assets/img/ripple.svg" alt="">
       </div>
       <ion-list no-margin>
         <ion-list-header>
@@ -42,25 +42,25 @@
 
     </div>
 
-    <div class="block-bottom" vertical-center *ngIf="!peopleAround.length" padding>
-      <div class="text-wrapper" *ngIf="!searchState" f-width>
+    <div class="block-bottom" block-grow vertical-center *ngIf="!peopleAround.length" padding>
+      <div class="text-wrapper" *ngIf="!noResults" f-width>
         <h4>Riding is better with friends&nbsp;! <br>Hit the search <ion-icon color="brand" name="search"></ion-icon> button to see who's nearby !</h4>
       </div>
-      <div class="text-wrapper" *ngIf="searchState" f-width>
+      <div class="text-wrapper" *ngIf="noResults" f-width>
         <h3>There isn't anybody in this search perimeter</h3><br><br>
       </div>
     </div>
 
-    <div class="block-bottom" *ngIf="peopleAround.length" >
+    <div class="block-bottom" block-grow *ngIf="peopleAround.length" >
       <ion-list no-margin>
         <ion-list-header>
           Results
         </ion-list-header>
         <ion-item *ngFor="let people of peopleAround; let i = index">
           <ion-avatar item-start>
-            <img *ngIf="!people.photoURL" src="./assets/img/man.svg" />
-            <img *ngIf="people.photoURL" [src]="people.photoURL" />
-          </ion-avatar>
+            <img [hidden]="!people.avatarLoaded" (load)="avatarLoaded(i)" src="{{people.avatar}}">
+            <ion-spinner *ngIf="!people.avatarLoaded"></ion-spinner>
+           </ion-avatar>
           <h2>{{people.displayName}}</h2>
           <p>{{people.distance}} km</p>
           <button item-end ion-button color="brand" icon-right (click)="sendMessageCloseBy(i)">

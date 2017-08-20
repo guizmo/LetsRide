@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, MenuController } from 'ionic-angular';
 
 import { Observable } from "rxjs/Rx";
 
@@ -38,6 +38,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     public alertProvider: AlertProvider,
     public disciplinesProvider: DisciplinesProvider,
     private notifications: NotificationsProvider,
+    public menuCtrl: MenuController,
     private fileProvider: FileProvider
   ) {
     console.log('profile', this)
@@ -55,6 +56,7 @@ export class ProfilePage implements OnInit, OnDestroy {
           .then((res) => {
             this.emailVerified = res;
             this.alertProvider.showEmailVerifiedMessage();
+            this.menuCtrl.enable(this.emailVerified, 'mainMenu');
           })
           .catch((error) => {
             console.error(error)
@@ -143,6 +145,7 @@ export class ProfilePage implements OnInit, OnDestroy {
         });
         this.emailVerified =  (_user.providerData[0].providerId == 'facebook.com') ? true : _user.emailVerified;
         this.currentUser = _user;
+        this.menuCtrl.enable(this.emailVerified, 'mainMenu');
       }
     });
   }

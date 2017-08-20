@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, ToastController } from 'ionic-angular';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { IonicPage, NavController } from 'ionic-angular';
+import { Validators, FormBuilder, FormGroup, ValidationErrors } from '@angular/forms';
 import { EmailValidator } from '../../validators/email';
 
 import { UserProvider, LoadingProvider, AlertProvider } from '../../providers';
@@ -26,52 +26,50 @@ export class SignupPage {
   public signupForm: FormGroup;
 
 
-  constructor(public navCtrl: NavController,
+
+  constructor(
+    public navCtrl: NavController,
     public userProvider: UserProvider,
-    public toastCtrl: ToastController,
     public translateService: TranslateService,
     private formBuilder: FormBuilder,
     public loadingProvider: LoadingProvider,
     public alertProvider: AlertProvider
   ) {
-
     this.translateService.get('SIGNUP_ERROR').subscribe((value) => {
       this.signupErrorString = value;
     })
 
     this.signupForm = formBuilder.group({
-        name: ['Guizmo Barto', Validators.compose([Validators.required])],
-        email: ['guillaume.bartolini@gmail.com', Validators.compose([Validators.required, EmailValidator.isValid])],
-        password: ['qwer12', Validators.compose([Validators.minLength(6), Validators.required])]
+        name: ['', Validators.compose([Validators.required])],
+        email: ['', Validators.compose([EmailValidator.isValid, Validators.required])],
+        password: ['', Validators.compose([Validators.minLength(6), Validators.required])]
     })
   }
 
-  createToast(message: string, duration: number = 3000, showCloseButton: boolean = null) {
-    return this.toastCtrl.create({
-      message,
-      duration,
-      showCloseButton,
-      closeButtonText: 'OK'
-    })
-  }
 
   signUpFormSubmit() {
     if (!this.signupForm.valid) {
-      this.createToast('Form not valid').present();
+      let errType;
+
+      Object.keys(this.signupForm.controls).forEach(key => {
+        const controlErrors: ValidationErrors = this.signupForm.get(key).errors;
+        if (controlErrors != null) {
+          Object.keys(controlErrors).forEach(keyError => {
+            errType = '';
+            errType = 'field/'+keyError;
+          });
+        }
+      });
+      this.alertProvider.showErrorMessage(errType);
       return
-    }
-    else {
+    } else {
 
 
       this.loadingProvider.show();
       this.userProvider.signUpUser(this.signupForm.value.name, this.signupForm.value.email, this.signupForm.value.password)
         .then((user) => {
           this.loadingProvider.hide();
-          this.createToast(
-            this.alertProvider.successMessages.emailVerificationSent.subTitle + this.signupForm.value.email ,
-            10000,
-            true
-          ).present();
+          this.alertProvider.showEmailVerificationSentToast(this.signupForm.value.email);
 
           let providerData = {...user.providerData[0], ...{ aFuid: user.uid, profileImg: {}, settings : { displayName : user.displayName } } };
 
@@ -79,15 +77,15 @@ export class SignupPage {
             if(data.aFuid){
               this.navCtrl.setRoot('ProfilePage', {...providerData, ...{'emailVerified': user.emailVerified} });
             }else{
-              console.error('Database create didnt work');
-              throw 'Database create didnt work';
+              this.alertProvider.showErrorMessage('database/generique');
             }
           });
 
         },
         (error) => {
           this.loadingProvider.hide();
-          this.createToast(error.message).present();
+          let code = error["code"];
+          this.alertProvider.showErrorMessage(code);
         })
     }
   }

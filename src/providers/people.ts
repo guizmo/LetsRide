@@ -17,16 +17,33 @@ export class PeopleProvider {
   ) {
   }
 
-  getPeople(start, end): FirebaseListObservable<any> {
-    return this.afdb.list('/users', {
-      query: {
-        orderByChild: 'settings/displayName',
-        limitToFirst: 10,
-        startAt: start,
-        endAt: end
-      }
-    });
+  getPeople(start = null, end = null, limitToFirst = null): FirebaseListObservable<any> {
+
+    let query:any = {
+      orderByChild : 'settings/displayName'
+    };
+
+    if(start){
+      query.startAt = start;
+    }
+    if(end){
+      query.endAt = end;
+    }
+    if(limitToFirst){
+      query.limitToFirst = limitToFirst;
+    }
+    /*query: {
+      orderByChild: 'settings/displayName',
+      limitToFirst: 10,
+      startAt: start,
+      endAt: end
+    }*/
+
+    console.log('qeury', query);
+
+    return this.afdb.list('/users', { query: query });
   }
+
 
 
 }

@@ -1,4 +1,7 @@
 page-login {
+  &.ion-page ion-content{
+    background-color: $brand;
+  }
   .scroll-content{
     padding-bottom: 0 !important;
   }
@@ -9,9 +12,32 @@ page-login {
     }
   }
   ion-slide{
-    background-color: $content_back;
-    &.slide-2{
+    background-color: $brand;
+    height: auto !important;
+    &.slide-2, &.slide-3{
       align-items: flex-start !important;
+      form{
+        padding-bottom: 0 !important;
+      }
+      ion-item{
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+      }
+    }
+  }
+
+  form{
+    ion-item{
+      background-color: transparent !important;
+      .item-inner{
+        border-color: $content_back !important;
+      }
+      ion-label{
+        color: #fff;
+      }
+      input{
+        color: $content_back;
+      }
     }
   }
 }

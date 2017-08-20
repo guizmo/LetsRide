@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChildren } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, AlertController, FabContainer } from 'ionic-angular';
 
 
@@ -16,10 +16,13 @@ import { UserProvider, AlertProvider, PlacesProvider, CaptureProvider} from '../
   templateUrl: 'places.html',
 })
 export class PlacesPage {
+  @ViewChildren('fab') fabs;
 
   places;
   user;
   images: Array<any>=[];
+  showSpinner:boolean = true;
+  showNoResult:boolean = false;
 
   constructor(
     public navCtrl: NavController,
@@ -37,9 +40,13 @@ export class PlacesPage {
     this.userProvider.afAuth.authState.subscribe((user) => {
       if(user){
         this.user = user.toJSON();
-        this.placesProvider.getAllByUser(this.user.uid).subscribe(
-            data => this.places = data
-        );
+        this.placesProvider.getAllByUser(this.user.uid).subscribe((data) => {
+          this.places = data;
+          this.showNoResult = (data.length < 1) ? true : false ;
+
+          this.showSpinner = false;
+
+        });
       }
     });
 
@@ -85,6 +92,7 @@ export class PlacesPage {
 
     modal.present();
     if(fab){
+      console.log(fab);
       fab.close();
     }
   }
@@ -124,6 +132,10 @@ export class PlacesPage {
   }
 
 
-
+  closeFabs(fab: FabContainer){
+    this.fabs
+      .filter((_fab) => _fab != fab )
+      .forEach((_fab:FabContainer) => _fab.close())
+  }
 
 }

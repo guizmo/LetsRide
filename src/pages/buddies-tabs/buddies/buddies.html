@@ -10,9 +10,9 @@
 
 
 <ion-content fullscreen>
-  <div id="content" class="block-content">
-    <div class="block-top" v-height="30" vertical-center>
-      <div class="body-text" padding text-center f-width>
+  <div id="content" class="block-content" block-flex>
+    <div class="block-top" >
+      <div class="body-text" padding text-center f-width margin-top margin-bottom>
         <h1>{{buddies.length}} <span>Friends</span></h1>
         <p>The more the better ! Tell your friends about Let's Ride</p>
         <!-- <button ion-button (click)="goto('ContactPage')">Invite them</button> -->
@@ -23,8 +23,19 @@
       </div>
     </div>
 
-    <div id="friend-list" class="block-bottom">
-      <ion-list>
+    <div id="friend-list" class="block-bottom" block-grow>
+      <ion-spinner class="list-content" *ngIf="showSpinner"></ion-spinner>
+      <div class="no-result-card" *ngIf="showNoResult">
+        <ion-card>
+          <ion-card-header>
+            Find friends then ride !
+          </ion-card-header>
+          <ion-card-content color="dark">
+            Let's ride is not "Facebook for riders"! But our goal is to help you ride with your buddies in no time! So go to the search tab and find people to ride with.
+          </ion-card-content>
+        </ion-card>
+      </div>
+      <ion-list no-margin>
         <ion-item-sliding *ngFor="let buddy of buddies | orderBy : ['sortByName']; let i = index">
           <ion-item >
             <ion-avatar item-start>

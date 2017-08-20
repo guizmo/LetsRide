@@ -20,18 +20,7 @@
 
 
 <ion-content>
-    <ion-spinner class="list-content" *ngIf="showSpinner"></ion-spinner>
-    <div class="no-result-card" *ngIf="showNoResult">
-      <ion-card>
-        <ion-card-header>
-          You have no places saved !
-        </ion-card-header>
-        <ion-card-content color="dark">
-          Here you can save the places you frequently ride our would like to ride one day !
-        </ion-card-content>
-      </ion-card>
-    </div>
-    <ng-container  *ngFor="let place of places; let last = last" >
+    <ng-container *ngFor="let place of places; let last = last" >
       <ion-card no-margin f-width margin-bottom  no-radius [class.last-item]="last">
         <div class="img-holder">
           <div
@@ -67,4 +56,24 @@
 
       </ion-card>
     </ng-container>
+
+  <!-- <ion-list>
+    <ion-item-sliding *ngFor="let place of places" >
+      <ion-item  (click)="presentModal('update', place.$key)" >
+        <ion-icon name="pin" item-start></ion-icon>
+        <h2>{{place.name}}</h2>
+        <h3>{{place.city}}</h3>
+        <p>{{place.country}}</p>
+        <ion-icon name="create" item-end></ion-icon>
+      </ion-item>
+      <ion-item-options side="right">
+        <button ion-button color="primary" (click)="delete(place.$key)">
+          <ion-icon ios="md-trash" md="md-trash"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+
+
+  </ion-list> -->
+
 </ion-content>

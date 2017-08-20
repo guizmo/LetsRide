@@ -9,22 +9,26 @@
         <ion-icon name="add"></ion-icon>
       </button>
     </ion-buttons>
+    <!-- <ion-buttons icon-only end>
+      <button *ngIf="!activeItemSliding" ion-button icon-only (click)="openOptionRight()">
+        <ion-icon name="add-circle"></ion-icon>
+      </button>
+      <button *ngIf="activeItemSliding" ion-button icon-only (click)="closeOption()">
+        <ion-icon name="close-circle"></ion-icon>
+      </button>
+    </ion-buttons> -->
   </ion-navbar>
+  <!-- <ion-toolbar no-padding >
+    <button color="brand" ion-button full icon-right no-margin (click)="presentEventModal()" >
+      Create a new event
+      <ion-icon name="add-circle"></ion-icon>
+    </button>
+  </ion-toolbar> -->
 </ion-header>
 
 
 <ion-content >
-  <ion-spinner class="list-content" *ngIf="showSpinner"></ion-spinner>
-  <div class="no-result-card" *ngIf="showNoResult">
-    <ion-card>
-      <ion-card-header>
-        You have no current event !
-      </ion-card-header>
-      <ion-card-content color="dark">
-        When adding events, your friends will automatically be notified about it. They will see it in their "Friends events list" !
-      </ion-card-content>
-    </ion-card>
-  </div>
+  <ion-spinner *ngIf="!eventsListing.length"></ion-spinner>
   <ng-container *ngFor="let event of eventsListing; let last = last" >
     <ion-card no-margin f-width margin-bottom no-radius no-shadow [class.last-item]="last">
       <ion-row>

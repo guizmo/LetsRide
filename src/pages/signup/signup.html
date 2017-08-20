@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header no-border>
 
   <ion-navbar>
     <ion-title>{{ 'SIGNUP_TITLE' | translate }}</ion-title>
@@ -8,37 +8,24 @@
 
 
 <ion-content>
-  <form [formGroup]="signupForm"  (submit)="signUpFormSubmit()">
-    <ion-list>
+  <form [formGroup]="signupForm"  (submit)="signUpFormSubmit()" padding>
 
-      <ion-item>
-        <ion-label fixed>{{ 'NAME' | translate }}</ion-label>
+      <ion-item no-padding>
+        <ion-label floating>{{ 'NAME' | translate }}</ion-label>
         <ion-input type="text" formControlName="name" name="name" required></ion-input>
       </ion-item>
 
-      <ion-item>
-        <ion-label fixed>{{ 'EMAIL' | translate }}</ion-label>
+      <ion-item no-padding>
+        <ion-label floating>{{ 'EMAIL' | translate }}</ion-label>
         <ion-input type="email" formControlName="email" name="email" required></ion-input>
       </ion-item>
 
-      <!--
-      Want to add a Username? Here you go:
-
-      <ion-item>
-        <ion-label floating>Username</ion-label>
-        <ion-input type="text" [(ngModel)]="account.username" name="username"></ion-input>
-      </ion-item>
-      -->
-
-      <ion-item>
-        <ion-label fixed>{{ 'PASSWORD' | translate }}</ion-label>
+      <ion-item no-padding>
+        <ion-label floating>{{ 'PASSWORD' | translate }}</ion-label>
         <ion-input type="password" formControlName="password" name="password" required></ion-input>
       </ion-item>
 
-      <div padding>
-        <button ion-button color="primary" block>{{ 'SIGNUP_BUTTON' | translate }}</button>
-      </div>
+      <button margin-top ion-button block color="primary">{{ 'SIGNUP_BUTTON' | translate }}</button>
 
-    </ion-list>
   </form>
 </ion-content>

@@ -1,10 +1,13 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, ToastController, Slides } from 'ionic-angular';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup, ValidationErrors } from '@angular/forms';
 
+import { AngularFireAuth } from 'angularfire2/auth';
+import * as firebase from 'firebase/app';
 
-import { UserProvider, LoadingProvider } from '../../providers';
+import { EmailValidator } from '../../validators/email';
 
+import { UserProvider, LoadingProvider, AlertProvider } from '../../providers';
 import { TranslateService } from '@ngx-translate/core';
 
 @IonicPage()
@@ -18,40 +21,44 @@ export class LoginPage {
   currentIndex:number = 0;
   pushPage:any;
   slideState: string = null;
-  slideOptions = {
-    pager: false,
-    speed: 500,
-    zoom: false,
-    centeredSlides:false,
-    direction: 'horizontal',
-    effect:'slide'
-  }
 
   public signInForm: FormGroup;
+  public resetPasswordForm:FormGroup;
 
   // Our translated text strings
   private loginErrorString: string;
 
   constructor(
     public navCtrl: NavController,
+    public afAuth: AngularFireAuth,
     public userProvider: UserProvider,
     public toastCtrl: ToastController,
     public translateService: TranslateService,
     private formBuilder: FormBuilder,
+    public alertProvider: AlertProvider,
     public loadingProvider: LoadingProvider
   ) {
+    afAuth.authState.subscribe((_user: firebase.User) => {
+      if (_user) {
+        this.navCtrl.setRoot('MainPage');
+      }
+    });
 
 
 
     this.signInForm = formBuilder.group({
-      email: ['guillaume.bartolini@gmail.com', Validators.compose([Validators.required, Validators.email])],
-      password: ['qwer12', Validators.compose([Validators.minLength(6), Validators.required])]
+      email: ['guillaume.bartolini@gmail.com', Validators.compose([EmailValidator.isValid, Validators.required])],
+      password: ['qwer12', Validators.compose([Validators.required])]
+    });
+
+
+    this.resetPasswordForm = formBuilder.group({
+      email: ['', Validators.compose([Validators.required, EmailValidator.isValid])]
     });
 
     this.translateService.get('LOGIN_ERROR').subscribe((value) => {
       this.loginErrorString = value;
     })
-
   }
 
   slideTo(index) {
@@ -74,9 +81,9 @@ export class LoginPage {
   signInWithProvider(provider:string) {
     this.userProvider.signInWithProvider(provider)
       .then((user) => {
-        console.log('Signed in with ' + provider + ' : ' , user)
 
-        this.createToast('Signed in with ' + provider + ': ' + user.displayName).present();
+        this.alertProvider.showSignInToast(provider + ': ' + user.displayName);
+
         this.userProvider.afdb.object(`/users/${user.uid}`).subscribe((data) => {
             if(data.$exists()){
               this.navCtrl.setRoot('MainPage');
@@ -86,8 +93,7 @@ export class LoginPage {
                 if(data.aFuid){
                   this.navCtrl.setRoot('ProfilePage', {...providerData, ...{'emailVerified': true} } );
                 }else{
-                  console.error('Database create didnt work');
-                  throw 'Database create didnt work';
+                  this.alertProvider.showErrorMessage('database/generique');
                 }
               });
 
@@ -95,7 +101,8 @@ export class LoginPage {
         });
 
       }).catch( (error) => {
-        this.createToast(error.message).present();
+        let code = error["code"];
+        this.alertProvider.showErrorMessage(code);
       });
   }
 
@@ -108,7 +115,18 @@ export class LoginPage {
 
   signInFormSubmit() {
     if (!this.signInForm.valid) {
-      this.createToast('Form not valid').present();
+      let errType;
+
+      Object.keys(this.signInForm.controls).forEach(key => {
+        const controlErrors: ValidationErrors = this.signInForm.get(key).errors;
+        if (controlErrors != null) {
+          Object.keys(controlErrors).forEach(keyError => {
+            errType = '';
+            errType = 'field/'+keyError;
+          });
+        }
+      });
+      this.alertProvider.showErrorMessage(errType);
       return
     }
     else {
@@ -117,20 +135,41 @@ export class LoginPage {
       this.userProvider.signInUser(this.signInForm.value.email, this.signInForm.value.password)
         .then((success) => {
           this.loadingProvider.hide();
-          this.createToast('Signed in with email: ' + this.signInForm.value.email).present();
 
+          this.alertProvider.showSignInToast('email: ' + this.signInForm.value.email);
           this.userProvider.checkEmailIsVerified();
 
           this.navCtrl.setRoot('MainPage');
         },
         (error) => {
           this.loadingProvider.hide();
-          this.createToast(error.message).present();
+          let code = error["code"];
+          this.alertProvider.showErrorMessage(code);
         })
     }
   }
 
 
+  resetPassword(){
+    if (!this.resetPasswordForm.valid){
+    } else {
+      this.loadingProvider.show();
+
+      this.userProvider.resetPassword(this.resetPasswordForm.value.email)
+      .then((user) => {
+        this.loadingProvider.hide();
+
+        this.alertProvider.showPasswordResetMessage(this.resetPasswordForm.value.email);
+        this.slideTo(1);
+
+      }, (error) => {
+        this.loadingProvider.hide();
+        let code = error["code"];
+        this.alertProvider.showErrorMessage(code);
+      });
+
+    }
+  }
 
 
 }

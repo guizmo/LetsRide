@@ -1,60 +1,58 @@
-<ion-header no-shadow no-border class="no-shadow">
-  <ion-navbar>
-    <ion-buttons start>
-      <button ion-button icon-left (click)="dismiss()">
-        <ion-icon name="arrow-back"></ion-icon>
-        Cancel
-      </button>
-    </ion-buttons>
-
-    <ion-buttons end>
-      <button ion-button icon-right (click)="onSave()" [disabled]="!eventForm.valid" >
-        Save
-        <ion-icon name="ios-calendar-outline"></ion-icon>
-      </button>
-    </ion-buttons>
-  </ion-navbar>
-
-</ion-header>
-
-
 <ion-content>
+  <div ion-fixed class="inset-modal-content">
 
-  <form [formGroup]="eventForm" (ngSubmit)="onSave()">
-    <ion-list>
-      <!-- NAME -->
-      <ion-item>
-        <ion-label>Name</ion-label>
-        <ion-input type="text" formControlName="name" name="name"></ion-input>
-      </ion-item>
+    <ion-navbar>
+      <ion-buttons start>
+        <button ion-button icon-left (click)="dismiss()">
+          <ion-icon name="arrow-back"></ion-icon>
+          Cancel
+        </button>
+      </ion-buttons>
 
-      <!-- TIME -->
-      <ion-item>
-        <ion-label>When</ion-label>
-        <ion-datetime displayFormat="DD/MMM/YY HH:mm" min="{{currentYear}}" max="{{maxYear}}" pickerFormat="D MMM YYYY H mm" formControlName="time" name="time"></ion-datetime>
-      </ion-item>
+      <ion-buttons end>
+        <button ion-button icon-right (click)="onSave()" [disabled]="!eventForm.valid" >
+          Save
+          <ion-icon name="ios-calendar-outline"></ion-icon>
+        </button>
+      </ion-buttons>
+    </ion-navbar>
 
-      <!-- WHERE -->
-      <ion-item>
-        <ion-label>Where</ion-label>
-        <ion-input type="text" formControlName="where" name="where"></ion-input>
-      </ion-item>
+    <form [formGroup]="eventForm" (ngSubmit)="onSave()">
+      <ion-list>
+        <!-- NAME -->
+        <ion-item>
+          <ion-label>Name</ion-label>
+          <ion-input type="text" formControlName="name" name="name"></ion-input>
+        </ion-item>
 
-      <!-- DISCIPLINE -->
-      <ion-item>
-        <ion-label>What</ion-label>
-        <ion-select
-          formControlName="disciplines"
-          name="disciplines"
-          okText="Okay"
-          cancelText="Dismiss"
-          >
-          <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
-        </ion-select>
-      </ion-item>
+        <!-- TIME -->
+        <ion-item>
+          <ion-label>When</ion-label>
+          <ion-datetime displayFormat="DD/MMM/YY HH:mm" min="{{currentYear}}" max="{{maxYear}}" pickerFormat="D MMM YYYY H mm" formControlName="time" name="time"></ion-datetime>
+        </ion-item>
 
-    </ion-list>
-  </form>
+        <!-- WHERE -->
+        <ion-item>
+          <ion-label>Where</ion-label>
+          <ion-input type="text" formControlName="where" name="where"></ion-input>
+        </ion-item>
+
+        <!-- DISCIPLINE -->
+        <ion-item>
+          <ion-label>What</ion-label>
+          <ion-select
+            formControlName="disciplines"
+            name="disciplines"
+            okText="Okay"
+            cancelText="Dismiss"
+            >
+            <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
+          </ion-select>
+        </ion-item>
+
+      </ion-list>
+    </form>
+  </div>
 
 
 </ion-content>

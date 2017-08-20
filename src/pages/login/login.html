@@ -5,57 +5,78 @@
 </ion-header> -->
 
 
-<ion-content>
-  <div class="block-content">
-    <div class="block-top">
+<ion-content no-bounce>
+  <div class="block-content" block-flex>
+    <div class="block-top"  block-grow vertical-center>
       <img src="assets/img/logo.png">
     </div><!-- block-top -->
-    <div class="block-bottom">
-      <ion-slides #slides (ionSlideDidChange)="slideChanged()" direction="horizontal" effect="slide" speed="300" zoom="false" spaceBetween="30" centeredSlides="false">
-        <ion-slide class="slide-1">
-            <div class="block-bottom">
-              <button ion-button icon-left full color="facebook" (click)="signInWithProvider('Facebook')">
-                <ion-icon name="logo-facebook"></ion-icon>  Continue with Facebook
-              </button>
+    <div class="block-bottom" vertical-center>
 
-              <button ion-button icon-left full color="google" (click)="signInWithProvider('Google+')">
-                <ion-icon name="logo-google"></ion-icon>  Continue with Google+
-              </button>
-
-              <button icon-left  ion-button full [navPush]="'SignupPage'">
-                <ion-icon ios="ios-mail-open" md="md-mail-open" ></ion-icon> Signup with Email
-              </button>
-
-            </div>
-        </ion-slide>
-
-        <ion-slide class="slide-2">
-            <form [formGroup]="signInForm" (submit)="signInFormSubmit()" padding-bottom>
-                <ion-item>
-                  <ion-label fixed>{{ 'EMAIL' | translate }}</ion-label>
-                  <ion-input type="email" formControlName="email" name="email" required ></ion-input>
-                </ion-item>
-
-                <ion-item>
-                  <ion-label fixed>{{ 'PASSWORD' | translate }}</ion-label>
-                  <ion-input type="password" formControlName="password" clearInput name="password"></ion-input>
-                </ion-item>
-
-
-                <button margin-top ion-button icon-left color="primary" full>
-                  <ion-icon ios="ios-log-in" md="md-log-in"></ion-icon>
-                  {{ 'LOGIN_BUTTON' | translate }}
+        <ion-slides #slides (ionSlideDidChange)="slideChanged()" direction="horizontal" effect="coverflow" speed="300" zoom="false" spaceBetween="30" centeredSlides="false">
+          <ion-slide class="slide-1">
+              <div class="block-bottom" block-grow padding-top padding-left padding-right>
+                <button ion-button icon-left block color="facebook" (click)="signInWithProvider('Facebook')">
+                  <ion-icon name="logo-facebook"></ion-icon>  Continue with Facebook
                 </button>
 
-                <div margin-bottom>
-                  <button ion-button full clear [navPush]="'PasswordResetPage'">
-                    {{ 'FORGOT_PASS_TITLE' | translate }}
-                  </button>
-                </div>
-            </form>
-        </ion-slide>
+                <button ion-button icon-left block color="google" (click)="signInWithProvider('Google+')">
+                  <ion-icon name="logo-google"></ion-icon>  Continue with Google+
+                </button>
 
-      </ion-slides>
+                <button icon-left  ion-button block clear color="light" [navPush]="'SignupPage'">
+                  <ion-icon ios="ios-mail-open" color="light" md="md-mail-open" ></ion-icon> Signup with Email
+                </button>
+
+              </div>
+          </ion-slide>
+
+          <ion-slide class="slide-2">
+            <form [formGroup]="signInForm" (submit)="signInFormSubmit()" padding>
+              <ion-item no-padding>
+                <ion-label floating>{{ 'EMAIL' | translate }}</ion-label>
+                <ion-input type="email" formControlName="email" name="email" required ></ion-input>
+              </ion-item>
+
+              <ion-item no-padding>
+                <ion-label floating>{{ 'PASSWORD' | translate }}</ion-label>
+                <ion-input type="password" formControlName="password" clearInput name="password"></ion-input>
+              </ion-item>
+
+
+              <button margin-top ion-button icon-left color="primary" block>
+                <ion-icon ios="ios-log-in" md="md-log-in"></ion-icon>
+                {{ 'LOGIN_BUTTON' | translate }}
+              </button>
+
+            </form>
+            <!-- <button color="content_back" ion-button block clear [navPush]="'PasswordResetPage'"> -->
+            <button color="content_back" ion-button block clear (click)="slideTo(2)">
+              {{ 'FORGOT_PASS_TITLE' | translate }}
+            </button>
+          </ion-slide>
+
+          <ion-slide class="slide-3">
+            <form [formGroup]="resetPasswordForm" (submit)="resetPassword()" novalidate padding>
+
+              <ion-item no-padding>
+                <ion-label floating>{{ 'EMAIL' | translate }}</ion-label>
+                <ion-input formControlName="email" type="email"
+                  [class.invalid]="!resetPasswordForm.controls.email.valid && resetPasswordForm.controls.email.dirty"></ion-input>
+              </ion-item>
+              <ion-item class="error-message" *ngIf="!resetPasswordForm.controls.email.valid  && resetPasswordForm.controls.email.dirty">
+                <p>Please enter a valid email.</p>
+              </ion-item>
+
+              <button margin-top ion-button block type="submit">
+                {{ 'RESET_PASS_TITLE' | translate }}
+              </button>
+
+            </form>
+          </ion-slide>
+
+
+        </ion-slides>
+
     </div><!-- block-bottom -->
   </div><!-- block-content -->
 
@@ -63,16 +84,16 @@
 </ion-content>
 
 
-<ion-footer>
-  <ion-toolbar>
+<ion-footer no-border>
+  <ion-toolbar no-border>
 
-    <button *ngIf="currentIndex === 0" no-margin ion-button icon-right clear full color="light" (click)="slideTo(1)">
+    <button *ngIf="currentIndex === 0" no-margin ion-button icon-right clear block color="light" (click)="slideTo(1)">
       Have an account ? Login
       <ion-icon name="log-in" ></ion-icon>
     </button>
 
 
-    <button *ngIf="currentIndex === 1" no-margin ion-button icon-left clear full color="light" (click)="slideTo(0)">
+    <button *ngIf="currentIndex !== 0" no-margin ion-button icon-left clear  color="light" (click)="slideTo(currentIndex-1)">
       <ion-icon name="arrow-back" ></ion-icon> Cancel
     </button>
 

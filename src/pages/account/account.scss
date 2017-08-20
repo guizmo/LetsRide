@@ -1,3 +1,15 @@
 page-account {
+  &.ion-page ion-content{
+    background-color: $brand;
+  }
+  .scroll-content{
+    padding-bottom: 0 !important;
+  }
+  .block-top{
+    img{
+      display: block;
+      margin: auto;
+    }
+  }
 
 }

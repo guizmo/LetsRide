@@ -8,9 +8,11 @@
 ion-modal.inset-modal {
   background-color: rgba(0,0,0,.5)!important;
   transition: opacity .25s ease-in-out;
-  padding: 20vh 10vw;
   .content{
     background: transparent!important;
+    .inset-modal-content{
+      padding: 20vh 10vw;
+    }
   }
 }
 
@@ -70,7 +72,7 @@ ion-modal.inset-modal {
 
 // BLOCKS
 // --------------------------------------------------
-.block-content{
+/*.block-content{
   display: flex;
   flex-direction: column;
   min-height: 100%;
@@ -78,4 +80,26 @@ ion-modal.inset-modal {
   .block-bottom{
     flex-grow: 1;
   }
+}*/
+[block-flex]{
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+
+  [block-grow]{
+    flex-grow: 1;
+  }
+}
+
+.no-result-card{
+  margin-top: 10vh;
+}
+ion-spinner.list-content{
+  position: absolute;
+  top: 10vh;
+  //bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
 }

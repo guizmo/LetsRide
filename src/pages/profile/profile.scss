@@ -9,7 +9,7 @@ page-profile {
     background-color: $brand;
   }
 
-  
+
 
   #profile-image {
     display: block;
@@ -69,11 +69,11 @@ page-profile {
   }
 
   ion-icon.google {
-    color: #dd4b39;
+    color: $google;
   }
 
   ion-icon.firebase {
-    color: #ffca28;
+    color: $firebase;
   }
 
 

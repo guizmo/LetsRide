@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AlertController } from 'ionic-angular';
+import { AlertController, ToastController } from 'ionic-angular';
 //import { Validator } from '../validator';
 const errorMessages = {
   // Alert Provider
@@ -31,7 +31,16 @@ const errorMessages = {
   invalidCharsPassword: 'Validator.profilePasswordValidator.patternError',
   passwordsDoNotMatch: { title: 'Change Password Failed!', subTitle: 'Sorry, but the passwords you entered do not match.' },
   // Image Error Messages
-  imageUpload: { title: 'Image Upload Failed!', subTitle: 'Sorry but we\'ve encountered an error uploading selected image.' }
+  imageUpload: { title: 'Image Upload Failed!', subTitle: 'Sorry but we\'ve encountered an error uploading selected image.' },
+  // field required
+  fieldRequired: {
+    title: 'Field required !',
+    subTitle: 'Sorry, but you forgot to fill up some fields'
+  },
+  databaseGenerique: {
+    title: 'Connection error !',
+    subTitle: 'An error occured! Please try again later.'
+  }
 };
 
 const successMessages = {
@@ -40,7 +49,8 @@ const successMessages = {
   emailVerified: { title: 'Email Confirmed!', subTitle: 'Congratulations! Your email has been confirmed!' },
   emailVerificationSent: { title: 'Email Confirmation Sent!', subTitle: 'An email confirmation has been sent to: ' },
   accountDeleted: { title: 'Account Deleted!', subTitle: 'Your account has been successfully deleted.' },
-  passwordChanged: { title: 'Password Changed!', subTitle: 'Your password has been successfully changed.' }
+  passwordChanged: { title: 'Password Changed!', subTitle: 'Your password has been successfully changed.' },
+  signIn: { title: 'Signed in!', subTitle: 'Signed in with ' }
 };
 
 const comfirmMessages = {
@@ -49,20 +59,22 @@ const comfirmMessages = {
 
 @Injectable()
 export class AlertProvider {
-  private alert;
+  public alert;
+  public toast;
 
   public successMessages;
   public errorMessages;
   public comfirmMessages;
 
   constructor(
+    public toastCtrl: ToastController,
     public alertCtrl: AlertController
-    //public logoutProvider: LogoutProvider
   ) {
     this.successMessages = successMessages;
     this.errorMessages = errorMessages;
     this.comfirmMessages = comfirmMessages;
   }
+
 
   // Show profile updated
   showProfileUpdatedMessage() {
@@ -117,6 +129,7 @@ export class AlertProvider {
     }).present();
   }
 
+
   // Show account deleted
   showAccountDeletedMessage() {
     this.alert = this.alertCtrl.create({
@@ -134,6 +147,27 @@ export class AlertProvider {
       buttons: ['OK']
     }).present();
   }
+
+  //TOASTS
+  // Show email verification sent
+  showEmailVerificationSentToast(email) {
+    this.toast = this.toastCtrl.create({
+      message: successMessages.emailVerificationSent["subTitle"] + email,
+      showCloseButton: true,
+      duration: 10000,
+      closeButtonText: 'OK'
+    }).present();
+  }
+
+  showSignInToast(msg) {
+    this.toast = this.toastCtrl.create({
+      message: successMessages.signIn["subTitle"] + msg,
+      showCloseButton: true,
+      duration: 3000,
+      closeButtonText: 'OK'
+    }).present();
+  }
+
 
   // Show error messages depending on the code
   // If you added custom error codes on top, make sure to add a case block for it.
@@ -304,6 +338,45 @@ export class AlertProvider {
           buttons: ['OK']
         }).present();
         break;
+      //Field required Error Messages
+      case 'field/required':
+        this.alert = this.alertCtrl.create({
+          title: errorMessages.fieldRequired["title"],
+          subTitle: errorMessages.fieldRequired["subTitle"],
+          buttons: ['OK']
+        }).present();
+        break;
+      //Field required Error Messages
+      case 'field/invalidEmail':
+        this.alert = this.alertCtrl.create({
+          title: errorMessages.invalidEmail["title"],
+          subTitle: errorMessages.invalidEmail["subTitle"],
+          buttons: ['OK']
+        }).present();
+        break;
+      //Field required Error Messages
+      case 'field/minlength':
+        this.alert = this.alertCtrl.create({
+          title: errorMessages.weakPassword["title"],
+          subTitle: errorMessages.weakPassword["subTitle"] + ' It must be at least 6 characters long !',
+          buttons: ['OK']
+        }).present();
+        break;
+      case 'database/generique':
+        this.alert = this.alertCtrl.create({
+          title: errorMessages.databaseGenerique["title"],
+          subTitle: errorMessages.databaseGenerique["subTitle"],
+          buttons: ['OK']
+        }).present();
+        break;
+      case 'field/equalTo':
+        this.alert = this.alertCtrl.create({
+          title: errorMessages.passwordsDoNotMatch["title"],
+          subTitle: errorMessages.passwordsDoNotMatch["subTitle"],
+          buttons: ['OK']
+        }).present();
+        break;
+
     }
   }
 }

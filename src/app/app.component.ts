@@ -22,7 +22,7 @@ export class LetsRide {
   pages: any[] = [
     { title: 'Home', component: 'MainPage', icon: 'home', is_active: true },
     { title: 'Profile', component: 'ProfilePage', icon: 'person', is_active: false },
-    { title: 'My Places', component: 'PlacesPage', icon: 'map', is_active: false },
+    { title: 'Places', component: 'PlacesPage', icon: 'map', is_active: false },
     { title: 'Friends', component: 'BuddiesTabsPage', icon: 'people', is_active: false },
     { title: 'Events', component: 'EventsPage', icon: 'calendar', is_active: false },
     //{ title: 'Contacts', component: 'ContactPage', icon: 'calendar', is_active: false },

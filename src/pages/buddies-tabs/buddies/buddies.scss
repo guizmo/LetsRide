@@ -1,5 +1,7 @@
 page-buddies {
-
+  #friend-list{
+    position: relative;
+  }
   &.ion-page ion-content{
     background: $brand;
   }
@@ -19,9 +21,15 @@ page-buddies {
   .block-bottom{
     padding-bottom: 5rem;
   }
-  
+
   .block-content{
-    background: #fff;
+    //background: #fff;
     min-height: 100%;
+  }
+  .block-bottom{
+    background: $content_back;
+    ion-list{
+      background: #fff;
+    }
   }
 }

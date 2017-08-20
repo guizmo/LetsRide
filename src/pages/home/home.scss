@@ -8,7 +8,8 @@ page-home {
     overflow: hidden;
     border-bottom: 1px solid #cfd8d9;
     transition: height 0.2s ease-in-out;
-
+    //transition: transform 0.2s ease-in-out;
+    //transform: scaleY(1);
     img{
       margin: auto;
       width: 80%;
@@ -20,13 +21,21 @@ page-home {
     }
   }
   .block-top{
+    transition: transform 0.2s ease-in-out;
+    transform: scaleY(1);
     ion-list{
       background: $content_back;
     }
 
-    &.hasResults{
+    &.smaller{
+      //transform: scaleY(.5);
       .ripple{
+        //transform: scaleY(2);
         height: 12vh;
+
+      }
+      ion-list{
+        //transform: scaleY(2);
       }
     }
   }

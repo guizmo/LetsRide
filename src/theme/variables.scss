@@ -34,6 +34,11 @@ $dark:       #444;
 $warning:    #fcb150;
 $facebook:   #324d8f;
 $google:     #dd4b3e;
+$firebase:    #ffca28;
+
+$primary: #ab3711;
+$secondary: #ab115b;
+
 $colors: (
   primary:    $primary,
   secondary:  $secondary,
@@ -46,7 +51,9 @@ $colors: (
   brand:      $brand,
   brand_back: $brand,
   brand_light: $brand_light,
-  brand_dark: $page_back
+  brand_dark: $page_back,
+  firebase:   $firebase,
+  content_back: $content_back
 );
 
 
@@ -144,3 +151,9 @@ $grid-max-widths: (
   lg: 960px,
   xl: 1140px
 );
+
+
+// CARD
+// --------------------------------------------------
+$card-ios-box-shadow:	0 1px 3px rgba(0, 0, 0, .2);
+$card-md-box-shadow : $card-ios-box-shadow;

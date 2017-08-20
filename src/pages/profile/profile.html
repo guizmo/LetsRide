@@ -16,14 +16,13 @@
 </ion-header>
 
 <ion-content fullscreen>
-  <div id="content" class="block-content" *ngIf="currentUser && userData">
+  <div id="content" class="block-content" block-flex *ngIf="currentUser && userData">
     <div id="profile-info" class="block-top" v-height="35">
 
       <div class="profile">
         <ion-spinner *ngIf="!profileImgLoaded"></ion-spinner>
         <img id="profile-image" [hidden]="!profileImgLoaded" (load)="imageHasLoaded()" [src]="profileImg" tappable (click)="changeProfileImg()"  />
       </div>
-
 
       <!-- Show icon of logged in provider -->
       <h3 id="profile-name">
@@ -35,18 +34,24 @@
         </ng-container>
       </h3>
     </div>
+    <ion-item text-center color="danger" *ngIf="!emailVerified" no-lines>
+      <p padding-left padding-right>You must verify your email to use Let's Ride!<br>Check you mailbox!</p>
+    </ion-item>
 
-    <div class="userData block-bottom">
+    <div class="userData block-bottom" block-grow>
 
-        <ion-list>
-          <ion-item *ngIf="userData.settings.city || userData.settings.country">
+        <ion-list >
+          <ion-item>
             <ion-icon name="pin" item-start></ion-icon>
+            <button block clear ion-button icon-left class="form-placeholder" *ngIf="!userData.settings.city && !userData.settings.country"  (click)="presentProfileModal()">Add your location</button>
             {{userData.settings.city}}
             <ng-container *ngIf="userData.settings.city && userData.settings.country"> | </ng-container>
             {{userData.settings.country}}
           </ion-item><!--userData -->
 
-          <ion-item *ngIf="userData.settings.age || userData.settings.gender">
+          <ion-item >
+              <ion-icon *ngIf="!userData.settings.age && !userData.settings.gender || !userData.settings.gender" name="person" item-start></ion-icon>
+              <button *ngIf="!userData.settings.age && !userData.settings.gender" block clear ion-button icon-left class="form-placeholder"  (click)="presentProfileModal()">Add your infos</button>
             <ng-container *ngIf="userData.settings.gender" [ngSwitch]="userData.settings.gender" item-start>
               <ion-icon *ngSwitchCase="'Male'" name="man" item-start></ion-icon>
               <ion-icon *ngSwitchCase="'Female'" name="woman" item-start></ion-icon>
@@ -55,18 +60,25 @@
           </ion-item>
         </ion-list>
 
-        <ion-list>
+        <ion-list >
+          <ion-item *ngIf="!userData.settings.disciplines" no-lines>
+            <ion-icon name="bicycle" item-start></ion-icon>
+            <button block clear ion-button icon-left class="form-placeholder"  (click)="presentProfileModal()">Add your riding style</button>
+          </ion-item>
           <ion-item-group *ngIf="userData.settings.disciplines">
-            <ion-list-header><h4>Sports</h4></ion-list-header>
+            <ion-list-header>
+              <ion-icon name="bicycle" item-start></ion-icon>
+            </ion-list-header>
             <ion-item *ngFor="let discipline of userData.settings.disciplines">
         			{{discipline}}
             </ion-item>
           </ion-item-group>
         </ion-list>
 
-        <ion-list no-margin *ngIf="userData.settings.level">
+        <ion-list no-margin>
           <ion-item>
             <ion-icon name="fa-signal" item-start></ion-icon>
+            <button block clear ion-button icon-left class="form-placeholder" *ngIf="!userData.settings.level"  (click)="presentProfileModal()">Add your level</button>
             <ng-container [ngSwitch]="userData.settings.level">
               <span *ngSwitchCase="'1'">Novice</span>
               <span *ngSwitchCase="'2'">Intermediate</span>

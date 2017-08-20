@@ -17,11 +17,13 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 })
 export class BuddiesPage {
 
-  public currentUser;
-  public userData;
-  public buddiesId:FirebaseListObservable<any[]>;
-  public buddies: any = [] ;
-  private buddiesSubcription;
+  currentUser;
+  userData;
+  buddiesId:FirebaseListObservable<any[]>;
+  buddies: any = [] ;
+  buddiesSubcription;
+  showSpinner:boolean = true;
+  showNoResult:boolean = false;
 
 
   constructor(
@@ -93,6 +95,13 @@ export class BuddiesPage {
   getBuddies(uid:string){
     this.buddiesProvider.getBuddies(uid);
     this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((buddies) => {
+      this.showSpinner = false;
+
+      this.showNoResult = (buddies.length < 1) ? true : false ;
+
+      if(this.showNoResult){
+        return;
+      }
 
       buddies.map((_buddy) => {
         _buddy.sortByName = _buddy.settings.displayName;
