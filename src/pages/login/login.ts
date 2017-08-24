@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, ToastController, Slides } from 'ionic-angular';
+import { IonicPage, NavController, ToastController, Slides, MenuController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup, ValidationErrors } from '@angular/forms';
 
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -36,10 +36,13 @@ export class LoginPage {
     public translateService: TranslateService,
     private formBuilder: FormBuilder,
     public alertProvider: AlertProvider,
+    public menuCtrl: MenuController,
     public loadingProvider: LoadingProvider
   ) {
+    this.menuCtrl.enable(false, 'mainMenu');
     afAuth.authState.subscribe((_user: firebase.User) => {
       if (_user) {
+        this.menuCtrl.enable(true, 'mainMenu');
         this.navCtrl.setRoot('MainPage');
       }
     });
@@ -79,6 +82,7 @@ export class LoginPage {
   }
 
   signInWithProvider(provider:string) {
+    this.loadingProvider.show();
     this.userProvider.signInWithProvider(provider)
       .then((user) => {
 
@@ -87,6 +91,7 @@ export class LoginPage {
         this.userProvider.afdb.object(`/users/${user.uid}`).subscribe((data) => {
             if(data.$exists()){
               this.navCtrl.setRoot('MainPage');
+              this.loadingProvider.hide();
             }else{
               let providerData = {...user.providerData[0], ...{ aFuid: user.uid, profileImg:{}, settings : { displayName : user.displayName } } };
               this.userProvider.addUserData(providerData).subscribe((data) => {
@@ -95,12 +100,14 @@ export class LoginPage {
                 }else{
                   this.alertProvider.showErrorMessage('database/generique');
                 }
+                this.loadingProvider.hide();
               });
 
             }
         });
 
       }).catch( (error) => {
+        this.loadingProvider.hide();
         let code = error["code"];
         this.alertProvider.showErrorMessage(code);
       });

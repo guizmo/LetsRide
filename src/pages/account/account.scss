@@ -3,12 +3,13 @@ page-account {
     background-color: $brand;
   }
   .scroll-content{
-    padding-bottom: 0 !important;
+    //padding-bottom: 0 !important;
   }
   .block-top{
     img{
       display: block;
       margin: auto;
+      max-width: 200px;
     }
   }
 

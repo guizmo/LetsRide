@@ -1,5 +1,5 @@
 import { Component, ViewChild, NgZone } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Nav, Platform, MenuController} from 'ionic-angular';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -12,7 +12,6 @@ import { AngularFireAuth } from 'angularfire2/auth';
 
 @Component({
   templateUrl: 'app.html',
-  //providers: [NotificationsProvider]
 })
 export class LetsRide {
   @ViewChild(Nav) nav: Nav;
@@ -25,7 +24,6 @@ export class LetsRide {
     { title: 'Places', component: 'PlacesPage', icon: 'map', is_active: false },
     { title: 'Friends', component: 'BuddiesTabsPage', icon: 'people', is_active: false },
     { title: 'Events', component: 'EventsPage', icon: 'calendar', is_active: false },
-    //{ title: 'Contacts', component: 'ContactPage', icon: 'calendar', is_active: false },
   ]
 
   currentUser: any = null;
@@ -37,15 +35,16 @@ export class LetsRide {
     public statusBar: StatusBar,
     public splashScreen: SplashScreen,
     private afAuth: AngularFireAuth,
+    public menuCtrl: MenuController,
     private notifications: NotificationsProvider
   ) {
     this.translate.init();
-    console.log('app.component constructor',  this)
 
     afAuth.authState.subscribe((user) => {
       if (!user) {
         this.nav.setRoot('LoginPage');
       } else {
+        this.menuCtrl.enable(true, 'mainMenu');
         this.currentUser = {...user.providerData[0], ...{'aFuid': user.uid} };
       }
 
@@ -55,13 +54,19 @@ export class LetsRide {
 
   initializeApp() {
     this.platform.ready().then(() => {
+      this.menuCtrl.enable(false, 'mainMenu');
+
       if(this.platform.is('cordova')){
         this.statusBar.styleDefault();
         this.splashScreen.hide();
         this.notifications.init(this.nav);
       }
     })
+
+
+
   }
+
 
 
   openPage(page) {

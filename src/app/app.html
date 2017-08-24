@@ -12,7 +12,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content>
+  <ion-content no-bounce>
     <ion-list>
       <ng-container *ngFor="let p of pages">
         <ion-item no-lines
@@ -31,13 +31,7 @@
 
   </ion-content>
 
-
-
-
-
-
-  <ion-footer  class="bar-stable" style="left:0;right:0;margin:0; width: 100%;position: fixed;bottom:0;">
-
+  <ion-footer>
       <ion-item
         menuClose
         *ngIf="!currentUser"

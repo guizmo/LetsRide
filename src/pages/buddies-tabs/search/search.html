@@ -25,34 +25,6 @@
     </ion-buttons>
   </ion-navbar>
 
-  <ion-toolbar>
-    <form [formGroup]="searchForm"  >
-      <div ion-button small color="light">
-        <ion-label>Sports</ion-label>
-        <ion-select
-          formControlName="disciplines"
-          name="disciplines"
-          multiple="true"
-          okText="Okay"
-          cancelText="Dismiss">
-          <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
-        </ion-select>
-      </div>
-      <div ion-button small color="light">
-        <ion-label>Countrie</ion-label>
-        <ion-select
-          formControlName="country"
-          name="country"
-          okText="Okay"
-          cancelText="Dismiss">
-          <ion-option *ngFor="let country of countries" [value]="code">{{country.name}}</ion-option>
-        </ion-select>
-      </div>
-      <button ion-button small color="light">Level</button>
-      <button ion-button small color="light">Gender</button>
-    </form>
-  </ion-toolbar>
-
 </ion-header>
 
 

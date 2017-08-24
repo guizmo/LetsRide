@@ -67,12 +67,8 @@ export class ProfileEditModalPage {
   }
 
   ngOnInit() {
-    this.disciplinesProvider.findAll().subscribe(
-      data => this.disciplines = data
-    );
-    this.countriesProvider.findAll().subscribe(
-      data => this.countries = data
-    );
+    this.disciplinesProvider.findAll().subscribe( data => this.disciplines = data );
+    this.countriesProvider.findAll().subscribe( data => this.countries = data );
   }
 
   dismiss() {

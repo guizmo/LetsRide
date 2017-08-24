@@ -13,13 +13,13 @@ import { OneSignal } from '@ionic-native/onesignal';
 import { Camera } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
 import { FilePath } from '@ionic-native/file-path';
+import { Diagnostic } from '@ionic-native/diagnostic';
 
 import { MomentModule } from 'angular2-moment';
 
-import 'web-animations-js/web-animations.min';
-
-// import { AgmCoreModule } from '@agm/core';
-// import {GoogleMapsAPIWrapper} from '@agm/core/services';
+//import 'web-animations-js/web-animations.min';
+//import { AgmCoreModule } from '@agm/core';
+//import {GoogleMapsAPIWrapper} from '@agm/core/services';
 import {
   AgmCoreModule,
   MapsAPILoader,
@@ -34,11 +34,8 @@ import { LetsRide } from './app.component';
 import { ListPage} from '../pages';
 
 import {
-  Api,
-  Settings,
   UserProvider,
   Translate,
-  AppEvents,
   DisciplinesProvider,
   CountriesProvider,
   LoadingProvider,
@@ -51,7 +48,8 @@ import {
   FileProvider,
   CaptureProvider,
   FacebookProvider,
-  PeopleProvider
+  PeopleProvider,
+  PermissionsProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -84,20 +82,6 @@ export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
-export function provideSettings(storage: Storage) {
-  /**
-   * The Settings provider takes a set of default settings for your app.
-   *
-   * You can add new settings options at any time. Once the settings are saved,
-   * these values will not overwrite the saved values (this can be done manually if desired).
-   */
-  return new Settings(storage, {
-    option1: true,
-    option2: 'Ionitron J. Framework',
-    option3: '3',
-    option4: 'Hello'
-  });
-}
 
 @NgModule({
   declarations: [
@@ -134,7 +118,6 @@ export function provideSettings(storage: Storage) {
     ListPage,
   ],
   providers: [
-    Api,
     UserProvider,
     DisciplinesProvider,
     Translate,
@@ -145,7 +128,6 @@ export function provideSettings(storage: Storage) {
     GooglePlus,
     Dialogs,
     SpinnerDialog,
-    AppEvents,
     CountriesProvider,
     LoadingProvider,
     AlertProvider,
@@ -166,7 +148,9 @@ export function provideSettings(storage: Storage) {
     FilePath,
     CaptureProvider,
     FacebookProvider,
-    PeopleProvider
+    PeopleProvider,
+    Diagnostic,
+    PermissionsProvider
   ]
 })
 export class AppModule {}

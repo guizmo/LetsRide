@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Platform, ToastController, App, Events } from 'ionic-angular';
 
-import { UserProvider, Translate } from '../../providers';
+import { UserProvider, Translate, LocationTrackerProvider } from '../../providers';
 import { Dialogs } from '@ionic-native/dialogs';
 
 
@@ -24,6 +24,7 @@ export class GbLogoutButton {
     private dialogs: Dialogs,
     public userProvider: UserProvider,
     private app: App,
+    public locationTracker: LocationTrackerProvider,
     public events: Events
   ) {
     this.text = 'Log out';
@@ -43,6 +44,7 @@ export class GbLogoutButton {
       )
       .then((res) => {
         if(res === 1)
+          this.locationTracker.stopTracking();
           this.userProvider.logout();
       })
       .catch(e => console.log('Error displaying dialog', e));

@@ -1,0 +1,97 @@
+<ion-header>
+  <ion-navbar>
+  <ion-buttons start>
+    <button ion-button icon-left (click)="dismiss()">
+      <ion-icon name="arrow-back"></ion-icon>
+      Cancel
+    </button>
+  </ion-buttons>
+
+    <ion-title>Filters</ion-title>
+
+  <ion-buttons end >
+    <button ion-button (click)="searchFormSubmit()"  >
+      Save
+    </button>
+  </ion-buttons>
+</ion-navbar>
+</ion-header>
+
+
+<ion-content >
+  <form [formGroup]="searchForm">
+
+    <ion-list>
+
+      <!-- CITY -->
+      <ion-item >
+        <ion-label>City</ion-label>
+        <ion-input type="text" formControlName="city" name="city"></ion-input>
+      </ion-item>
+
+      <!-- COUNTRIE -->
+      <ion-item>
+        <ion-label>Countrie</ion-label>
+        <ion-select
+          formControlName="country"
+          name="country"
+          okText="Okay"
+          cancelText="Dismiss"
+          >
+          <ion-option *ngFor="let country of countries" [value]="code">{{country.name}}</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <!-- GENDER -->
+    <ion-list radio-group formControlName="gender" name="gender">
+      <ion-item>
+        <ion-label>
+          <ion-icon color="dark" icon-left name="man" large></ion-icon>
+        </ion-label>
+        <ion-radio value="Male" checked></ion-radio>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>
+          <ion-icon color="dark" icon-left name="woman" large></ion-icon>
+        </ion-label>
+        <ion-radio value="Female"></ion-radio>
+      </ion-item>
+    </ion-list>
+
+    <ion-list no-margin>
+
+      <!-- DISCIPLINE -->
+
+
+      <ion-item>
+        <ion-label>Sports</ion-label>
+        <ion-select
+          formControlName="disciplines"
+          name="disciplines"
+          multiple="true"
+          okText="Okay"
+          cancelText="Dismiss"
+          >
+          <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- LEVEL -->
+      <ion-item>
+        <ion-label>Level</ion-label>
+        <ion-range min="1" max="5" step="1" snaps="true" formControlName="level" name="level">
+          <ion-icon range-left small ios="stats-outline" md="md-stats"></ion-icon>
+          <ion-icon range-right name="stats"></ion-icon>
+        </ion-range>
+      </ion-item>
+
+    </ion-list>
+
+
+
+
+  </form>
+
+</ion-content>

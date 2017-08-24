@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 
 import { NativePageTransitions, NativeTransitionOptions } from '@ionic-native/native-page-transitions';
-import {OneSignal} from '@ionic-native/onesignal';
+import { OneSignal } from '@ionic-native/onesignal';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 import { UserProvider, LocationTrackerProvider, NotificationsProvider} from '../../providers';
+
+declare var myWindow:any;
 
 @IonicPage()
 @Component({
@@ -36,14 +38,13 @@ export class MainPage {
     public afAuth: AngularFireAuth,
     private nativePageTransitions: NativePageTransitions,
     public locationTracker: LocationTrackerProvider,
-    private notifications: NotificationsProvider
+    private notifications: NotificationsProvider,
+    public platform: Platform,
   ) {
-    //this.items = afDB.list('/recipes');
-    this.state = {
-      enabled: false
-    }
 
-    console.log(this);
+    this.state = {
+      enabled: this.locationTracker.is_tracking
+    }
 
     this.afAuth.authState.subscribe((user) => {
       if(user){
@@ -51,14 +52,19 @@ export class MainPage {
         this.userProvider.userData.subscribe((settings) => this.userSettings = settings);
       }
     });
+
   }
 
-  ionViewDidLoad(){
-  }
 
   onToggleEnabled() {
+
     if(this.state.enabled){
+      let that = this;
+      setTimeout(function(){
+        that.state.enabled = that.locationTracker.can_track;
+      },300);
       this.locationTracker.startTracking(this.currentUser.uid);
+
     }else{
       this.locationTracker.stopTracking();
     }
@@ -77,7 +83,6 @@ export class MainPage {
       that.searchDone = false;
     },50);
 
-    console.log(this.search);
 
     //Let time for animation before resolving data
     setTimeout(function(){
@@ -164,30 +169,23 @@ export class MainPage {
 
   sendMessageCloseBy(index){
     let oneSignalId = this.peopleAround[index].oneSignalId;
+    let name = this.userSettings.displayName;
     let data = {
       type: 'closeBy',
       from: {
         oneSignalId: this.userSettings.oneSignalId,
         user_id: this.userSettings.aFuid
       },
-      displayName: this.userSettings.displayName
+      displayName: name
     };
-    this.notifications.sendMessage([oneSignalId], data);
+    let contents = {
+      'en': `${name} wants to let you know that is close by !`
+    }
+    this.notifications.sendMessage([oneSignalId], data, contents);
   }
 
 
 
-  fakeCloseBywithRedirect(){
-    //redirect on web
-    this.notifications.handleNotificationOpened({
-      type: 'closeBy',
-      from: {
-        oneSignalId: this.userSettings.oneSignalId,
-        user_id: this.userSettings.aFuid
-      },
-      displayName: this.userSettings.displayName
-    })
-  }
 
   avatarLoaded(index){
     this.peopleAround[index].avatarLoaded = true;

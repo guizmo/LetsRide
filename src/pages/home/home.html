@@ -25,7 +25,7 @@
         </ion-list-header>
         <ion-item>
           <ion-label>Maximum distance</ion-label>
-          <ion-select [(ngModel)]="search.radius" interface="action-sheet">
+          <ion-select [(ngModel)]="search.radius" (ionChange)="findPeopleAround()" interface="action-sheet">
             <ion-option value="5">5 km</ion-option>
             <ion-option value="10">10 km</ion-option>
             <ion-option value="15">15 km</ion-option>
@@ -36,7 +36,7 @@
         </ion-item>
         <ion-item>
           <ion-label>Friends only</ion-label>
-          <ion-checkbox color="brand" [(ngModel)]="search.friends" checked="search.friends"></ion-checkbox>
+          <ion-checkbox color="brand" [(ngModel)]="search.friends" checked="search.friends" (ionChange)="findPeopleAround()"></ion-checkbox>
         </ion-item>
       </ion-list>
 
@@ -44,10 +44,10 @@
 
     <div class="block-bottom" block-grow vertical-center *ngIf="!peopleAround.length" padding>
       <div class="text-wrapper" *ngIf="!noResults" f-width>
-        <h4>Riding is better with friends&nbsp;! <br>Hit the search <ion-icon color="brand" name="search"></ion-icon> button to see who's nearby !</h4>
+        <h5>Riding is better with friends&nbsp;! <br>Hit the search <ion-icon color="brand" name="search"></ion-icon> button to see who's nearby !</h5>
       </div>
       <div class="text-wrapper" *ngIf="noResults" f-width>
-        <h3>There isn't anybody in this search perimeter</h3><br><br>
+        <h5>There isn't anybody in this search perimeter</h5><br><br>
       </div>
     </div>
 

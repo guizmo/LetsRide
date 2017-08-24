@@ -1,6 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { IonicPage, NavController, NavParams, Content, ModalController } from 'ionic-angular';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subject } from 'rxjs/Subject'
@@ -28,35 +27,17 @@ export class SearchPage {
   isSearching = false;
   showNoResult = false;
 
-  disciplines:ReadonlyArray<any>;
-  countries:ReadonlyArray<any>;
-  private searchForm: FormGroup;
-
-
   constructor(
-    private formBuilder: FormBuilder,
-    public disciplinesPvr: DisciplinesProvider,
-    public countriesPvr: CountriesProvider,
     public navCtrl: NavController,
     public navParams: NavParams,
     public afdb: AngularFireDatabase,
     public afAuth: AngularFireAuth,
     public userProvider: UserProvider,
+    public modalCtrl: ModalController,
     private notifications: NotificationsProvider,
     private peoplePvr: PeopleProvider
   ) {
     console.log(this);
-    this.disciplinesPvr.findAll().subscribe(
-      data => this.disciplines = data
-    );
-    this.countriesPvr.findAll().subscribe(
-      data => this.countries = data
-    );
-    let controls = {
-      disciplines: [],
-      country: '',
-    }
-    this.searchForm = formBuilder.group(controls);
   }
 
   ionViewDidLoad() {
@@ -127,6 +108,16 @@ export class SearchPage {
   }
 
   showOptions(){
+    let modal = this.modalCtrl.create('SearchFilterModalPage', {filters: null} );
+
+    modal.onDidDismiss(filters => {
+      console.log('filters', filters);
+      if(filters != null && filters != 'cancel'){
+        //do search
+      }
+    });
+
+    modal.present();
 
   }
 

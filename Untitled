@@ -1,0 +1,26 @@
+plugins.appPreferences.fetch('testkey1').then(function(success){
+  console.log('success', success)
+},function(fail){
+  console.log('success', fail)
+})
+
+
+plugins.appPreferences.store(function(res){
+  console.log('success', res)
+}, function(fail){
+  console.log('fail', fail)
+}, 'testdict1', 'testkey1', 'testvalue1');
+
+plugins.appPreferences.fetch(function(res){
+  console.log('success', res)
+}, function(fail){
+  console.log('fail', fail)
+}, 'testdict1', 'testkey1');
+
+plugins.appPreferences.fetch(function(res){
+  console.log('success', res)
+}, function(fail){
+  console.log('fail', fail)
+}, 'UIBackgroundModes', 'location');
+
+prefs.store (ok, fail, 'dict', 'key', 'value');

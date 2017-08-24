@@ -1,11 +1,15 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Platform } from 'ionic-angular';
+
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
+
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/observable/forkJoin';
-import {Observable} from 'rxjs/Observable';
+import { Observable } from 'rxjs/Observable';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+
+import { PermissionsProvider } from './permissions';
 
 /*
   Generated class for the LocationTrackerProvider provider.
@@ -22,6 +26,8 @@ export class LocationTrackerProvider {
   public tracker: FirebaseObjectObservable<any>;
   public trackers: FirebaseListObservable<any>;
   public trackerSubsciption;
+  public is_tracking: boolean = false;
+  public can_track: boolean = false;
 
 
   constructor(
@@ -30,62 +36,117 @@ export class LocationTrackerProvider {
     public zone: NgZone,
     public platform: Platform,
     public afdb: AngularFireDatabase,
+    private perm: PermissionsProvider
   ) {
     console.log(this);
+    console.log('is_tracking', this.is_tracking);
+
+    this.platform.ready().then((res) => {
+      this.checkLocationPermissions();
+      console.log('ready : cantrack = ', this.can_track);
+    })
+
+    this.platform.resume.subscribe((res) => {
+      this.checkLocationPermissions();
+      console.log('resume : cantrack = ', this.can_track);
+    })
+
   }
 
+  checkLocationPermissions(){
+    this.perm.isLocationAuthorized().then((res) => {
+      if(res){
+      console.log('isLocationAuthorized then success' , res);
+      this.can_track = true;
+      }else{
+        console.log('isLocationAuthorized then fail', res);
+        this.can_track = false;
+      }
+    }).catch((res) => {
+      console.log('isLocationAuthorized catch', res);
+      this.can_track = false;
+    })
+  }
+
+
+
+
   startTracking(uid: string) {
-    console.log('startTracking');
+    console.log('startTracking : cantrack = ', this.can_track);
+      if(this.can_track){
+        console.log('startTracking => this.trackInBackground(uid)', this.can_track);
+        this.trackInBackground(uid);
+      }else{
+        console.log('startTracking => this.perm.showMessage()', this.can_track);
+        this.is_tracking = false;
+        this.perm.showMessage();
+      }
+
+  }
+
+  trackInBackground(uid: string){
     this.tracker = this.afdb.object(`/trackers/${uid}`);
-    console.log(this);
+
+    console.log('trackInBackground', this);
     // Background Tracking
     let config = {
-      desiredAccuracy: 0,
+      desiredAccuracy: 100,
       accuracy: 100,
       stationaryRadius: 20,
       distanceFilter: 10,
-      debug: true,
+      debug: false,
       interval: 5000, //android
       activityType: 'Fitness',//ios,
-      pauseLocationUpdates: false //ios
+      pauseLocationUpdates: false, //ios
+      locationProvider:0 //android
     };
-
     this.backgroundGeolocation.configure(config).subscribe((location) => {
 
-      //console.log('BackgroundGeolocation:  ' + location.latitude + ',' + location.longitude);
-      console.log('BackgroundGeolocation');
+      if(location){
+        // Run update inside of Angular's zone
+        this.is_tracking = true;
+        /*this.zone.run(() => {
+          this.lat = location.latitude;
+          this.lng = location.longitude;
+        });*/
 
-      // Run update inside of Angular's zone
-      this.zone.run(() => {
-        this.lat = location.latitude;
-        this.lng = location.longitude;
-      });
-
-      this.tracker.set({
-        lat: location.latitude,
-        lng: location.longitude
-      });
+        this.tracker.set({
+          lat: location.latitude,
+          lng: location.longitude
+        });
+      }
 
       if (this.platform.is('ios')) {
-          this.backgroundGeolocation.finish().then((data) => console.log('finish ', data) );
+        this.backgroundGeolocation.finish().then((data) => console.log('finish ', data) );
       }
-    }, (err) => {
-
-      console.log('error', JSON.stringify(err) );
 
     });
 
-    // Turn ON the background-geolocation system.
-    this.backgroundGeolocation.start();
 
+    this.backgroundGeolocation.start().then((success) => {
+
+    }).catch((err) => {
+
+      if (this.platform.is('ios')) {
+        this.backgroundGeolocation.finish().then((data) => console.log('finish ', data) );
+      }
+      this.stopTracking();
+
+      if(err.code == 2){
+        //this.backgroundGeolocation.showAppSettings();
+      }
+    })
 
   }
 
 
   stopTracking() {
-    console.log('stopTracking');
+    this.is_tracking = false;
     this.backgroundGeolocation.stop();
-    this.tracker.remove();
+    if(this.tracker){
+      this.tracker.remove();
+    }
+
   }
 
 
@@ -105,7 +166,6 @@ export class LocationTrackerProvider {
           lng: settings.lng
         };
 
-        console.log(position, distanceMax);
 
         this.trackerSubsciption = this.trackers.subscribe(data => {
           if(data){
@@ -117,9 +177,18 @@ export class LocationTrackerProvider {
             peopleAround.map( (obj) => key_distance_obj[obj.$key] = obj.distance );
 
             let buddiesRequest = [];
-            for(let persone of peopleAround){
-              buddiesRequest.push( this.afdb.object(`/users/${persone.$key}`, { preserveSnapshot: true }).first() );
+            if(peopleAround.length > 0){
+              for(let persone of peopleAround){
+                buddiesRequest.push( this.afdb.object(`/users/${persone.$key}`, { preserveSnapshot: true }).first() );
+              }
+            }else{
+              return resolve([]);
             }
+
+            if(buddiesRequest.length == 0){
+              return resolve([]);
+            }
+
             let buddies = [];
             Observable.forkJoin(buddiesRequest).subscribe((snapshots) => {
               if(snapshots){

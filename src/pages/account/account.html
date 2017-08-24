@@ -14,13 +14,13 @@
 
 <ion-content no-bounce>
   <div class="block-content" block-flex>
-    <div class="block-top" v-height="50" vertical-center>
+    <div class="block-top"  block-grow vertical-center>
       <img src="assets/img/logo.png">
     </div><!-- block-top -->
-    <div class="block-bottom" block-grow vertical-center>
+    <div class="block-bottom"  vertical-center>
 
       <div class="content" f-width>
-        <h3 text-center *ngIf="currentUser">{{currentUser.email}}</h3>
+        <h4 padding text-center *ngIf="currentUser">{{currentUser.email}}</h4>
         <div padding *ngIf="providerId == 'password'">
           <button ion-button icon-left block color="primary" (click)="presentAccountModal('password')">
             <ion-icon name="key"></ion-icon>  Change Password
@@ -30,16 +30,16 @@
             <ion-icon name="mail-open"></ion-icon>  Change Email Address
           </button>
         </div>
+        <ion-item *ngIf="!emailVerified" text-center color="danger" text-wrap no-padding >
+          <p padding-left padding-right>After changing your email, you must verify it! Check you mailbox!</p>
+        </ion-item>
+
 
       </div>
     </div>
   </div>
 
-
 </ion-content>
-<ion-footer class="bar-stable" style="left:0;right:0;margin:0; width: 100%;position: fixed;bottom:0;">
-  <ion-item text-center color="danger" *ngIf="!emailVerified" no-padding >
-    <p padding-left padding-right>After changing your email, you must verify it! <br>Check you mailbox!</p>
-  </ion-item>
+<ion-footer>
     <gb-logout-button  nav-clear ></gb-logout-button>
 </ion-footer>
