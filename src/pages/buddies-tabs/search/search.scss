@@ -1,4 +1,9 @@
 page-search {
+  .filters-selected{
+    background: #fff;
+    border-bottom: 1px solid #cecece;
+    padding-bottom: 1px;
+  }
   ion-searchbar{
     input{
       text-transform: capitalize;

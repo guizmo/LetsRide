@@ -26,6 +26,7 @@ export class SearchPage {
   endAt = new Subject() ;
   isSearching = false;
   showNoResult = false;
+  filters:any = [];
 
   constructor(
     public navCtrl: NavController,
@@ -38,6 +39,8 @@ export class SearchPage {
     private peoplePvr: PeopleProvider
   ) {
     console.log(this);
+
+    //this.filters = [{"value":["Cross Country (XC)", "Downhill", "Enduro", "Road", "All-mountain"],"alias":"disciplines"},{"value":"New Caledonia","alias":"country"},{"value":"Male","alias":"gender"},{"value":"Nouméa","alias":"city"},{"value":3,"alias":"level"}];
   }
 
   ionViewDidLoad() {
@@ -67,6 +70,8 @@ export class SearchPage {
         this.isSearching = false;
         //this.people = people;
         this.peopleArr = people;
+
+
 
       })
   }
@@ -108,12 +113,20 @@ export class SearchPage {
   }
 
   showOptions(){
-    let modal = this.modalCtrl.create('SearchFilterModalPage', {filters: null} );
+    let modal = this.modalCtrl.create('SearchFilterModalPage', {filters: this.filters} );
 
     modal.onDidDismiss(filters => {
-      console.log('filters', filters);
-      if(filters != null && filters != 'cancel'){
-        //do search
+      if(filters != null && filters != 'cancel' && Object.keys(filters).length > 0){
+        this.filters = Object.keys(filters).map((key, index) => {
+          let obj = {
+            value: filters[key],
+            alias: key
+          };
+          return (filters[key] != '') ? obj : null ;
+        }).filter((filter) => {
+          return filter;
+        });
+        this.applySearchFilter();
       }
     });
 
@@ -121,8 +134,18 @@ export class SearchPage {
 
   }
 
-  onCancel(searchbar) {
+  onCancel(searchbar){
     this.people = [];
+  }
+
+  removeFilter(index, indexDiscipline = null){
+    if(indexDiscipline !== null){
+      this.filters[index].value.splice(indexDiscipline, 1);
+    }else{
+      this.filters.splice(index, 1);
+    }
+
+    this.applySearchFilter();
   }
 
 
@@ -171,6 +194,49 @@ export class SearchPage {
           this.afdb.list(`/users/${key}/buddies`).update(this.userData.aFuid, data.from);
         }
       })
+  }
+
+
+
+
+
+
+
+  applySearchFilter(){
+
+    let filtersSize = this.filters.length;
+
+    if(filtersSize === 0){
+      this.people = [];
+      return;
+    }
+
+    let disciplines = this.filters.filter((_filter) => {
+      return _filter.alias == 'disciplines' ;
+    });
+
+    let scoreToMatch = (disciplines.length) ? filtersSize - 1 + disciplines[0].value.length : filtersSize;
+    this.people = this.peopleArr.map((person) => {
+        person.score = 0;
+        let settings = person.settings;
+
+        this.filters.map((_filter) => {
+
+          if(_filter.alias == 'disciplines' ){
+            if(JSON.stringify(_filter.value) == JSON.stringify(settings[_filter.alias])){
+              person.score = person.score + _filter.value.length;
+            }
+          }else{
+            if(settings[_filter.alias] == _filter.value){
+              person.score++;
+            }
+          }
+        });
+        return person;
+      }).filter((people) => people.score == scoreToMatch)
+
+
+
   }
 
 

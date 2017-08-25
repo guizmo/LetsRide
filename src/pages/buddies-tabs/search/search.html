@@ -35,6 +35,21 @@
     Searching
   </ion-label>
 
+  <div class="filters-selected" *ngIf="filters.length">
+    <ng-container *ngFor="let filter of filters; let i = index">
+      <button *ngIf="filter.alias != 'disciplines'" ion-button small icon-right (click)="removeFilter(i)">
+        {{filter.value}}
+        <ion-icon name="close"></ion-icon>
+      </button>
+      <ng-container *ngIf="filter.alias == 'disciplines'" >
+        <button *ngFor="let disciplineFilter of filter.value; let x = index" ion-button small icon-right (click)="removeFilter(i, x)">
+          {{x}} {{i}} {{disciplineFilter}}
+          <ion-icon name="close"></ion-icon>
+        </button>
+      </ng-container>
+    </ng-container>
+  </div>
+
 
 
   <ion-list>

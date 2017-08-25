@@ -14,6 +14,7 @@ export class SearchFilterModalPage {
   disciplines:ReadonlyArray<any>;
   countries:ReadonlyArray<any>;
 
+
   constructor(
     public navCtrl: NavController,
     private formBuilder: FormBuilder,
@@ -26,25 +27,7 @@ export class SearchFilterModalPage {
     this.disciplinesPvr.findAll().subscribe(data => this.disciplines = data);
     this.countriesPvr.findAll().subscribe(data => this.countries = data);
 
-    const emptyValues = {
-      disciplines: '',
-      country: '',
-      gender: '',
-      city: '',
-      level: ''
-    }
-
-    let filters = this.navParams.data.filters != null ? this.navParams.data.filters : emptyValues;
-    let { disciplines = '', country = '', gender = '', city = '', level = '' } = filters;
-
-    let controls = {
-      disciplines: [disciplines],
-      country: country,
-      gender: gender,
-      city: city,
-      level: level
-    }
-
+    let controls = this.getControls();
     this.searchForm = formBuilder.group(controls);
   }
 
@@ -59,6 +42,33 @@ export class SearchFilterModalPage {
 
   dismiss() {
     this.viewCtrl.dismiss('cancel');
+  }
+
+  arrayToObject(array, keyField){
+    return array.reduce((obj, item) => {
+      obj[item[keyField]] = item
+      return obj
+    }, {});
+  }
+
+
+  getControls(){
+    let filters = this.arrayToObject(this.navParams.data.filters, 'alias');
+
+    let controls = {
+      disciplines: [],
+      country: '',
+      gender: '',
+      city: '',
+      level: ''
+    }
+
+    Object.keys(controls).map((key, index) => {
+      (filters[key]) ? controls[key] = filters[key].value  : ''  ;
+    });
+    controls.disciplines = [controls.disciplines];
+    return controls;
+
   }
 
 }
