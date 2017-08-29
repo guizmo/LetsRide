@@ -139,7 +139,7 @@ export class EventsPage {
             headings: `${name} has created an event`
           }
         }
-        if(this.oneSignalBuddiesId.length && message){
+        if(this.oneSignalBuddiesId.length && message && this.userData.oneSignalId){
           message.contents = contents;
           this.sendEventToBuddies(message);
         }
@@ -216,7 +216,7 @@ export class EventsPage {
     this.buddies.subscribe(
       _buddies => {
         if(_buddies){
-          this.oneSignalBuddiesId = _buddies.map(buddie => buddie.oneSignalId);
+          this.oneSignalBuddiesId = _buddies.filter(buddie => buddie.oneSignalId).map(buddie => buddie.oneSignalId);
         }
       },
       error => console.log('error'),

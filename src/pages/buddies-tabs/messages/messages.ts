@@ -26,7 +26,7 @@ export class MessagesPage {
   private buddiesRequestSubscription;
   private buddiesSubcription;
 
-  public messages: string = "requests";
+  public messages: string = "events";
 
   constructor(
     public navCtrl: NavController,
@@ -90,7 +90,7 @@ export class MessagesPage {
         let bud = this.buddies.filter((_bud) => _bud.$key === event.$key)[0];
         let buddy = {
           displayName: bud.settings.displayName,
-          oneSignalId: bud.oneSignalId,
+          oneSignalId: bud.oneSignalId || null,
           aFuid: bud.$key
         };
 
@@ -136,7 +136,7 @@ export class MessagesPage {
 
   acceptFriendRequest(index){
     let buddy = this.buddiesRequest[index];
-    let { aFuid, displayName, oneSignalId} = buddy;
+    let { aFuid, displayName, oneSignalId = null} = buddy;
     //console.log(`send notif to "${displayName}" from "${this.userData.displayName} - ${this.userData.aFuid}" @ "${oneSignalId}" after updating database for "${aFuid}"`);
 
     this.userData.buddies[aFuid].pending = false;
@@ -146,12 +146,14 @@ export class MessagesPage {
         //add new buddie to the ASKER
         let asker = {
           pending: false,
-          oneSignalId: _userData.oneSignalId,
+          oneSignalId: _userData.oneSignalId || null,
           user_id: _userData.aFuid
         }
         this.afdb.object(`/users/${aFuid}/buddies/${_userData.aFuid}`).update(asker);
         //send message to the ASKER
-        this.sendMessageFriendRequestAccepted(oneSignalId, this.userData.settings.displayName);
+        if(oneSignalId && _userData.oneSignalId){
+          this.sendMessageFriendRequestAccepted(oneSignalId, this.userData.settings.displayName);
+        }
         buddy.pending = false;
         this.requestAccepted.push(buddy);
         this.buddies.splice(index, 1);
@@ -170,7 +172,8 @@ export class MessagesPage {
       displayName: name
     };
     let contents = {
-      'en': `You are now connected to ${name}`
+      'en': `You are now connected to ${name}`,
+      'fr': `Vous êtes maintenant connecté à ${name}`
     }
     this.notifications.sendMessage([oneSignalId], data, contents);
   }

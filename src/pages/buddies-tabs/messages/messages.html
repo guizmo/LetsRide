@@ -9,11 +9,11 @@
 
   <ion-toolbar no-border-top>
     <ion-segment [(ngModel)]="messages" color="light">
-      <ion-segment-button value="requests">
-        Friend requests
-      </ion-segment-button>
       <ion-segment-button value="events">
         Friends events
+      </ion-segment-button>
+      <ion-segment-button value="requests">
+        Friend requests
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
@@ -25,8 +25,7 @@
 
   <div [ngSwitch]="messages">
     <div *ngSwitchCase="'requests'">
-      <h3 *ngIf="!buddies || !buddies.length">No friend request pending</h3>
-      <ion-list *ngIf="buddies && buddies.length">
+      <ion-list >
         <ion-list-header>
           Pending
         </ion-list-header>
@@ -44,6 +43,9 @@
             </button>
           </ion-item>
         </ng-container>
+        <h3 [style.color]="'#555'" text-center *ngIf="!buddiesRequest || !buddiesRequest.length" class="no-result">
+          There is no friend request pending
+        </h3>
       </ion-list>
 
 
@@ -61,8 +63,8 @@
           </ion-item>
         </ng-container>
       </ion-list>
-    </div><!-- requests -->
 
+    </div><!-- requests -->
 
     <div *ngSwitchCase="'events'">
       <ion-list>
@@ -93,10 +95,11 @@
               </p>
             </ion-card-content>
           </ion-card>
-
-
         </ng-container>
       </ion-list>
+      <h3 [style.color]="'#555'" text-center *ngIf="!buddiesEvents || !buddiesEvents.length" class="no-result">
+        There is no events coming up
+      </h3>
 
 
 

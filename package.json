@@ -45,6 +45,7 @@
         "@ngx-translate/core": "^7.0.0",
         "@ngx-translate/http-loader": "^0.1.0",
         "angular2-moment": "^1.6.0",
+        "angular2-virtual-scroll": "^0.2.1",
         "angularfire2": "^4.0.0-rc.1",
         "angularfire2-offline": "^4.1.5",
         "com.greybax.spinnerdialog": "~1.0.8",

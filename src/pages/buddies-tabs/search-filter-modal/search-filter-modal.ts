@@ -60,6 +60,7 @@ export class SearchFilterModalPage {
       country: '',
       gender: '',
       city: '',
+      displayName: '',
       level: ''
     }
 

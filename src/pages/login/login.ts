@@ -50,8 +50,8 @@ export class LoginPage {
 
 
     this.signInForm = formBuilder.group({
-      email: ['guillaume.bartolini@gmail.com', Validators.compose([EmailValidator.isValid, Validators.required])],
-      password: ['qwer12', Validators.compose([Validators.required])]
+      email: ['', Validators.compose([EmailValidator.isValid, Validators.required])],
+      password: ['', Validators.compose([Validators.required])]
     });
 
 

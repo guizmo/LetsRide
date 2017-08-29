@@ -1,7 +1,10 @@
 page-search {
+  .list-ios > .item-block:first-child{
+    border-top: none;
+  }
   .filters-selected{
     background: #fff;
-    border-bottom: 1px solid #cecece;
+    border-bottom: 2px solid #cecece;
     padding-bottom: 1px;
   }
   ion-searchbar{

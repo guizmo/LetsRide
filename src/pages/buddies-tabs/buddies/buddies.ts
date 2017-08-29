@@ -121,7 +121,7 @@ export class BuddiesPage {
 
 
   removeFriend(index){
-    let { aFuid, displayName, oneSignalId} = this.buddies[index];
+    let { aFuid, displayName } = this.buddies[index];
 
     //remove reference to request in currentUser
     let removeFromCurrentUser = this.afdb.object(`/users/${this.userData.aFuid}/buddies/${aFuid}`).remove();

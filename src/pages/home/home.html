@@ -63,7 +63,7 @@
            </ion-avatar>
           <h2>{{people.displayName}}</h2>
           <p>{{people.distance}} km</p>
-          <button item-end ion-button color="brand" icon-right (click)="sendMessageCloseBy(i)">
+          <button *ngIf="people.oneSignalId" item-end ion-button color="brand" icon-right (click)="sendMessageCloseBy(i)">
             Notify <ion-icon name="send" ></ion-icon>
           </button>
         </ion-item>

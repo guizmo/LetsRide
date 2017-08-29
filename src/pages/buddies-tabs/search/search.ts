@@ -20,6 +20,8 @@ export class SearchPage {
 
   currentUser;
   userData;
+  filterSearch:boolean = false;
+  nameSearch:string;
   people:any = [];
   peopleArr:any = [];
   startAt = new Subject() ;
@@ -47,7 +49,6 @@ export class SearchPage {
     //this.peoplePvr.getPeople(this.startAt, this.endAt, 10)
     this.peoplePvr.getPeople()
       .subscribe(people => {
-        console.log(people);
         if(people.length){
           people.map((person) => {
             person.avatarLoaded = false;
@@ -68,11 +69,7 @@ export class SearchPage {
           }
         }
         this.isSearching = false;
-        //this.people = people;
         this.peopleArr = people;
-
-
-
       })
   }
 
@@ -80,37 +77,11 @@ export class SearchPage {
     this.people[index].avatarLoaded = true;
   }
 
-  search($event) {
-    let q = $event.target.value;
-    if(!q){
-      this.people = [];
-      this.isSearching = false;
-      this.showNoResult = false;
-      return;
-    }
-
-    this.people = this.peopleArr.filter((v) => {
-      if(v.settings.displayName && q) {
-        if (v.settings.displayName.toLowerCase().indexOf(q.toLowerCase()) > -1) {
-          return true;
-        }
-        return false;
-      }
-    });
-
-    //this.isSearching = true;
-    //let q = this.capitalize($event.target.value);
-    //this.startAt.next(q);
-    //this.endAt.next(q+"\uf8ff");
-  }
 
   ionViewDidEnter() {
     this.getCurrentUser();
   }
 
-  capitalize(s){
-    return s[0].toUpperCase() + s.slice(1);
-  }
 
   showOptions(){
     let modal = this.modalCtrl.create('SearchFilterModalPage', {filters: this.filters} );
@@ -134,13 +105,14 @@ export class SearchPage {
 
   }
 
-  onCancel(searchbar){
-    this.people = [];
-  }
+
 
   removeFilter(index, indexDiscipline = null){
     if(indexDiscipline !== null){
       this.filters[index].value.splice(indexDiscipline, 1);
+      if(this.filters[index].value.length === 0){
+        this.filters.splice(index, 1);
+      }
     }else{
       this.filters.splice(index, 1);
     }
@@ -178,22 +150,21 @@ export class SearchPage {
     let data = {
       type: 'friendRequest',
       from: {
-        oneSignalId: this.userData.oneSignalId,
+        oneSignalId: this.userData.oneSignalId || null,
         user_id: this.userData.aFuid,
         pending: true,
       },
       displayName: name
     };
 
-    this.notifications.sendMessage([oneSignalId], data)
-      .then((res) => {
-        this.afdb.list(`/users/${key}/buddies`).update(this.userData.aFuid, data.from);
-      })
-      .catch((err) => {
-        if(err == 'cordova_not_available'){
-          this.afdb.list(`/users/${key}/buddies`).update(this.userData.aFuid, data.from);
-        }
-      })
+
+    this.afdb.list(`/users/${key}/buddies`).update(this.userData.aFuid, data.from);
+
+    if(this.userData.oneSignalId && oneSignalId){
+
+      this.notifications.sendMessage([oneSignalId], data)
+    }
+
   }
 
 
@@ -202,30 +173,78 @@ export class SearchPage {
 
 
 
-  applySearchFilter(){
+  applySearchFilter($event = null){
+    let filterArr = [];
+    let q;
+    //this.isSearching = true;
+    if($event){
+      q = $event.target.value;
+      console.log('event.target.value', q);
+
+      if (this.filters.filter(f => f.alias == 'displayName').length > 0) {
+        console.log('display filter exist');
+        if(!q){
+          this.filters = this.filters.filter(f => f.alias != 'displayName');
+        }else{
+          this.filters.map((filter) => {
+            console.log('map filters for displayName');
+            if(filter.alias == 'displayName'){
+              filter.value = q;
+            }
+          });
+        }
+
+      }else{
+        this.filters.push({
+          value: q,
+          alias: 'displayName'
+        })
+      }
+    }
 
     let filtersSize = this.filters.length;
 
+
+
+    console.log('filtersSize', filtersSize);
     if(filtersSize === 0){
       this.people = [];
+      //this.isSearching = false;
+      this.showNoResult = false;
       return;
     }
+
+    this.filterSearch = true;
 
     let disciplines = this.filters.filter((_filter) => {
       return _filter.alias == 'disciplines' ;
     });
 
     let scoreToMatch = (disciplines.length) ? filtersSize - 1 + disciplines[0].value.length : filtersSize;
+
     this.people = this.peopleArr.map((person) => {
         person.score = 0;
         let settings = person.settings;
 
         this.filters.map((_filter) => {
-
-          if(_filter.alias == 'disciplines' ){
-            if(JSON.stringify(_filter.value) == JSON.stringify(settings[_filter.alias])){
-              person.score = person.score + _filter.value.length;
+          if(_filter.alias == 'displayName'){
+            if(_filter.value) {
+              let q = _filter.value;
+              if (person.settings.displayName.toLowerCase().indexOf(q.toLowerCase()) > -1) {
+                person.score++;
+              }
             }
+
+          }else if(_filter.alias == 'disciplines' ){
+            if(settings[_filter.alias].length){
+              let sports = settings[_filter.alias];
+              let disciplinesFilters = _filter.value;
+              let res  = sports.reduce((r, a) => disciplinesFilters.includes(a) && r.concat(a) || r, []);
+              if(disciplinesFilters.length === res.length){
+                person.score = person.score + disciplinesFilters.length;
+              }
+            }
+
           }else{
             if(settings[_filter.alias] == _filter.value){
               person.score++;
@@ -233,10 +252,11 @@ export class SearchPage {
           }
         });
         return person;
-      }).filter((people) => people.score == scoreToMatch)
+      }).filter((people) => people.score == scoreToMatch);
 
-
-
+    if(this.people.length===0){
+      this.showNoResult = true;
+    }
   }
 
 

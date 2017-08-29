@@ -71,11 +71,6 @@ export class NotificationsProvider {
 
     let template = this.templates[payload.type];
 
-
-
-    console.log('template = ', template);
-
-
     let notificationObj:any = {
       include_player_ids: userIds,
       data: payload,
@@ -88,9 +83,6 @@ export class NotificationsProvider {
     if(headings){
       notificationObj.headings = headings;
     }
-
-    console.log(notificationObj);
-
 
     return this.oneSignal.postNotification(notificationObj);
   }
@@ -110,6 +102,9 @@ export class NotificationsProvider {
     }
 
     let MsgType = data.type;
+
+    console.log(data);
+    console.log(JSON.stringify(data));
 
     if(MsgType){
       this.navCtrl.setRoot('NotificationsPage', data);

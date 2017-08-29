@@ -1,9 +1,3 @@
-<!--
-  Generated template for the SearchPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
 
   <ion-navbar>
@@ -11,9 +5,9 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-searchbar
-      (ionInput)="search($event)"
+      (ionInput)="applySearchFilter($event)"
       [showCancelButton]=true
-      (ionCancel)="onCancel($event)"
+      (ionCancel)="applySearchFilter()"
       [debounce]="300"
       placeholder="Find riders"
       #searchInput>
@@ -28,36 +22,45 @@
 </ion-header>
 
 
-<ion-content>
+<ion-content no-bounce>
+
+
+  <div class="filters-selected" *ngIf="filters.length">
+    <ng-container *ngFor="let filter of filters; let i = index">
+      <ng-container [ngSwitch]="filter.alias">
+        <ng-container *ngSwitchCase="'displayName'" ></ng-container>
+
+        <ng-container *ngSwitchCase="'disciplines'" >
+          <button *ngFor="let disciplineFilter of filter.value; let x = index" ion-button small icon-right (click)="removeFilter(i, x)">
+            {{disciplineFilter}}
+            <ion-icon name="close"></ion-icon>
+          </button>
+        </ng-container>
+
+        <ng-container *ngSwitchDefault>
+          <button ion-button small icon-right (click)="removeFilter(i)">
+            {{filter.value}}
+            <ion-icon name="close"></ion-icon>
+          </button>
+        </ng-container>
+
+      </ng-container>
+    </ng-container>
+  </div>
 
   <ion-label *ngIf="isSearching" text-center color="dark">
     <ion-spinner></ion-spinner><br>
     Searching
   </ion-label>
 
-  <div class="filters-selected" *ngIf="filters.length">
-    <ng-container *ngFor="let filter of filters; let i = index">
-      <button *ngIf="filter.alias != 'disciplines'" ion-button small icon-right (click)="removeFilter(i)">
-        {{filter.value}}
-        <ion-icon name="close"></ion-icon>
-      </button>
-      <ng-container *ngIf="filter.alias == 'disciplines'" >
-        <button *ngFor="let disciplineFilter of filter.value; let x = index" ion-button small icon-right (click)="removeFilter(i, x)">
-          {{x}} {{i}} {{disciplineFilter}}
-          <ion-icon name="close"></ion-icon>
-        </button>
-      </ng-container>
-    </ng-container>
-  </div>
 
 
 
-  <ion-list>
-    <ng-container *ngFor="let person of people; let i = index">
-      <ion-item>
+  <ion-list [virtualScroll]="people" approxItemHeight="60px" >
+
+      <ion-item *virtualItem="let person; let i = index" >
         <ion-avatar item-start>
-          <img [hidden]="!person.avatarLoaded" (load)="avatarLoaded(i)" src="{{person.avatar}}">
-          <ion-spinner *ngIf="!person.avatarLoaded"></ion-spinner>
+          <ion-img [src]="person.avatar"></ion-img>
         </ion-avatar>
         <h2>{{person.settings.displayName}}</h2>
         <h3 *ngIf="person.settings.country">{{person.settings.country}}</h3>
@@ -69,7 +72,6 @@
           <ion-icon color="dark" name="person-add"></ion-icon>
         </button>
       </ion-item>
-    </ng-container>
   </ion-list>
 
   <h3 [style.color]="'#555'" text-center *ngIf="!isSearching && showNoResult && !people.length" class="no-result">

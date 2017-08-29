@@ -16,6 +16,7 @@ import { FilePath } from '@ionic-native/file-path';
 import { Diagnostic } from '@ionic-native/diagnostic';
 
 import { MomentModule } from 'angular2-moment';
+import { VirtualScrollModule } from 'angular2-virtual-scroll';
 
 //import 'web-animations-js/web-animations.min';
 //import { AgmCoreModule } from '@agm/core';
@@ -150,7 +151,8 @@ export function HttpLoaderFactory(http: Http) {
     FacebookProvider,
     PeopleProvider,
     Diagnostic,
-    PermissionsProvider
+    PermissionsProvider,
+    VirtualScrollModule
   ]
 })
 export class AppModule {}
