@@ -56,17 +56,35 @@
         <ion-list-header>
           Results
         </ion-list-header>
-        <ion-item *ngFor="let people of peopleAround; let i = index">
-          <ion-avatar item-start>
-            <img [hidden]="!people.avatarLoaded" (load)="avatarLoaded(i)" src="{{people.avatar}}">
-            <ion-spinner *ngIf="!people.avatarLoaded"></ion-spinner>
-           </ion-avatar>
-          <h2>{{people.displayName}}</h2>
-          <p>{{people.distance}} km</p>
-          <button *ngIf="people.oneSignalId" item-end ion-button color="brand" icon-right (click)="sendMessageCloseBy(i)">
-            Notify <ion-icon name="send" ></ion-icon>
-          </button>
-        </ion-item>
+        <ion-item-sliding  #slidingItem *ngFor="let people of peopleAround; let i = index"  >
+          <ion-item #item>
+            <ion-avatar item-start>
+              <img [hidden]="!people.avatarLoaded" (load)="avatarLoaded(i)" src="{{people.avatar}}">
+              <ion-spinner *ngIf="!people.avatarLoaded"></ion-spinner>
+             </ion-avatar>
+            <h2>{{people.displayName}}</h2>
+            <p>{{people.distance}} km</p>
+            <!-- <button *ngIf="people.oneSignalId" item-end ion-button color="brand" icon-only (click)="sendMessageCloseBy(i)">
+              <ion-icon name="send" ></ion-icon>
+            </button> -->
+            <button item-end ion-button clear icon-only (click)="openOption(slidingItem, item, options)">
+              <ion-icon color="brand" name="more" ></ion-icon>
+            </button>
+          </ion-item>
+
+          <ion-item-options #options side="right" (click)="closeOption()">
+            <button ion-button item-end ion-button icon-only color="secondary" (click)="openMap(i)">
+              <ion-icon name="map" ></ion-icon>
+            </button>
+            <button *ngIf="people.oneSignalId && !people.sent" item-end ion-button color="brand" icon-only (click)="sendMessageCloseBy(i)">
+              <ion-icon name="send" ></ion-icon>
+            </button>
+            <button *ngIf="people.sent" item-end ion-button color="brand" icon-only >
+              <ion-icon name="checkmark" ></ion-icon>
+            </button>
+          </ion-item-options>
+
+        </ion-item-sliding>
       </ion-list>
     </div>
   </div>

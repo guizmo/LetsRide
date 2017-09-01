@@ -4,6 +4,7 @@ import { Platform } from 'ionic-angular';
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 
+import { Subject } from 'rxjs/Subject'
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/observable/forkJoin';
 import { Observable } from 'rxjs/Observable';
@@ -11,12 +12,9 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 
 import { PermissionsProvider } from './permissions';
 
-/*
-  Generated class for the LocationTrackerProvider provider.
+import * as moment  from 'moment';
 
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular DI.
-*/
+
 @Injectable()
 export class LocationTrackerProvider {
 
@@ -28,6 +26,9 @@ export class LocationTrackerProvider {
   public trackerSubsciption;
   public is_tracking: boolean = false;
   public can_track: boolean = false;
+  public canTrackSubject = new Subject() ;
+  public timeTracker;
+  public uid;
 
 
   constructor(
@@ -43,12 +44,12 @@ export class LocationTrackerProvider {
 
     this.platform.ready().then((res) => {
       this.checkLocationPermissions();
-      console.log('ready : cantrack = ', this.can_track);
+      console.log('ready : cantrack = ', this);
     })
 
     this.platform.resume.subscribe((res) => {
       this.checkLocationPermissions();
-      console.log('resume : cantrack = ', this.can_track);
+      console.log('resume : cantrack = ', this);
     })
 
   }
@@ -56,15 +57,20 @@ export class LocationTrackerProvider {
   checkLocationPermissions(){
     this.perm.isLocationAuthorized().then((res) => {
       if(res){
-      console.log('isLocationAuthorized then success' , res);
-      this.can_track = true;
+        console.log('isLocationAuthorized then success' , res);
+        this.can_track = true;
+        this.canTrackSubject.next(this.can_track);
       }else{
         console.log('isLocationAuthorized then fail', res);
         this.can_track = false;
+        this.canTrackSubject.next(this.can_track);
+        if(this.is_tracking) this.stopTracking();
       }
     }).catch((res) => {
       console.log('isLocationAuthorized catch', res);
       this.can_track = false;
+      this.canTrackSubject.next(this.can_track);
+      if(this.is_tracking) this.stopTracking();
     })
   }
 
@@ -73,19 +79,22 @@ export class LocationTrackerProvider {
 
   startTracking(uid: string) {
     console.log('startTracking : cantrack = ', this.can_track);
-      if(this.can_track){
-        console.log('startTracking => this.trackInBackground(uid)', this.can_track);
-        this.trackInBackground(uid);
-      }else{
-        console.log('startTracking => this.perm.showMessage()', this.can_track);
-        this.is_tracking = false;
-        this.perm.showMessage();
-      }
+
+    if(this.can_track){
+      console.log('startTracking => this.trackInBackground(uid)', this.can_track);
+      this.trackInBackground(uid);
+    }else{
+      console.log('startTracking => this.perm.showMessage()', this.can_track);
+      this.is_tracking = false;
+      this.perm.showMessage();
+    }
 
   }
 
   trackInBackground(uid: string){
+    this.uid = uid;
     this.tracker = this.afdb.object(`/trackers/${uid}`);
+    this.timeTracker = moment().valueOf();
 
     console.log('trackInBackground', this);
     // Background Tracking
@@ -101,8 +110,12 @@ export class LocationTrackerProvider {
       locationProvider:0 //android
     };
     this.backgroundGeolocation.configure(config).subscribe((location) => {
+      console.log('this.backgroundGeolocation.configure', location);
+
+      this.checkTimeTracking();
 
       if(location){
+        console.log('has location');
         // Run update inside of Angular's zone
         this.is_tracking = true;
         /*this.zone.run(() => {
@@ -114,6 +127,8 @@ export class LocationTrackerProvider {
           lat: location.latitude,
           lng: location.longitude
         });
+      }else{
+        console.log('no location');
       }
 
       if (this.platform.is('ios')) {
@@ -124,9 +139,9 @@ export class LocationTrackerProvider {
 
 
     this.backgroundGeolocation.start().then((success) => {
-
+      console.log('this.backgroundGeolocation.start success', success);
     }).catch((err) => {
-
+      console.log('this.backgroundGeolocation.start err', err);
       if (this.platform.is('ios')) {
         this.backgroundGeolocation.finish().then((data) => console.log('finish ', data) );
       }
@@ -139,18 +154,35 @@ export class LocationTrackerProvider {
 
   }
 
-
-  stopTracking() {
-    this.is_tracking = false;
-    this.backgroundGeolocation.stop();
-    if(this.tracker){
-      this.tracker.remove();
+  checkTimeTracking(){
+    if(this.timeTracker){
+      let duration = moment.duration(moment().valueOf() - this.timeTracker);
+      let minutes = duration.minutes();
+      console.log('duration', minutes, duration );
+      if(minutes >= 60){
+        console.log('stopTracking minutes >= 60', minutes >= 60);
+        this.stopTracking();
+      }
     }
 
   }
 
+  stopTracking() {
+    console.log('stopTracking()');
+    this.is_tracking = false;
+    this.backgroundGeolocation.stop();
+    this.timeTracker = null;
 
+    if(this.tracker){
+      this.tracker.remove();
+    }else if(this.uid){
+      let tracker = this.afdb.object(`/trackers/${this.uid}`);
+      if(tracker){
+        tracker.remove();
+      }
+    }
 
+  }
 
 
   findPeopleAround(settings:any){
@@ -158,6 +190,7 @@ export class LocationTrackerProvider {
     return new Promise<any>( (resolve, reject) => {
 
       this.geolocation.getCurrentPosition().then((position) => {
+
         settings.lat = position.coords.latitude;
         settings.lng = position.coords.longitude;
         let distanceMax = parseFloat(settings.distanceMax);
@@ -165,7 +198,6 @@ export class LocationTrackerProvider {
           lat: settings.lat,
           lng: settings.lng
         };
-
 
         this.trackerSubsciption = this.trackers.subscribe(data => {
           if(data){
@@ -229,7 +261,16 @@ export class LocationTrackerProvider {
   }
 
 
+  initLocation(){
+    this.perm.isLocationAuthorized().then().catch((res) => {
+      this.backgroundGeolocation.start();
+      if (this.platform.is('ios')) {
+        this.backgroundGeolocation.finish();
+      }
+      this.backgroundGeolocation.stop();
 
+    })
+  }
 
 
   applyHaversine(locations, userLocation){

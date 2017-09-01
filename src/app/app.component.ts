@@ -6,7 +6,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { Dialogs } from '@ionic-native/dialogs';
 
 import { ListPage} from '../pages';
-import { Translate, NotificationsProvider } from '../providers';
+import { Translate, NotificationsProvider, LocationTrackerProvider } from '../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 
@@ -36,6 +36,7 @@ export class LetsRide {
     public splashScreen: SplashScreen,
     private afAuth: AngularFireAuth,
     public menuCtrl: MenuController,
+    private locationTracker: LocationTrackerProvider,
     private notifications: NotificationsProvider
   ) {
     this.translate.init();
@@ -60,6 +61,7 @@ export class LetsRide {
         this.statusBar.styleDefault();
         this.splashScreen.hide();
         this.notifications.init(this.nav);
+        this.locationTracker.initLocation();
       }
     })
 

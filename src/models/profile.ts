@@ -37,5 +37,7 @@ export interface Profile {
   providerId?: string;
   oneSignalId?: string;
   profileImg?: ProfileImg;
-  buddies?: Buddies
+  buddies?: Buddies;
+  firstLaunch: boolean;
+  location: boolean;
 }

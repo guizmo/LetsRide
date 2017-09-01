@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
+import { Component, ElementRef } from '@angular/core';
+import { IonicPage, NavController, NavParams, ItemSliding, Item, ItemOptions } from 'ionic-angular';
 
 import { NativePageTransitions, NativeTransitionOptions } from '@ionic-native/native-page-transitions';
 import { OneSignal } from '@ionic-native/onesignal';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
-import { UserProvider, LocationTrackerProvider, NotificationsProvider} from '../../providers';
+import { UserProvider, LocationTrackerProvider, NotificationsProvider, PermissionsProvider} from '../../providers';
 
 declare var myWindow:any;
 
@@ -17,6 +17,9 @@ declare var myWindow:any;
 })
 export class MainPage {
 
+  canTrackSubject;
+  activeItemSliding: ItemSliding = null;
+  private onResumeSubscription;
   private items: FirebaseListObservable<any[]>;
   private state: any;
   private searchDone: boolean = null;
@@ -39,9 +42,7 @@ export class MainPage {
     private nativePageTransitions: NativePageTransitions,
     public locationTracker: LocationTrackerProvider,
     private notifications: NotificationsProvider,
-    public platform: Platform,
   ) {
-
     this.state = {
       enabled: this.locationTracker.is_tracking
     }
@@ -54,6 +55,22 @@ export class MainPage {
     });
 
   }
+
+  ionViewWillEnter(){
+    console.log('ionViewWillEnter', this);
+    this.canTrackSubject = this.locationTracker.canTrackSubject.subscribe((can_track) => {
+      console.log('subscribe this.canTrackSubject', can_track);
+      if(this.state.enabled && !can_track){
+        this.state.enabled = can_track;
+      }
+    })
+  }
+  ionViewWillLeave(){
+    console.log('ionViewWillLeave', this);
+    console.log('unsubscribe this.canTrackSubject');
+    this.canTrackSubject.unsubscribe();
+  }
+
 
 
   onToggleEnabled() {
@@ -115,6 +132,7 @@ export class MainPage {
         console.error(err);
       })
   }
+
   filterByBuddies(users){
     if(!this.userSettings.buddies && users.length < 1){
       return [];
@@ -142,7 +160,6 @@ export class MainPage {
 
     people.map((person) => {
       person.avatarLoaded = false;
-
       if(person.profileImg && person.profileImg.url != ''){
         person.avatar = person.profileImg.url;
       }else if(person.photoURL){
@@ -168,6 +185,8 @@ export class MainPage {
   }
 
   sendMessageCloseBy(index){
+    this.peopleAround[index].sent = true;
+
     let oneSignalId = this.peopleAround[index].oneSignalId;
     let name = this.userSettings.displayName;
     let data = {
@@ -185,10 +204,40 @@ export class MainPage {
   }
 
 
-
+  openMap(index){
+    console.log('openMap', index);
+  }
 
   avatarLoaded(index){
     this.peopleAround[index].avatarLoaded = true;
   }
 
+  closeOption() {
+    if(this.activeItemSliding) {
+      this.activeItemSliding.close();
+      this.activeItemSliding = null;
+    }
+  }
+  openOption(itemSlide: ItemSliding, item: Item, options) {
+    if(this.activeItemSliding!==null) //use this if only one active sliding item allowed
+    this.closeOption();
+    this.activeItemSliding = itemSlide;
+
+    let children = options.children;
+    let totalWidth = 0;
+    let swipeAmount = 160;
+    itemSlide.startSliding(swipeAmount);
+    itemSlide.moveSliding(swipeAmount);
+    setTimeout(function() {
+      for (var i = 0; i < children.length; i++) {
+        totalWidth += children[i].clientWidth;
+      }
+      swipeAmount = totalWidth || 150; //set your required swipe amount
+      itemSlide.setElementClass('active-options-right', true);
+      itemSlide.setElementClass('active-swipe-right', true);
+      item.setElementStyle('transition', null);
+      item.setElementStyle('transform', 'translate3d(-'+swipeAmount+'px, 0px, 0px)');
+    },0)
+
+  }
 }
