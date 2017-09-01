@@ -1,13 +1,12 @@
 <ion-header>
   <ion-navbar>
-    <ion-buttons *ngIf="state == 'create'" start>
+    <ion-buttons *ngIf="state != 'update'" start>
       <button ion-button icon-left (click)="dismiss()">
         <ion-icon name="arrow-back"></ion-icon>
-        Cancel
+        {{backButton}}
       </button>
     </ion-buttons>
-    <!-- <ion-title>Map</ion-title> -->
-    <ion-buttons end>
+    <ion-buttons *ngIf="state != 'display'" end>
       <button ion-button icon-right (click)="onSave()">
         Save
         <ion-icon name="lr-add-location"></ion-icon>
@@ -20,7 +19,7 @@
 
 <ion-content no-padding>
 
-  <div class="searchblock">
+  <div class="searchblock" *ngIf="state != 'display'">
     <ion-toolbar [hidden]="!mapAPI_loaded" no-padding transparent >
       <ion-searchbar
         color="dark"
@@ -70,9 +69,24 @@
         (markerClick)="clickedMarker(marker.label)"
         [latitude]="marker.lat"
         [longitude]="marker.lng"
-        [markerDraggable]="true"
+        [markerDraggable]="markerDraggable"
         (dragEnd)="markerDragEnd(marker, $event)"
         [iconUrl]="'assets/img/pin.png'"
+        >
+        <!-- [label]="marker.label" -->
+
+      <agm-info-window *ngIf="marker.name">
+        <strong>{{marker.name}}</strong>
+      </agm-info-window>
+
+    </agm-marker>
+
+    <agm-marker
+        *ngIf="buddy"
+        (markerClick)="clickedMarker(marker.label)"
+        [latitude]="buddy.location.lat"
+        [longitude]="buddy.location.lng"
+        [iconUrl]="buddy.avatar"
         >
         <!-- [label]="marker.label" -->
 

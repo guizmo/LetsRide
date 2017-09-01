@@ -204,9 +204,10 @@ export class LocationTrackerProvider {
             let key_distance_obj = {};
             let _trackers = data.filter( _tracker => _tracker.$key !== settings.uid);
             let peopleAround = this.applyHaversine(_trackers, userLocation);
+
             peopleAround = peopleAround.filter( location => location.distance < distanceMax);
             peopleAround = peopleAround.sort((locationA, locationB) => locationA.distance - locationB.distance );
-            peopleAround.map( (obj) => key_distance_obj[obj.$key] = obj.distance );
+            peopleAround.map( (obj) => key_distance_obj[obj.$key] = {distance:obj.distance, lat:obj.lat, lng:obj.lng}  );
 
             let buddiesRequest = [];
             if(peopleAround.length > 0){
@@ -234,7 +235,7 @@ export class LocationTrackerProvider {
                       oneSignalId: snapshot.oneSignalId || null,
                       buddies: snapshot.buddies || null,
                       photoURL: snapshot.photoURL || profileImg || null,
-                      distance: key_distance_obj[snapshot.aFuid]
+                      location: key_distance_obj[snapshot.aFuid]
                     }
                     buddies.push(buddy);
                   }

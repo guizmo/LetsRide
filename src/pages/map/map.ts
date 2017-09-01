@@ -5,8 +5,9 @@ import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 
 import {GoogleMapsAPIWrapper, MapsAPILoader} from '@agm/core';
 import {GoogleMap, ZoomControlOptions, MapTypeStyle, ControlPosition} from '@agm/core/services/google-maps-types';
-// import { AgmMap, AgmMarker } from '@agm/core';
+
 import { ModalNavPage } from '../modal-nav/modal-nav';
+import { MapStyle } from '../../constants/mapStyle';
 
 declare var window: any;
 declare var google:any;
@@ -35,6 +36,9 @@ interface marker {
 export class MapPage {
 
   public map: any = {};
+  backButton: string = 'Cancel';
+  buddy:any = null;
+  markerDraggable:boolean = true;
   private searchControlForm: FormGroup;
   public state: string;
   public marker: marker = {};
@@ -45,7 +49,7 @@ export class MapPage {
   private mapAPI_loaded:boolean = false;
   private loading: any;
   private zoomControlOptions:ZoomControlOptions;
-  private mapStyle;
+  private mapStyle = MapStyle;
 
   @ViewChild("search", { read: ElementRef }) searchElementRef;
 
@@ -60,7 +64,7 @@ export class MapPage {
     public modalNavPage: ModalNavPage,
     public viewCtrl: ViewController
   ) {
-    this.setMapStyle();
+    console.log('MAP',this);
     //this.spinnerDialog.show('Loading map ...', '', false, {overlayOpacity:0.8});
     // this.searchControlForm = formBuilder.group({
     //   search: '',
@@ -96,6 +100,13 @@ export class MapPage {
       this.setCurrentPosition();
     }
     this.marker.userId = this.modalNavPage.navParams.get('userId');
+    console.log(this);
+
+    if(this.state == 'display'){
+      this.backButton = 'Back';
+      this.buddy = this.modalNavPage.navParams.get('buddy');
+      this.markerDraggable = false;
+    }
   }
 
   presentLoader(message){
@@ -161,6 +172,9 @@ export class MapPage {
 
 
   markerDragEnd(m: marker, $event: any) {
+    if(this.state == 'display'){
+      return;
+    }
     this.marker.lat = $event.coords.lat;
     this.marker.lng = $event.coords.lng;
   }
@@ -169,6 +183,9 @@ export class MapPage {
   }
 
   mapClicked($event: any) {
+    if(this.state == 'display'){
+      return;
+    }
     this.marker.lat = $event.coords.lat;
     this.marker.lng = $event.coords.lng;
     this.getGeoLocation(this.marker.lat, this.marker.lng);
@@ -252,192 +269,5 @@ export class MapPage {
     this.modalNavPage.dismissModal({state: 'cancel'});
   }
 
-  setMapStyle(){
-    this.mapStyle = [
-    {
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "hue": "#ff4400"
-        },
-        {
-          "saturation": -100
-        },
-        {
-          "lightness": -4
-        },
-        {
-          "gamma": 0.72
-        }
-      ]
-    },
-    {
-      "featureType": "road",
-      "elementType": "labels.icon"
-    },
-    {
-      "featureType": "landscape.man_made",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "hue": "#0077ff"
-        },
-        {
-          "gamma": 3.1
-        }
-      ]
-    },
-    {
-      "featureType": "water",
-      "stylers": [
-        {
-          "hue": "#00ccff"
-        },
-        {
-          "gamma": 0.44
-        },
-        {
-          "saturation": -33
-        }
-      ]
-    },
-    {
-      "featureType": "poi.park",
-      "stylers": [
-        {
-          "hue": "#44ff00"
-        },
-        {
-          "saturation": -23
-        }
-      ]
-    },
-    {
-      "featureType": "water",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {
-          "hue": "#007fff"
-        },
-        {
-          "gamma": 0.77
-        },
-        {
-          "saturation": 65
-        },
-        {
-          "lightness": 99
-        }
-      ]
-    },
-    {
-      "featureType": "water",
-      "elementType": "labels.text.stroke",
-      "stylers": [
-        {
-          "gamma": 0.11
-        },
-        {
-          "weight": 5.6
-        },
-        {
-          "saturation": 99
-        },
-        {
-          "hue": "#0091ff"
-        },
-        {
-          "lightness": -86
-        }
-      ]
-    },
-    {
-      "featureType": "transit.line",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "lightness": -48
-        },
-        {
-          "hue": "#ff5e00"
-        },
-        {
-          "gamma": 1.2
-        },
-        {
-          "saturation": -23
-        }
-      ]
-    },
-    {
-      "featureType": "transit",
-      "elementType": "labels.text.stroke",
-      "stylers": [
-        {
-          "saturation": -64
-        },
-        {
-          "hue": "#ff9100"
-        },
-        {
-          "lightness": 16
-        },
-        {
-          "gamma": 0.47
-        },
-        {
-          "weight": 2.7
-        }
-      ]
-    }
-  ];
-  }
 
-
-  /*autocomplete() {
-      this.mapsAPILoader.load().then(() => {
-
-        let inputField = this.searchElementRef.nativeElement.querySelector('.searchbar-input');
-        let autocomplete = new google.maps.places.Autocomplete( inputField, {
-          //types: ['address', 'cities']
-        });
-
-        autocomplete.addListener("place_changed", () => {
-          this.ngZone.run(() => {
-            //get the place result
-            let place = autocomplete.getPlace();
-            console.log('autocomplete.addListener', autocomplete);
-            //verify result
-            if (place.geometry === undefined || place.geometry === null) {
-              return;
-            }
-            //set latitude, longitude and zoom
-            this.map = {
-              lat: place.geometry.location.lat(),
-              lng: place.geometry.location.lng(),
-              zoom: 16
-            }
-            this.marker.lat = place.geometry.location.lat();
-            this.marker.lng = place.geometry.location.lng();
-            this.marker.name = place.name;
-            this.addressToMarker(place.address_components);
-
-          });
-        });
-      });
-  }
-  loadMap(){
-    //native
-      Geolocation.getCurrentPosition().then((position) => {
-
-          this.map = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-              zoom: 15
-          };
-          this.firstTime = false;
-      }, (err) => {
-      });
-
-  }*/
 }

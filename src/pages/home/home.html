@@ -63,7 +63,7 @@
               <ion-spinner *ngIf="!people.avatarLoaded"></ion-spinner>
              </ion-avatar>
             <h2>{{people.displayName}}</h2>
-            <p>{{people.distance}} km</p>
+            <p>{{people.location.distance}} km</p>
             <!-- <button *ngIf="people.oneSignalId" item-end ion-button color="brand" icon-only (click)="sendMessageCloseBy(i)">
               <ion-icon name="send" ></ion-icon>
             </button> -->
@@ -73,7 +73,7 @@
           </ion-item>
 
           <ion-item-options #options side="right" (click)="closeOption()">
-            <button ion-button item-end ion-button icon-only color="secondary" (click)="openMap(i)">
+            <button ion-button item-end ion-button icon-only color="secondary" (click)="openMap(i)" >
               <ion-icon name="map" ></ion-icon>
             </button>
             <button *ngIf="people.oneSignalId && !people.sent" item-end ion-button color="brand" icon-only (click)="sendMessageCloseBy(i)">

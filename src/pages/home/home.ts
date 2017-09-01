@@ -1,5 +1,5 @@
 import { Component, ElementRef } from '@angular/core';
-import { IonicPage, NavController, NavParams, ItemSliding, Item, ItemOptions } from 'ionic-angular';
+import { IonicPage, NavController, ModalController, NavParams, ItemSliding, Item, ItemOptions } from 'ionic-angular';
 
 import { NativePageTransitions, NativeTransitionOptions } from '@ionic-native/native-page-transitions';
 import { OneSignal } from '@ionic-native/onesignal';
@@ -33,9 +33,11 @@ export class MainPage {
     friends: false
   };
 
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
+    public modalCtrl: ModalController,
     private afDB: AngularFireDatabase,
     private userProvider: UserProvider,
     public afAuth: AngularFireAuth,
@@ -53,7 +55,7 @@ export class MainPage {
         this.userProvider.userData.subscribe((settings) => this.userSettings = settings);
       }
     });
-
+    console.log(this);
   }
 
   ionViewWillEnter(){
@@ -67,10 +69,8 @@ export class MainPage {
   }
   ionViewWillLeave(){
     console.log('ionViewWillLeave', this);
-    console.log('unsubscribe this.canTrackSubject');
     this.canTrackSubject.unsubscribe();
   }
-
 
 
   onToggleEnabled() {
@@ -205,7 +205,25 @@ export class MainPage {
 
 
   openMap(index){
-    console.log('openMap', index);
+    let person = this.peopleAround[index];
+    let modal = this.modalCtrl.create('ModalNavPage', {
+      state: 'display',
+      key: null,
+      values: null,
+      page:'MapPage',
+      userId: this.currentUser.uid,
+      buddy: person
+    });
+
+    modal.present();
+
+
+    modal.onDidDismiss(data => {
+      console.log('dismiss map', data);
+    });
+
+
+
   }
 
   avatarLoaded(index){

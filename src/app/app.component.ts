@@ -63,10 +63,7 @@ export class LetsRide {
         this.notifications.init(this.nav);
         this.locationTracker.initLocation();
       }
-    })
-
-
-
+    });
   }
 
 

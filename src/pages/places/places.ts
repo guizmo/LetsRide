@@ -84,8 +84,6 @@ export class PlacesPage {
               break;
             }
           }
-
-
       }
     });
 
