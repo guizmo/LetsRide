@@ -71,12 +71,11 @@
         [longitude]="marker.lng"
         [markerDraggable]="markerDraggable"
         (dragEnd)="markerDragEnd(marker, $event)"
-        [iconUrl]="'assets/img/pin.png'"
+        [iconUrl]="'assets/img/pin.svg'"
         >
         <!-- [label]="marker.label" -->
-
-      <agm-info-window *ngIf="marker.name">
-        <strong>{{marker.name}}</strong>
+      <agm-info-window *ngIf="marker.displayName">
+        <strong>{{marker.displayName}}</strong>
       </agm-info-window>
 
     </agm-marker>
@@ -86,13 +85,12 @@
         (markerClick)="clickedMarker(marker.label)"
         [latitude]="buddy.location.lat"
         [longitude]="buddy.location.lng"
-        [iconUrl]="buddy.avatar"
+        [iconUrl]="'assets/img/friend.svg'"
         >
-        <!-- [label]="marker.label" -->
+        <agm-info-window>
+          <strong>{{buddy.displayName}}</strong>
+        </agm-info-window>
 
-      <agm-info-window *ngIf="marker.name">
-        <strong>{{marker.name}}</strong>
-      </agm-info-window>
 
     </agm-marker>
 

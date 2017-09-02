@@ -39,8 +39,6 @@ export class PeopleProvider {
       endAt: end
     }*/
 
-    console.log('qeury', query);
-
     return this.afdb.list('/users', { query: query });
   }
 

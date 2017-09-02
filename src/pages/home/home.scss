@@ -1,4 +1,9 @@
 page-home {
+  .ion-content-refresher{
+    //min-height: 50vh;
+    position:absolute;
+    z-index: 10;
+  }
   .ripple{
     background: url('../assets/img/map.png') center center ;
     background-size: cover;
@@ -41,6 +46,11 @@ page-home {
   }
   .block-bottom{
     //background-color: #fff;
+    position: relative;
+    .block-text{
+      position: relative;
+      z-index: 20;
+    }
   }
 
   .text-wrapper{

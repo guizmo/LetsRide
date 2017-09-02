@@ -25,6 +25,7 @@ export class LocationTrackerProvider {
   public trackers: FirebaseListObservable<any>;
   public trackerSubsciption;
   public is_tracking: boolean = false;
+  public isTrackingSubject = new Subject() ;
   public can_track: boolean = false;
   public canTrackSubject = new Subject() ;
   public timeTracker;
@@ -94,7 +95,7 @@ export class LocationTrackerProvider {
   trackInBackground(uid: string){
     this.uid = uid;
     this.tracker = this.afdb.object(`/trackers/${uid}`);
-    this.timeTracker = moment().valueOf();
+    this.timeTracker = moment();
 
     console.log('trackInBackground', this);
     // Background Tracking
@@ -111,29 +112,27 @@ export class LocationTrackerProvider {
     };
     this.backgroundGeolocation.configure(config).subscribe((location) => {
       console.log('this.backgroundGeolocation.configure', location);
+      let checkTimeTracking = this.checkTimeTracking();
 
-      this.checkTimeTracking();
 
-      if(location){
+      if(location && checkTimeTracking){
         console.log('has location');
         // Run update inside of Angular's zone
         this.is_tracking = true;
-        /*this.zone.run(() => {
-          this.lat = location.latitude;
-          this.lng = location.longitude;
-        });*/
+        this.isTrackingSubject.next(this.is_tracking);
+
 
         this.tracker.set({
           lat: location.latitude,
-          lng: location.longitude
+          lng: location.longitude,
+          timestamp: location.time
         });
-      }else{
-        console.log('no location');
       }
 
       if (this.platform.is('ios')) {
         this.backgroundGeolocation.finish().then((data) => console.log('finish ', data) );
       }
+
 
     });
 
@@ -155,23 +154,28 @@ export class LocationTrackerProvider {
   }
 
   checkTimeTracking(){
+
     if(this.timeTracker){
-      let duration = moment.duration(moment().valueOf() - this.timeTracker);
-      let minutes = duration.minutes();
-      console.log('duration', minutes, duration );
-      if(minutes >= 60){
-        console.log('stopTracking minutes >= 60', minutes >= 60);
+      let hourInMs = 3600000;
+      let diff = moment().diff(this.timeTracker);
+      if(diff > hourInMs){
         this.stopTracking();
+        return false;
       }
+      return true;
+    }else{
+      this.stopTracking();
+      return false;
     }
 
   }
 
   stopTracking() {
     console.log('stopTracking()');
-    this.is_tracking = false;
     this.backgroundGeolocation.stop();
     this.timeTracker = null;
+    this.is_tracking = false;
+    this.isTrackingSubject.next(this.is_tracking);
 
     if(this.tracker){
       this.tracker.remove();

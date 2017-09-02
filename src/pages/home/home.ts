@@ -17,7 +17,9 @@ declare var myWindow:any;
 })
 export class MainPage {
 
+  refresher;
   canTrackSubject;
+  isTrackingSubject;
   activeItemSliding: ItemSliding = null;
   private onResumeSubscription;
   private items: FirebaseListObservable<any[]>;
@@ -65,11 +67,23 @@ export class MainPage {
       if(this.state.enabled && !can_track){
         this.state.enabled = can_track;
       }
-    })
+    });
+
+    this.isTrackingSubject = this.locationTracker.isTrackingSubject.subscribe((is_tracking) => {
+      console.log('subscribe this.isTrackingSubject', is_tracking);
+      if(this.locationTracker.can_track){
+        this.state.enabled = is_tracking;
+      }else{
+        this.state.enabled = this.locationTracker.can_track;
+      }
+    });
+
+
   }
   ionViewWillLeave(){
     console.log('ionViewWillLeave', this);
     this.canTrackSubject.unsubscribe();
+    this.isTrackingSubject.unsubscribe();
   }
 
 
@@ -98,7 +112,7 @@ export class MainPage {
     setTimeout(function(){
       that.searching = true;
       that.searchDone = false;
-    },50);
+    },0);
 
 
     //Let time for animation before resolving data
@@ -153,8 +167,6 @@ export class MainPage {
 
   setPeople(people){
     let that = this;
-    this.searchDone = true;
-    this.searching = false;
     //finish animation then print results
     //to avoid reflow slugish animation
 
@@ -169,10 +181,16 @@ export class MainPage {
         person.avatarLoaded = true;
       }
     })
+    if(this.refresher) {
+      this.refresher.complete();
+      this.refresher = null;
+    }
 
     setTimeout(function(){
       that.noResults = (people.length == 0) ? true : false ;
       that.peopleAround = people;
+      that.searchDone = true;
+      that.searching = false;
     },300);
   }
 
@@ -203,6 +221,10 @@ export class MainPage {
     this.notifications.sendMessage([oneSignalId], data, contents);
   }
 
+  doRefresh(refresher){
+    this.refresher = refresher;
+    this.findPeopleAround();
+  }
 
   openMap(index){
     let person = this.peopleAround[index];

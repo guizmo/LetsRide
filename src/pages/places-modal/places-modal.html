@@ -37,10 +37,10 @@
         </ion-row>
       </ion-grid>
     </div>
-    <div class="content-block block-bottom">
-      <form [formGroup]="placeForm" (submit)="placeFormSubmit()" padding-bottom>
+    <div class="content-block block-bottom" block-flex>
+      <form [formGroup]="placeForm" (submit)="placeFormSubmit()" >
 
-        <ion-list>
+        <ion-list no-margin>
             <ion-item>
               <ion-label>Name</ion-label>
               <ion-input type="text" placeholder="Name" formControlName="name" name="name" ></ion-input>
@@ -64,7 +64,7 @@
             </ion-item>
             <!-- DISCIPLINE -->
             <ion-item>
-              <ion-label>Styles</ion-label>
+              <ion-label>Sports</ion-label>
               <ion-select
                 formControlName="disciplines"
                 name="disciplines"
@@ -75,20 +75,23 @@
                 <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
               </ion-select>
             </ion-item>
-
-            <ion-item>
-              <ion-label>Location</ion-label>
-              <ion-input [disabled]="true" type="text" placeholder="Latitude" formControlName="lat" name="lat" ></ion-input>
-              <ion-input [disabled]="true" type="text" placeholder="Longitude" formControlName="lng" name="lng" ></ion-input>
-            </ion-item>
-
-            <ion-item *ngIf="place.image">
-              <!-- <img src="assets/img/background/advance-card-map-madison.png"> -->
-              <img *ngIf="place.image" [src]="place.image">
-            </ion-item>
-
         </ion-list>
       </form>
+
+      <div
+        *ngIf="place.image && pathForImage(place.image)"
+        class="img-wrapper"
+        block-grow
+        [style.backgroundImage]="'url(' + pathForImage(place.image) + ')'">
+      </div>
+      <div
+        *ngIf="!place.image || !pathForImage(place.image)"
+        class="img-wrapper"
+        block-grow
+        [style.backgroundImage]="'url(assets/img/background/advance-card-map-madison.png)'">
+      </div>
+
+
     </div>
   </div>
 

@@ -5,6 +5,7 @@ import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 
 import {GoogleMapsAPIWrapper, MapsAPILoader} from '@agm/core';
 import {GoogleMap, ZoomControlOptions, MapTypeStyle, ControlPosition} from '@agm/core/services/google-maps-types';
+import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 
 import { ModalNavPage } from '../modal-nav/modal-nav';
 import { MapStyle } from '../../constants/mapStyle';
@@ -62,6 +63,7 @@ export class MapPage {
     private mapsAPILoader: MapsAPILoader,
     private ngZone: NgZone,
     public modalNavPage: ModalNavPage,
+    public afdb: AngularFireDatabase,
     public viewCtrl: ViewController
   ) {
     console.log('MAP',this);
@@ -105,6 +107,11 @@ export class MapPage {
     if(this.state == 'display'){
       this.backButton = 'Back';
       this.buddy = this.modalNavPage.navParams.get('buddy');
+      this.afdb.object(`/trackers/${this.buddy.aFuid}`).subscribe((res) => {
+        if(res) this.buddy.location = res;
+        console.log(res);
+        console.log(this.buddy);
+      })
       this.markerDraggable = false;
     }
   }
@@ -121,6 +128,7 @@ export class MapPage {
       this.geocoder = new google.maps.Geocoder();
       this.autocompleteService = new google.maps.places.AutocompleteService();
       this.mapAPI_loaded = true;
+
     });
   }
 
@@ -208,10 +216,20 @@ export class MapPage {
         this.marker.lat = lat;
         this.marker.lng = lng;
 
+
+        if(this.buddy && this.mapAPI_loaded){
+          let bounds = new google.maps.LatLngBounds();
+          bounds.extend( new google.maps.LatLng(this.marker.lat, this.marker.lng) );
+          bounds.extend( new google.maps.LatLng(this.buddy.location.lat, this.buddy.location.lng) );
+          this.map.lat = bounds.getCenter().lat();
+          this.map.lng = bounds.getCenter().lng();
+          this.map.zoom = 12;
+        }
+
+
         this.loading.dismiss();
       });
     }else{
-      console.log("no geolocation in navigator" );
       this.loading.dismiss();
     }
   }

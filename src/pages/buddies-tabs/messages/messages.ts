@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import 'rxjs/add/observable/forkJoin';
 import {Observable} from 'rxjs/Observable';
+import * as moment  from 'moment';
 
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 
@@ -83,21 +84,29 @@ export class MessagesPage {
 
 
   getBuddiesEvents(uid:string){
+    let now = moment();
     this.buddiesEventsSubscription = this.buddiesProvider.buddiesEvents.subscribe((events) => {
-      console.log('getBuddiesEvents', events);
       let _events = [];
       let buddyEvents = events.filter((event) => event.$exists()).map((event) => {
-        let bud = this.buddies.filter((_bud) => _bud.$key === event.$key)[0];
-        let buddy = {
-          displayName: bud.settings.displayName,
-          oneSignalId: bud.oneSignalId || null,
-          aFuid: bud.$key
-        };
+        let bud = this.buddies.filter((_bud) => _bud.$key === event.$key);
+        bud = bud[0] || null;
 
-        for (let key in event) {
-          _events.push(Object.assign(event[key], buddy));
+        if(bud){
+          let buddy = {
+            displayName: bud.settings.displayName,
+            oneSignalId: bud.oneSignalId || null,
+            aFuid: bud.$key
+          };
+
+          for (let key in event) {
+            let eventTime = moment(event[key].time);
+            if (eventTime.diff(now) >= 0){
+              _events.push(Object.assign(event[key], buddy));
+            }
+          }
+
         }
-        //event.map((ev) => console.log(ev))
+
         return _events;
       })
       _events.sort(function(a,b) {

@@ -104,6 +104,8 @@ export class BuddiesPage {
       }
 
       buddies.map((_buddy) => {
+        //console.log(_buddy);
+        if(_buddy)
         _buddy.sortByName = _buddy.settings.displayName;
 
         if(_buddy.profileImg && _buddy.profileImg.url != ''){

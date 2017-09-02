@@ -44,7 +44,7 @@ export class PlacesModalPage {
       let {name ,disciplines ,country ,city ,lat ,lng, image } = values;
       this.place = {name ,disciplines:[disciplines] ,country ,city ,lat ,lng, image };
       this.userId = values.userId;
-      this.image = this.capture.pathForImage('letsride/'+this.userId+'/'+values.image);
+      this.image = this.pathForImage(values.image);
 
     }else{
       this.place = {name:'',disciplines:'',country:'',city:'',image:'',lat:null,lng:null};
@@ -77,6 +77,10 @@ export class PlacesModalPage {
 
   dismiss(){
     this.modalNavPage.dismissModal({state: 'cancel'});
+  }
+
+  pathForImage(img){
+    return this.capture.pathForImage('letsride/'+this.userId+'/'+img);
   }
 
   setImage(){

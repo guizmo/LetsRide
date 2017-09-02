@@ -21,12 +21,6 @@ export class BuddiesProvider {
 
   setBuddiesList(uid:string){
     this.buddiesId = this.afdb.list(`/users/${uid}/buddies`);
-      /*,{
-      query: {
-        orderByChild: 'pending',
-        equalTo: false
-      }
-    });*/
   }
 
   getBuddies(uid:string){
@@ -55,6 +49,7 @@ export class BuddiesProvider {
           if(alreadyBuddiesRequest.length > 0){
             Observable.forkJoin(alreadyBuddiesRequest).subscribe((res) => {
               if(res){
+                res = res.filter((_bud:any) => _bud.$exists())
                 this.buddies.next(res);
               }
             });
@@ -65,6 +60,7 @@ export class BuddiesProvider {
           if(futureBuddiesRequest.length > 0){
             Observable.forkJoin(futureBuddiesRequest).subscribe((res) => {
               if(res){
+                res = res.filter((_bud:any) => _bud.$exists())
                 this.buddiesRequest.next(res);
               }
             });
@@ -75,6 +71,7 @@ export class BuddiesProvider {
           if(eventsBuddiesRequest.length > 0){
             Observable.forkJoin(eventsBuddiesRequest).subscribe((res) => {
               if(res){
+                res = res.filter((_bud:any) => _bud.$exists())
                 this.buddiesEvents.next(res);
               }
             });

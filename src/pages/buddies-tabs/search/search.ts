@@ -145,7 +145,16 @@ export class SearchPage {
   }
 
 
-  sendFriendRequest(key, oneSignalId, name){
+  sendFriendRequest(index){
+    this.people[index].requestSent = true;
+    let person = this.people[index];
+    let key = person.aFuid;
+    let oneSignalId = person.oneSignalId;
+    let name = person.settings.displayName;
+
+    let contents = {
+      'en': `${name} sent you a friend request!`
+    }
 
     let data = {
       type: 'friendRequest',
@@ -157,12 +166,10 @@ export class SearchPage {
       displayName: name
     };
 
-
     this.afdb.list(`/users/${key}/buddies`).update(this.userData.aFuid, data.from);
 
     if(this.userData.oneSignalId && oneSignalId){
-
-      this.notifications.sendMessage([oneSignalId], data)
+      this.notifications.sendMessage([oneSignalId], data, contents)
     }
 
   }
