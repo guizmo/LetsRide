@@ -8,6 +8,13 @@ page-events {
     background-color: #f9f9f9;
     min-height: 15vh;
   }
+  .buddyName{
+    color: #444;
+  }
+  ion-card-title{
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
   ion-card{
     border-bottom: 1px solid #ddd;
     &.last-item{
@@ -15,18 +22,12 @@ page-events {
     }
   }
   ion-card-content{
-
     ion-icon{
       color: $brand;
     }
 
     .date{
       overflow: hidden;
-      // h2{
-      //   margin-bottom: 1.5rem !important;
-      //   color: #444;
-      //   font-weight: 600 !important;
-      // }
       .day{
         margin-right: 2rem !important;
       }

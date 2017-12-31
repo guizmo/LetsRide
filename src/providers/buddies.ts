@@ -13,6 +13,7 @@ export class BuddiesProvider {
   public buddies = new BehaviorSubject<any>([]) ;
   public buddiesRequest = new BehaviorSubject<any>([]) ;
   public buddiesEvents = new BehaviorSubject<any>([]) ;
+  public eventsParticipations:FirebaseObjectObservable<any[]>;
 
   constructor(
     public afdb: AngularFireDatabase,
@@ -97,7 +98,7 @@ export class BuddiesProvider {
     this.buddiesId.subscribe(
       _buddies => {
         if(_buddies){
-          //console.log('buddies list changed');
+          console.log('buddies list changed', _buddies);
           let buddiesRequest = [];
           for(let _buddy of _buddies){
             buddiesRequest.push( this.afdb.object(`/events/${_buddy.$key}`).first() );
@@ -113,6 +114,16 @@ export class BuddiesProvider {
       error => console.log('error'),
       () => console.log('finished')
     );
+  }
+
+  getParticipants(uid: string, eventID: string){
+    //this.eventsParticipations = this.afdb.list(`/events_participation`);
+    this.eventsParticipations = this.afdb.object(`/events/${uid}/${eventID}/participants`);
+    return this.eventsParticipations;
+  }
+  updateParticipants(participant: any): firebase.Promise<void> {
+    //this.eventsParticipations.set(eventID: 'participants', participantID);
+    return this.eventsParticipations.set(participant);
   }
 
 }

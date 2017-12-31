@@ -24,6 +24,7 @@ export class LetsRide {
     { title: 'Places', component: 'PlacesPage', icon: 'map', is_active: false },
     { title: 'Friends', component: 'BuddiesTabsPage', icon: 'people', is_active: false },
     { title: 'Events', component: 'EventsPage', icon: 'calendar', is_active: false },
+    //{ title: 'Notifs', component: 'NotifsPage', icon: 'calendar', is_active: false },
   ]
 
   currentUser: any = null;
@@ -71,8 +72,12 @@ export class LetsRide {
   openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
-
-    this.nav.setRoot(page);
+    if(page == 'NotifsPage'){
+      let data = {displayName: "Guillaume Bartolini", eventId: "-Kt5-pe0rAEMKbwuaM6b", type: "newEvent", from: {user_id: "VMNmYlatT7aZzWfGBwM9aJzf6WN2", oneSignalId: "337092a2-4fa9-46df-9116-94fa3d701148"}};
+      this.nav.setRoot('EventsPage', data);
+    }else{
+      this.nav.setRoot(page);
+    }
     this.is_active = page;
   }
 }

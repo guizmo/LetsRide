@@ -1,12 +1,14 @@
 import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, AlertController, PopoverController, ItemSliding, Item } from 'ionic-angular';
 
+import { Observable, BehaviorSubject, Subscription } from 'rxjs';
+
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { MomentModule } from 'angular2-moment';
 import * as moment  from 'moment';
 
-import { UserProvider, NotificationsProvider, DisciplinesProvider} from '../../../providers';
+import { UserProvider, NotificationsProvider, DisciplinesProvider, BuddiesProvider} from '../../../providers';
 
 //https://forum.ionicframework.com/t/click-to-slide-open-ion-item-sliding-instead-of-swiping/54642/5
 //http://blog.ihsanberahim.com/2017/05/trigger-ionitemsliding-using-click-event.html
@@ -24,15 +26,18 @@ export class EventsPage {
   private userData;
   private currentUser;
   private itemInUpdateMode;
-
+  private refresher;
   public eventModal;
   public events:FirebaseListObservable<any[]>;
-  public buddies:FirebaseListObservable<any[]>;
+  public buddiesEvents: any = [];
+  public buddies: any = [] ;
   public oneSignalBuddiesId: any = [];
   public eventsListing: any = [];
   private disciplines:ReadonlyArray<any>;
   private showSpinner:boolean = true;
   private showNoResult:boolean = false;
+  private buddiesEventsSubscription;
+  private buddiesSubcription;
 
   constructor(
     public disciplinesProvider: DisciplinesProvider,
@@ -40,6 +45,7 @@ export class EventsPage {
     public navParams: NavParams,
     private afdb: AngularFireDatabase,
     private userProvider: UserProvider,
+    private buddiesProvider: BuddiesProvider,
     private notifications: NotificationsProvider,
     private afAuth: AngularFireAuth,
     private modalCtrl: ModalController,
@@ -47,44 +53,17 @@ export class EventsPage {
     private popoverCtrl: PopoverController
   ) {
     moment.locale('en-gb');
+
     this.disciplinesProvider.findAll().subscribe(
       data => this.disciplines = data
     );
     this.afAuth.authState.subscribe((user) => {
       if(user){
         this.currentUser = user.toJSON();
-        this.events = this.afdb.list(`/events/${user.uid}`, {
-          query: {
-            orderByChild: 'time'
-          }
-        })
 
-        this.events.map((events) => {
-          let now = moment();
-          return events
-            .filter((event) => {
-              let eventTime = moment(event.time);
-              return (eventTime.diff(now) >= 0);
-            })
-            .map((event) => {
-
-              let style = 'default.png';
-              if(event.disciplines){
-                style = this.getRidingStyle(event.disciplines)+'.jpg';
-              }
-              event.backgroundImage = `./assets/img/styles/${style}`;
-              return event;
-            });
-        }).subscribe((events) => {
-          if(events){
-            this.eventsListing = events;
-            this.showSpinner = false;
-
-            this.showNoResult = (events.length < 1) ? true : false ;
-
-          }
-        });
-
+        this.getBuddiesEvents();
+        //this.getEvents(user.uid);
+        this.getBuddies();
 
         this.userProvider.userData.subscribe((settings) => {
           if(settings){
@@ -92,9 +71,15 @@ export class EventsPage {
           }
         });
 
-        this.getBuddies(user.uid);
       }
     });
+
+
+  }
+
+  ionViewWillUnload(){
+    this.buddiesEventsSubscription.unsubscribe();
+    this.buddiesSubcription.unsubscribe();
   }
 
   ionViewDidLoad() {
@@ -104,8 +89,11 @@ export class EventsPage {
   presentPopover(event) {
     let popover = this.popoverCtrl.create('EventPage', {
       values: event
+    }, {
+      cssClass: 'events-popover-content'
     });
     popover.present();
+    this.navParams.data = null;
   }
 
   presentEventModal(event:any = null){
@@ -119,33 +107,113 @@ export class EventsPage {
     this.onDismiss();
   }
 
+
+  getBuddiesEvents(){
+    this.buddiesProvider.getBuddies(this.currentUser.uid);
+    let now = moment();
+    //this.buddiesProvider.getBuddiesEvents(this.currentUser.uid);
+    this.buddiesEventsSubscription = this.buddiesProvider.buddiesEvents.subscribe((events) => {
+      let _events = [];
+
+      let buddyEvents = events.filter((event) => event.$exists()).map((event) => {
+
+        let bud = this.buddies.filter((_bud) => _bud.$key === event.$key);
+        bud = bud[0] || null;
+
+        if(bud){
+          let buddyEvent = {
+            displayName: bud.settings.displayName,
+            oneSignalId: bud.oneSignalId || null,
+            aFuid: bud.$key,
+            buddy: true
+          };
+
+
+          for (let key in event) {
+            let eventTime = moment(event[key].time);
+            let style = 'default.png';
+            if(event[key].disciplines){
+              style = this.getRidingStyle(event[key].disciplines)+'.jpg';
+            }
+            event[key].backgroundImage = `./assets/img/styles/${style}`;
+            event[key].$key = key;
+            if (eventTime.diff(now) >= 0){
+              if(event[key].participants && event[key].participants[this.currentUser.uid]){
+                event[key].participates = true;
+              }
+              _events.push(Object.assign(event[key], buddyEvent));
+            }
+          }
+
+        }
+
+        return _events;
+      })
+
+      this.buddiesEvents = _events;
+      this.getEvents(this.currentUser.uid);
+      //this.mergeEvents();
+
+    })
+  }
+
+
+  getEvents(uid){
+    this.events = this.afdb.list(`/events/${uid}`, {
+      query: {
+        orderByChild: 'time'
+      }
+    })
+
+    this.events.map((events) => {
+      let now = moment();
+      return events
+        .map((event) => {
+          let eventTime = moment(event.time);
+          if((now.diff(eventTime) >= 0)){
+            //automatically remove old events
+            this.events.remove(event.$key);
+          }
+          let style = 'default.png';
+          if(event.disciplines){
+            style = this.getRidingStyle(event.disciplines)+'.jpg';
+          }
+          event.backgroundImage = `./assets/img/styles/${style}`;
+          return event;
+        })
+        .filter((event) => {
+          let eventTime = moment(event.time);
+          return (eventTime.diff(now) >= 0);
+        })
+    }).subscribe((events) => {
+      if(events){
+        //this.eventsListing = events;
+        this.mergeEvents(events);
+      }
+    });
+
+  }
+
   onDismiss(){
     this.eventModal.onDidDismiss(event => {
       if(event != null && event != 'cancel'){
         let name = this.userData.settings.displayName;
-        let message = null ;
+        let message:any = {} ;
         let time = moment(event.time).format('lll');
-        let contents = `Let's ride @ "${event.name}" -- ${time}`;
         //Add or update
+        message.contents = `Riding "${event.name}" @ ${time}`;
 
+        let eventKey;
         if(this.itemInUpdateMode){
           this.updateEvent(this.itemInUpdateMode, event);
-          message = {
-            headings: `${name} has changed an event`
-          }
+          eventKey = this.itemInUpdateMode;
+          message.headings = `${name} has updated an event`;
+          this.sendEventToBuddies(message, eventKey)
         }else{
-          this.addEvent(event);
-          message = {
-            headings: `${name} has created an event`
-          }
+          message.headings = `${name} has created an event`;
+          this.addEvent(event).then((eventKey) => this.sendEventToBuddies(message, eventKey))
         }
-        if(this.oneSignalBuddiesId.length && message && this.userData.oneSignalId){
-          message.contents = contents;
-          this.sendEventToBuddies(message);
-        }
-
         this.itemInUpdateMode = null;
-
       }
     });
   }
@@ -156,7 +224,14 @@ export class EventsPage {
   }
 
   addEvent(data){
-    this.events.push(data);
+    return new Promise<any>( (resolve, reject) => {
+      this.events.push(data).then((res) => {
+        resolve(res.key)
+      }).catch( (err) => {
+        console.log(err);
+        reject(err);
+      });
+    });
   }
 
   deleteEvent(key){
@@ -204,59 +279,74 @@ export class EventsPage {
     });
   }
 
-
-  getBuddies(uid:string){
-    this.buddies = this.afdb.list(`/users/${uid}/buddies`,{
-      query: {
-        orderByChild: 'pending',
-        equalTo: false
+  getBuddies(){
+    this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((_buddies) => {
+      if(_buddies){
+        this.buddies = _buddies;
+        this.oneSignalBuddiesId = _buddies.filter(buddie => buddie.oneSignalId).map(buddie => buddie.oneSignalId);
       }
-    });
-
-    this.buddies.subscribe(
-      _buddies => {
-        if(_buddies){
-          this.oneSignalBuddiesId = _buddies.filter(buddie => buddie.oneSignalId).map(buddie => buddie.oneSignalId);
-        }
-      },
-      error => console.log('error'),
-      () => console.log('finished')
-    );
+    })
   }
 
+  sendEventToBuddies(message, key){
+    if(this.oneSignalBuddiesId.length && this.userData.oneSignalId){
+      let name = this.userData.settings.displayName;
+      let data = {
+        type: 'newEvent',
+        from: {
+          oneSignalId: this.userData.oneSignalId,
+          user_id: this.userData.aFuid
+        },
+        eventId:key,
+        displayName: name
+      };
 
-  sendEventToBuddies(message){
-    let name = this.userData.settings.displayName;
-    let data = {
-      type: 'newEvent',
-      from: {
-        oneSignalId: this.userData.oneSignalId,
-        user_id: this.userData.aFuid
-      },
-      displayName: name
-    };
+      let contents = {
+        'en': message.contents
+      }
+      let headings = {
+        'en': message.headings
+      }
 
-    let contents = {
-      'en': message.contents
+      console.log('sendMessage', data);
+
+      this.notifications.sendMessage(this.oneSignalBuddiesId, data, contents, headings);
     }
-    let headings = {
-      'en': message.headings
-    }
-
-    this.notifications.sendMessage(this.oneSignalBuddiesId, data, contents, headings)
-      .then((res) => {
-        console.log('message sent');
-      })
-      .catch((err) => {
-        if(err == 'cordova_not_available'){
-          console.log('message sent');
-        }
-      })
   }
 
   getRidingStyle(value: string){
     let discipline = this.disciplines.filter( disciplineVal => disciplineVal.name == value )[0];
     return discipline.alias;
+  }
+
+  mergeEvents(eventsListing){
+    let newList = [...this.buddiesEvents, ...eventsListing].sort(function(a,b) {
+      return new Date(a.time).getTime() - new Date(b.time).getTime();
+    });
+    this.eventsListing = newList;
+    this.showSpinner = false;
+    this.showNoResult = (newList.length < 1) ? true : false ;
+
+
+    let that = this;
+    setTimeout(function () {
+      if(that.refresher){
+        that.refresher.complete();
+        that.refresher = null;
+      }
+    }, 2000)
+
+    if(this.navParams.data && this.navParams.data.type == 'newEvent'){
+      let event = this.eventsListing.filter(event => event.$key == this.navParams.data.eventId);
+      if(event.length){
+        this.presentPopover(event[0]);
+      }
+
+    }
+  }
+  refreshList(refresher) {
+    this.refresher = refresher;
+    this.getBuddiesEvents();
   }
 
 }

@@ -4,6 +4,8 @@ import { IonicPage, NavController, ModalController, NavParams, ItemSliding, Item
 import { NativePageTransitions, NativeTransitionOptions } from '@ionic-native/native-page-transitions';
 import { OneSignal } from '@ionic-native/onesignal';
 
+import { Subscription } from 'rxjs/Subscription';
+
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 import { UserProvider, LocationTrackerProvider, NotificationsProvider, PermissionsProvider} from '../../providers';
@@ -18,8 +20,8 @@ declare var myWindow:any;
 export class MainPage {
 
   refresher;
-  canTrackSubject;
-  isTrackingSubject;
+  canTrackSubject: Subscription;
+  isTrackingSubject: Subscription;
   activeItemSliding: ItemSliding = null;
   private onResumeSubscription;
   private items: FirebaseListObservable<any[]>;
@@ -62,14 +64,14 @@ export class MainPage {
 
   ionViewWillEnter(){
     console.log('ionViewWillEnter', this);
-    this.canTrackSubject = this.locationTracker.canTrackSubject.subscribe((can_track) => {
+    this.canTrackSubject = this.locationTracker.getCanTrack().subscribe((can_track) => {
       console.log('subscribe this.canTrackSubject', can_track);
       if(this.state.enabled && !can_track){
         this.state.enabled = can_track;
       }
     });
 
-    this.isTrackingSubject = this.locationTracker.isTrackingSubject.subscribe((is_tracking) => {
+    this.isTrackingSubject = this.locationTracker.getIsTracking().subscribe((is_tracking) => {
       console.log('subscribe this.isTrackingSubject', is_tracking);
       if(this.locationTracker.can_track){
         this.state.enabled = is_tracking;

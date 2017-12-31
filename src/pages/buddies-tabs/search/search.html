@@ -70,7 +70,7 @@
         </ion-avatar>
         <h2>{{person.settings.displayName}}</h2>
         <h3 *ngIf="person.settings.country">{{person.settings.country}}</h3>
-        <ng-container item-end *ngIf="!person.requestSent">
+        <ng-container item-end *ngIf="!person.iconName">
           <button
             *ngIf="!person.buddies && !person.requestSent || person.buddies && !person.buddies[currentUser.uid]"
             ion-button clear item-end icon-only
@@ -78,7 +78,7 @@
             <ion-icon color="dark" name="person-add"></ion-icon>
           </button>
         </ng-container>
-        <ion-icon *ngIf="person.requestSent" color="dark" name="checkmark" item-end></ion-icon>
+        <ion-icon *ngIf="person.iconName" color="dark" [name]="person.iconName" item-end></ion-icon>
 
       </ion-item>
   </ion-list>

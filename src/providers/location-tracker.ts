@@ -5,12 +5,14 @@ import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 
 import { Subject } from 'rxjs/Subject'
+import { Observable } from 'rxjs/Observable';
+
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/observable/forkJoin';
-import { Observable } from 'rxjs/Observable';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 
 import { PermissionsProvider } from './permissions';
+import { CloudFunctionsProvider } from './cloud-functions';
 
 import * as moment  from 'moment';
 
@@ -38,7 +40,8 @@ export class LocationTrackerProvider {
     public zone: NgZone,
     public platform: Platform,
     public afdb: AngularFireDatabase,
-    private perm: PermissionsProvider
+    private perm: PermissionsProvider,
+    private cloudFunctions: CloudFunctionsProvider
   ) {
     console.log(this);
     console.log('is_tracking', this.is_tracking);
@@ -54,6 +57,13 @@ export class LocationTrackerProvider {
     })
 
   }
+
+  getIsTracking(): Observable<any> {
+    return this.isTrackingSubject.asObservable();
+  }
+  getCanTrack(): Observable<any> {
+    return this.canTrackSubject.asObservable();
+  }
 
   checkLocationPermissions(){
     this.perm.isLocationAuthorized().then((res) => {
@@ -121,11 +131,13 @@ export class LocationTrackerProvider {
         this.is_tracking = true;
         this.isTrackingSubject.next(this.is_tracking);
 
+        console.log(this.timeTracker);
 
         this.tracker.set({
           lat: location.latitude,
           lng: location.longitude,
-          timestamp: location.time
+          timestamp: location.time,
+          timestamp_start: this.timeTracker.valueOf()
         });
       }
 
@@ -190,6 +202,9 @@ export class LocationTrackerProvider {
 
 
   findPeopleAround(settings:any){
+    //clean up old trackers
+    this.cloudFunctions.deleteOldTrackers();
+
     this.trackers = this.afdb.list('/trackers');
     return new Promise<any>( (resolve, reject) => {
 

@@ -49,11 +49,7 @@ export class MessagesPage {
         this[key] = values[key];
       }
       console.log('if value', this.currentUser.uid);
-      this.buddiesProvider.getBuddies(this.currentUser.uid);
-
-      this.getBuddies(this.currentUser.uid);
-      this.getBuddiesEvents(this.currentUser.uid);
-      this.getBuddiesRequest(this.currentUser.uid);
+      this.loadAll();
       return;
     }
 
@@ -75,9 +71,15 @@ export class MessagesPage {
     );
   }
 
+  loadAll(){
+    this.buddiesProvider.getBuddies(this.currentUser.uid);
+    this.getBuddies(this.currentUser.uid);
+    this.getBuddiesEvents(this.currentUser.uid);
+    this.getBuddiesRequest(this.currentUser.uid);
+  }
+
   getBuddies(uid:string){
     this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((buddies) => {
-      console.log(buddies);
       this.buddies = buddies;
     })
   }
@@ -90,7 +92,6 @@ export class MessagesPage {
       let buddyEvents = events.filter((event) => event.$exists()).map((event) => {
         let bud = this.buddies.filter((_bud) => _bud.$key === event.$key);
         bud = bud[0] || null;
-
         if(bud){
           let buddy = {
             displayName: bud.settings.displayName,
@@ -98,15 +99,19 @@ export class MessagesPage {
             aFuid: bud.$key
           };
 
+
           for (let key in event) {
+            event[key].participates = false;
             let eventTime = moment(event[key].time);
             if (eventTime.diff(now) >= 0){
-              _events.push(Object.assign(event[key], buddy));
+              if(event[key].participants && event[key].participants[this.currentUser.uid]){
+                event[key].participates = true;
+              }
+              _events.push(Object.assign({key}, event[key], buddy));
             }
           }
 
         }
-
         return _events;
       })
       _events.sort(function(a,b) {
@@ -142,6 +147,25 @@ export class MessagesPage {
   }
 
 
+  joinEvent(event, state){
+    this.buddiesProvider.getParticipants(event.aFuid, event.key);
+    let participant = {};
+    participant[this.currentUser.uid] = state;
+
+    console.log(event, state);
+
+    this.buddiesProvider
+      .updateParticipants(participant)
+      .then(res => {
+        if(state && event.oneSignalId){
+          this.sendMessageToFriend(event.oneSignalId, this.userData.settings.displayName, 'joinedEvent', event.name);
+        }
+        this.loadAll();
+      });
+  }
+
+
+
 
   acceptFriendRequest(index){
     let buddy = this.buddiesRequest[index];
@@ -161,7 +185,7 @@ export class MessagesPage {
         this.afdb.object(`/users/${aFuid}/buddies/${_userData.aFuid}`).update(asker);
         //send message to the ASKER
         if(oneSignalId && _userData.oneSignalId){
-          this.sendMessageFriendRequestAccepted(oneSignalId, this.userData.settings.displayName);
+          this.sendMessageToFriend(oneSignalId, this.userData.settings.displayName, 'friendRequestAccepted');
         }
         buddy.pending = false;
         this.requestAccepted.push(buddy);
@@ -171,20 +195,27 @@ export class MessagesPage {
   }
 
 
-  sendMessageFriendRequestAccepted(oneSignalId, name){
+  sendMessageToFriend(oneSignalId, name, type, eventName = null){
     let data = {
-      type: 'friendRequestAccepted',
+      type: type,
       from: {
         oneSignalId: this.userData.oneSignalId,
         user_id: this.userData.aFuid
       },
       displayName: name
     };
-    let contents = {
-      'en': `You are now connected to ${name}`,
-      'fr': `Vous êtes maintenant connecté à ${name}`
+
+    let contents = {};
+
+    if(type == 'friendRequestAccepted'){
+      contents['en'] = `You are now connected to ${name}`;
+      contents['fr'] = `Vous êtes maintenant connecté à ${name}`;
+    }else if(type == 'joinedEvent'){
+      contents['en'] = `${name} is going to your event "${eventName}"`;
+      contents['fr'] = `${name} participe à votre événement "${eventName}"`;
     }
     this.notifications.sendMessage([oneSignalId], data, contents);
   }
+
 
 }

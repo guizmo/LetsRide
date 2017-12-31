@@ -14,6 +14,9 @@
 
 
 <ion-content >
+  <ion-refresher (ionRefresh)="refreshList($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <ion-spinner class="list-content" *ngIf="showSpinner"></ion-spinner>
   <div class="no-result-card" *ngIf="showNoResult">
     <ion-card>
@@ -26,7 +29,7 @@
     </ion-card>
   </div>
   <ng-container *ngFor="let event of eventsListing; let last = last" >
-    <ion-card no-margin f-width margin-bottom no-radius no-shadow [class.last-item]="last">
+    <ion-card *ngIf="event.participates || !event.aFuid"  no-margin f-width margin-bottom no-radius no-shadow [class.last-item]="last">
       <ion-row>
         <ion-col class="cover-img" col-12 col-sm-4 no-padding>
           <div *ngIf="event.backgroundImage" f-height f-width class="cover-style" [style.backgroundImage]="'url(' + event.backgroundImage + ')'"></div>
@@ -56,7 +59,7 @@
             </p>
           </ion-card-content>
 
-          <ion-row>
+          <ion-row *ngIf="!event.buddy">
             <ion-col text-right>
               <button ion-button color="danger" icon-left clear small (click)="deleteEvent(event.$key)">
                 <ion-icon color="dark" ios="ios-trash-outline" md="md-trash"></ion-icon>
@@ -68,39 +71,21 @@
               </button>
             </ion-col>
           </ion-row>
+
+          <ion-row *ngIf="event.buddy">
+            <ion-col text-right class="buddyName" padding-right >
+              <h3 icon-left>
+                <ion-icon color="dark" name="contacts"></ion-icon>
+                {{event.displayName}}
+              </h3>
+            </ion-col>
+          </ion-row>
       </ion-col>
     </ion-row>
 
     </ion-card>
 
 
-    <!-- <ion-item-sliding #eventsSliding *ngFor="let event of events | async; let i = index">
-      <ion-item #eventsItem >
-        <ion-buttons icon-only item-start>
-          <button ion-button (click)="viewOnMap(event)" icon-only>
-            <ion-icon name="pin" ></ion-icon>
-          </button>
-        </ion-buttons>
-        <h2>{{event.name}}</h2>
-        <ion-buttons icon-only item-end>
-          <button ion-button icon-only (click)="presentPopover(event)">
-            <ion-icon name="information-circle"></ion-icon>
-          </button>
-        </ion-buttons>
-      </ion-item>
-
-      <ion-item-options side="right">
-        <button ion-button color="danger" icon-only (click)="deleteEvent(event.$key)">
-          <ion-icon name="trash"></ion-icon>
-        </button>
-        <button ion-button color="light" icon-only>
-          <ion-icon name="fa-copy"></ion-icon>
-        </button>
-        <button ion-button color="primary" icon-only (click)="presentEventModal(event)">
-          <ion-icon name="create"></ion-icon>
-        </button>
-      </ion-item-options>
-    </ion-item-sliding> -->
 
 
   </ng-container>

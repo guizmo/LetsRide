@@ -61,7 +61,7 @@
         "cordova-plugin-filepath": "^1.0.2",
         "cordova-plugin-geolocation": "~2.4.3",
         "cordova-plugin-googleplus": "^5.1.1",
-        "cordova-plugin-mauron85-background-geolocation": "~2.2.5",
+        "cordova-plugin-mauron85-background-geolocation": "^2.3.2",
         "cordova-plugin-native-spinner": "^1.1.3",
         "cordova-plugin-network-information": "~1.3.3",
         "cordova-plugin-splashscreen": "~4.0.1",
@@ -109,11 +109,6 @@
             "cordova-plugin-geolocation": {
                 "GEOLOCATION_USAGE_DESCRIPTION": "GEOLOCATION_USAGE_DESCRIPTION a definir text"
             },
-            "cordova-plugin-mauron85-background-geolocation": {
-                "ACCOUNT_TYPE": "$PACKAGE_NAME.account",
-                "CONTENT_AUTHORITY": "$PACKAGE_NAME",
-                "ALWAYS_USAGE_DESCRIPTION": "This app requires background location tracking"
-            },
             "cordova-plugin-network-information": {},
             "cordova-plugin-googleplus": {
                 "REVERSED_CLIENT_ID": "com.googleusercontent.apps.897213692051-7kkb79uur5glo5ltin079ip8bfl56u3t"
@@ -126,7 +121,10 @@
             "cordova-plugin-filepath": {},
             "cordova-plugin-file": {},
             "cordova-plugin-native-spinner": {},
-            "cordova.plugins.diagnostic": {}
+            "cordova.plugins.diagnostic": {},
+            "cordova-plugin-mauron85-background-geolocation": {
+                "ALWAYS_USAGE_DESCRIPTION": "This app always requires location tracking"
+            }
         },
         "platforms": [
             "browser",

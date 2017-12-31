@@ -50,7 +50,8 @@ import {
   CaptureProvider,
   FacebookProvider,
   PeopleProvider,
-  PermissionsProvider
+  PermissionsProvider,
+  CloudFunctionsProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -152,7 +153,8 @@ export function HttpLoaderFactory(http: Http) {
     PeopleProvider,
     Diagnostic,
     PermissionsProvider,
-    VirtualScrollModule
+    VirtualScrollModule,
+    CloudFunctionsProvider
   ]
 })
 export class AppModule {}

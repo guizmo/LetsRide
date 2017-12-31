@@ -1,0 +1,18 @@
+{
+type: "friendRequest",
+displayName: "Guizmosh",
+from: {
+  pending: true,
+  user_id: "VMNmYlatT7aZzWfGBwM9aJzf6WN2",
+  oneSignalId: "337092a2-4fa9-46df-9116-94fa3d701148"
+  }
+}
+
+{
+displayName: "Guillaume Bartolini",
+eventId: "-Kt4QLGNzlQG1vA7h2nG",
+type: "newEvent",
+from: {
+  user_id: "VMNmYlatT7aZzWfGBwM9aJzf6WN2",
+  oneSignalId: "337092a2-4fa9-46df-9116-94fa3d701148"}
+}

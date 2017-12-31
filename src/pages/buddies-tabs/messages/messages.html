@@ -71,7 +71,7 @@
         <ion-list-header>
           Coming Up
         </ion-list-header>
-        <ng-container *ngFor="let event of buddiesEvents | orderBy : ['time']">
+        <ng-container *ngFor="let event of buddiesEvents | orderBy : ['time']; let i = index">
           <ion-card>
             <ion-card-header>
               <h1>{{event.displayName}}</h1>
@@ -94,6 +94,14 @@
                 {{event.name}}
               </p>
             </ion-card-content>
+            <button *ngIf="event.participates" ion-button color="brand" no-margin icon-left full (click)="joinEvent(event, null)">
+              <ion-icon color="light" name="checkmark-circle-outline"></ion-icon>
+              <div>Going</div>
+            </button>
+            <button *ngIf="!event.participates" ion-button color="brand" no-margin icon-left full (click)="joinEvent(event, true)">
+              <ion-icon color="light" name="close-circle"></ion-icon>
+              <div>Not going</div>
+            </button>
           </ion-card>
         </ng-container>
       </ion-list>

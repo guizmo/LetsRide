@@ -20,7 +20,9 @@
         tappable
         [class.selected]="p.component === is_active"
         (click)="openPage(p.component)" >
-          <ion-icon [name]="p.icon" item-start></ion-icon> {{p.title}}
+          <ion-icon [name]="p.icon" item-start></ion-icon>
+          {{p.title}}
+          <ion-badge *ngIf="p.counter" color="secondary" item-end>{{p.counter}}</ion-badge>
         </ion-item>
       </ng-container>
     </ion-list>

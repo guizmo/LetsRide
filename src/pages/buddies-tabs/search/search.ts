@@ -41,17 +41,29 @@ export class SearchPage {
     private peoplePvr: PeopleProvider
   ) {
     console.log(this);
-
+    this.getCurrentUser();
     //this.filters = [{"value":["Cross Country (XC)", "Downhill", "Enduro", "Road", "All-mountain"],"alias":"disciplines"},{"value":"New Caledonia","alias":"country"},{"value":"Male","alias":"gender"},{"value":"Nouméa","alias":"city"},{"value":3,"alias":"level"}];
   }
 
-  ionViewDidLoad() {
-    //this.peoplePvr.getPeople(this.startAt, this.endAt, 10)
+  getPeople() {
+
     this.peoplePvr.getPeople()
       .subscribe(people => {
         if(people.length){
+
           people.map((person) => {
             person.avatarLoaded = false;
+            console.log(this.currentUser.uid);
+            if(person.buddies && person.buddies[this.currentUser.uid]){
+              if(person.buddies[this.currentUser.uid].pending){
+                person.iconName = 'contacts';
+              }else {
+                //if person.requestSent
+                person.iconName = 'checkmark';
+              }
+            }else{
+              person.iconName = null;
+            }
 
             if(person.profileImg && person.profileImg.url != ''){
               person.avatar = person.profileImg.url;
@@ -69,6 +81,7 @@ export class SearchPage {
           }
         }
         this.isSearching = false;
+        people = people.filter((person) => person.aFuid != this.currentUser.uid )
         this.peopleArr = people;
       })
   }
@@ -79,7 +92,7 @@ export class SearchPage {
 
 
   ionViewDidEnter() {
-    this.getCurrentUser();
+    //this.getCurrentUser();
   }
 
 
@@ -127,6 +140,7 @@ export class SearchPage {
       for (let key in values) {
         this[key] = values[key];
       }
+      this.getPeople();
       return;
     }
 
@@ -137,6 +151,7 @@ export class SearchPage {
           for (let key in values) {
             this[key] = values[key];
           }
+          this.getPeople();
         }
       },
       error => console.log('error'),
@@ -146,7 +161,7 @@ export class SearchPage {
 
 
   sendFriendRequest(index){
-    this.people[index].requestSent = true;
+    this.people[index].iconName = 'checkmark';
     let person = this.people[index];
     let key = person.aFuid;
     let oneSignalId = person.oneSignalId;
