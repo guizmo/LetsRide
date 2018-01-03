@@ -1,5 +1,8 @@
 {
   "name": "LetsRide",
   "app_id": "e8a53e4b",
-  "type": "ionic-angular"
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
 }

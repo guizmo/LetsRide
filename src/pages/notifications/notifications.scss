@@ -1,3 +1,45 @@
-page-notifications {
+.platform-ios page-notifications {
+  $num-of-tabs: 2;
+  @mixin tabs {
+   @for $i from 1 through $num-of-tabs {
+     &:nth-of-type(#{$i}) {
+       &.segment-activated {
+         ~ .slide {
+           left: calc((100% / #{$num-of-tabs}) * #{$i - 1});
+         }
+       }
+     }
+   }
+  }
+
+  .segment-button {
+    max-width: 175px !important;
+  }
+
+  /*.segment-button {
+    //border: 0 !important;
+    //border-radius: 0 !important;
+    //@include tabs;
+    max-width: 175px !important;
+    min-height: 25px !important;
+    line-height: 25px !important;
+    overflow: visible;
+    ion-badge{
+      position: absolute;
+      top: -5px;
+    }
+    .right-badge{
+      right: -5px;
+    }
+    .left-badge{
+      left: -5px;
+    }
+
+    &.segment-activated{
+      //background: transparent !important;
+    }
+  }*/
+
+
 
 }

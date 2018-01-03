@@ -3,12 +3,9 @@ import { IonicPage, App } from 'ionic-angular';
 
 import {OneSignal} from '@ionic-native/onesignal';
 
-/*
-  Generated class for the NotificationsProvider provider.
+import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular DI.
-*/
+
 @Injectable()
 export class NotificationsProvider {
   one_id: string = null;
@@ -23,13 +20,17 @@ export class NotificationsProvider {
     joinedEvent: '9558f575-afc3-4d51-9eb8-fb7a937a2425'
   }
 
+  public fetchAll:FirebaseListObservable<any[]>;
+  public fetch_by_id:FirebaseListObservable<any[]>;
 
   constructor(
     private oneSignal: OneSignal,
+    private afdb: AngularFireDatabase,
     private app: App,
   ) {
-    console.log(this);
+    console.log('OneSignal', this);
     //this.navCtrl = this.app.getRootNav();
+    this.fetchAll = this.afdb.list(`/notifications`);
   }
 
   init(nav) {
@@ -67,7 +68,6 @@ export class NotificationsProvider {
 
 
   sendMessage(userIds: string[], payload, contents:any = null, headings:any = null){
-
     //let template = (payload.friendRequest) ? this.templates.friendRequest : (payload.friendRequestAccepted) ? this.templates.friendRequestAccepted : '' ;
 
     let template = this.templates[payload.type];
@@ -85,11 +85,28 @@ export class NotificationsProvider {
       notificationObj.headings = headings;
     }
 
-    return this.oneSignal.postNotification(notificationObj);
+    console.log('notificationObj ', JSON.stringify(notificationObj));
+
+    this.oneSignal.postNotification(notificationObj).then(res => {
+      console.log('postNotification ', JSON.stringify(res));
+      if(!res.errors){
+        this.saveNotification(res.id, notificationObj);
+      }
+    })
   }
 
 
-
+  saveNotification(id:string, notificationObj:any){
+    let uids = notificationObj.include_player_ids;
+    for (let i = 0; i < uids.length; i++) {
+        //let onesignal_uid = uids[i];
+        let uid = notificationObj.data.to.user_id;
+        let obj = {};
+        notificationObj.read = false;
+        obj[id] = notificationObj
+        this.fetchAll.update(uid, obj);
+    }
+  }
 
   tagUser(tags:any){
     this.oneSignal.sendTags(tags);
@@ -111,4 +128,8 @@ export class NotificationsProvider {
     }
   }
 
+  fetchById(uid:string){
+    this.fetch_by_id = this.afdb.list(`/notifications/${uid}`, ref => ref.orderByChild('read'));
+    return this.fetch_by_id;
+  }
 }

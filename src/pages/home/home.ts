@@ -218,7 +218,8 @@ export class MainPage {
       displayName: name
     };
     let contents = {
-      'en': `${name} is close by!`
+      'en': `${name} is close by!`,
+      'fr': `${name} n'est pas loin!`
     }
     this.notifications.sendMessage([oneSignalId], data, contents);
   }

@@ -307,9 +307,7 @@ export class EventsPage {
       let headings = {
         'en': message.headings
       }
-
       console.log('sendMessage', data);
-
       this.notifications.sendMessage(this.oneSignalBuddiesId, data, contents, headings);
     }
   }

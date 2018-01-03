@@ -47,6 +47,7 @@ export class UserProvider {
         this.userData = this.afdb.object(`users/${_user.uid}`);
         this.emailVerified = this.currentUser.emailVerified;
         console.log('afAuth.authState Observable in')
+        this.checkOneSignalID();
       } else {
         console.log('afAuth.authState Observable out')
       }
@@ -73,6 +74,15 @@ export class UserProvider {
   updateUserData(data:any) {
     this.userData.update(data);
     return this.userData;
+  }
+
+  checkOneSignalID() {
+    let one_id = this.notifications.one_id;
+    this.userData.subscribe((userData) => {
+      if(one_id && one_id != userData.oneSignalId){
+        this.userData.update({'oneSignalId': one_id});
+      }
+    });
   }
 
 

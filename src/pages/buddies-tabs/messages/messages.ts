@@ -152,13 +152,11 @@ export class MessagesPage {
     let participant = {};
     participant[this.currentUser.uid] = state;
 
-    console.log(event, state);
-
     this.buddiesProvider
       .updateParticipants(participant)
       .then(res => {
         if(state && event.oneSignalId){
-          this.sendMessageToFriend(event.oneSignalId, this.userData.settings.displayName, 'joinedEvent', event.name);
+          this.sendMessageToFriend(event.oneSignalId, this.userData.settings.displayName, 'joinedEvent', event);
         }
         this.loadAll();
       });
@@ -185,7 +183,7 @@ export class MessagesPage {
         this.afdb.object(`/users/${aFuid}/buddies/${_userData.aFuid}`).update(asker);
         //send message to the ASKER
         if(oneSignalId && _userData.oneSignalId){
-          this.sendMessageToFriend(oneSignalId, this.userData.settings.displayName, 'friendRequestAccepted');
+          this.sendMessageToFriend(oneSignalId, this.userData.settings.displayName, 'friendRequestAccepted', _userData);
         }
         buddy.pending = false;
         this.requestAccepted.push(buddy);
@@ -195,14 +193,17 @@ export class MessagesPage {
   }
 
 
-  sendMessageToFriend(oneSignalId, name, type, eventName = null){
+  sendMessageToFriend(oneSignalId, name, type, recipientData = null){
     let data = {
       type: type,
       from: {
         oneSignalId: this.userData.oneSignalId,
         user_id: this.userData.aFuid
       },
-      displayName: name
+      displayName: name,
+      to: {
+        user_id: recipientData.aFuid
+      }
     };
 
     let contents = {};
@@ -211,10 +212,12 @@ export class MessagesPage {
       contents['en'] = `You are now connected to ${name}`;
       contents['fr'] = `Vous êtes maintenant connecté à ${name}`;
     }else if(type == 'joinedEvent'){
+      let eventName = recipientData.name;
       contents['en'] = `${name} is going to your event "${eventName}"`;
       contents['fr'] = `${name} participe à votre événement "${eventName}"`;
     }
-    this.notifications.sendMessage([oneSignalId], data, contents);
+    console.log(data);
+    this.notifications.sendMessage([oneSignalId], data, contents, null );
   }
 
 

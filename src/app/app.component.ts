@@ -18,13 +18,14 @@ export class LetsRide {
 
   rootPage: any = 'MainPage';
   is_active = 'MainPage';
+  badges = null;
   pages: any[] = [
     { title: 'Home', component: 'MainPage', icon: 'home', is_active: true },
     { title: 'Profile', component: 'ProfilePage', icon: 'person', is_active: false },
     { title: 'Places', component: 'PlacesPage', icon: 'map', is_active: false },
     { title: 'Friends', component: 'BuddiesTabsPage', icon: 'people', is_active: false },
     { title: 'Events', component: 'EventsPage', icon: 'calendar', is_active: false },
-    //{ title: 'Notifs', component: 'NotifsPage', icon: 'calendar', is_active: false },
+    { title: 'Notifications', component: 'NotificationsPage', icon: 'mail', is_active: false },
   ]
 
   currentUser: any = null;
@@ -48,10 +49,12 @@ export class LetsRide {
       } else {
         this.menuCtrl.enable(true, 'mainMenu');
         this.currentUser = {...user.providerData[0], ...{'aFuid': user.uid} };
+        this.getBadges(user.uid);
       }
 
     });
     this.initializeApp();
+    console.log(this);
   }
 
   initializeApp() {
@@ -67,17 +70,30 @@ export class LetsRide {
     });
   }
 
+  getBadges(uid:string){
+    this.notifications.fetchById(uid).subscribe(res => {
+      if(res){
+        let newRes = res.filter(res => {
+          return res.read === false;
+        })
+        this.badges = newRes;
+        this.pages[5].counter = this.badges.length;
+      }
+    });
+  }
+
 
 
   openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
-    if(page == 'NotifsPage'){
+    /*if(page == 'NotifsPage'){
       let data = {displayName: "Guillaume Bartolini", eventId: "-Kt5-pe0rAEMKbwuaM6b", type: "newEvent", from: {user_id: "VMNmYlatT7aZzWfGBwM9aJzf6WN2", oneSignalId: "337092a2-4fa9-46df-9116-94fa3d701148"}};
       this.nav.setRoot('EventsPage', data);
     }else{
       this.nav.setRoot(page);
-    }
+    }*/
+    this.nav.setRoot(page);
     this.is_active = page;
   }
 }

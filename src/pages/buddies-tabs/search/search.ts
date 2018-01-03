@@ -184,7 +184,7 @@ export class SearchPage {
     this.afdb.list(`/users/${key}/buddies`).update(this.userData.aFuid, data.from);
 
     if(this.userData.oneSignalId && oneSignalId){
-      this.notifications.sendMessage([oneSignalId], data, contents)
+      this.notifications.sendMessage([oneSignalId], data, contents);
     }
 
   }
