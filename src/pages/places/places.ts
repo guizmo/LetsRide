@@ -41,6 +41,7 @@ export class PlacesPage {
       if(user){
         this.user = user.toJSON();
         this.placesProvider.getAllByUser(this.user.uid).subscribe((data) => {
+          console.log('getAllByUser', data);
           this.places = data;
           this.showNoResult = (data.length < 1) ? true : false ;
 
@@ -66,7 +67,7 @@ export class PlacesPage {
     let modal = this.modalCtrl.create('ModalNavPage', {
       state: state,
       key: key,
-      values: (key) ? this.places.filter( place => place.$key === key)[0] : null,
+      values: (key) ? this.places.filter( place => place.key === key)[0] : null,
       page: page,
       userId: this.user.uid
     })

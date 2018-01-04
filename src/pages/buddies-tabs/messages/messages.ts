@@ -5,7 +5,7 @@ import 'rxjs/add/observable/forkJoin';
 import {Observable} from 'rxjs/Observable';
 import * as moment  from 'moment';
 
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+import { AngularFireDatabase } from 'angularfire2/database';
 
 import { UserProvider, NotificationsProvider, BuddiesProvider} from '../../../providers';
 

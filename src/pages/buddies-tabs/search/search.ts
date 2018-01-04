@@ -7,7 +7,7 @@ import { Subject } from 'rxjs/Subject'
 import { UserProvider, NotificationsProvider, PeopleProvider, DisciplinesProvider, CountriesProvider } from '../../../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+import { AngularFireDatabase } from 'angularfire2/database';
 
 
 

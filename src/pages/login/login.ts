@@ -88,8 +88,11 @@ export class LoginPage {
 
         this.alertProvider.showSignInToast(provider + ': ' + user.displayName);
 
-        this.userProvider.afdb.object(`/users/${user.uid}`).subscribe((data) => {
-            if(data.$exists()){
+        this.userProvider.afdb.object(`/users/${user.uid}`)
+          .snapshotChanges()
+          .subscribe((data) => {
+            // TODO: check if data.$exists()
+            if(data){
               this.navCtrl.setRoot('MainPage');
               this.loadingProvider.hide();
             }else{

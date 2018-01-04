@@ -3,7 +3,8 @@ import { IonicPage, App } from 'ionic-angular';
 
 import {OneSignal} from '@ionic-native/onesignal';
 
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
+import { Observable } from 'rxjs/Observable';
 
 
 @Injectable()
@@ -20,8 +21,10 @@ export class NotificationsProvider {
     joinedEvent: '9558f575-afc3-4d51-9eb8-fb7a937a2425'
   }
 
-  public fetchAll:FirebaseListObservable<any[]>;
-  public fetch_by_id:FirebaseListObservable<any[]>;
+  public fetchAllRef:AngularFireList<any>;
+  public fetchAll:Observable<any>;
+  public fetch_by_idRef:AngularFireList<any>;
+  public fetch_by_id:Observable<any>;
 
   constructor(
     private oneSignal: OneSignal,
@@ -30,7 +33,8 @@ export class NotificationsProvider {
   ) {
     console.log('OneSignal', this);
     //this.navCtrl = this.app.getRootNav();
-    this.fetchAll = this.afdb.list(`/notifications`);
+    this.fetchAllRef = this.afdb.list(`/notifications`);
+    this.fetchAll = this.fetchAllRef.snapshotChanges();
   }
 
   init(nav) {
@@ -104,7 +108,7 @@ export class NotificationsProvider {
         let obj = {};
         notificationObj.read = false;
         obj[id] = notificationObj
-        this.fetchAll.update(uid, obj);
+        this.fetchAllRef.update(uid, obj);
     }
   }
 
@@ -129,7 +133,8 @@ export class NotificationsProvider {
   }
 
   fetchById(uid:string){
-    this.fetch_by_id = this.afdb.list(`/notifications/${uid}`, ref => ref.orderByChild('read'));
+    this.fetch_by_idRef = this.afdb.list(`/notifications/${uid}`, ref => ref.orderByChild('read'));
+    this.fetch_by_id = this.fetch_by_idRef.snapshotChanges();
     return this.fetch_by_id;
   }
 }

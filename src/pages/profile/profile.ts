@@ -129,8 +129,11 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   userAuth(){
     this.userProvider.afAuth.authState.subscribe((_user: firebase.User) => {
+      console.log('component afAuth.authState');
       if (_user) {
-        this.userProvider.userData.subscribe((data) => {
+        console.log('_user = ', _user);
+        this.userProvider.getUserData().subscribe((data) => {
+          console.log('this.userProvider.userData = ', data);
           this.userData = data;
           this.displayName = (data.settings && data.settings.displayName) ? data.settings.displayName : _user.displayName;
 

@@ -5,7 +5,7 @@ import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 
 import {GoogleMapsAPIWrapper, MapsAPILoader} from '@agm/core';
 import {GoogleMap, ZoomControlOptions, MapTypeStyle, ControlPosition} from '@agm/core/services/google-maps-types';
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 
 import { ModalNavPage } from '../modal-nav/modal-nav';
 import { MapStyle } from '../../constants/mapStyle';
@@ -107,11 +107,13 @@ export class MapPage {
     if(this.state == 'display'){
       this.backButton = 'Back';
       this.buddy = this.modalNavPage.navParams.get('buddy');
-      this.afdb.object(`/trackers/${this.buddy.aFuid}`).subscribe((res) => {
-        if(res) this.buddy.location = res;
-        console.log(res);
-        console.log(this.buddy);
-      })
+      this.afdb.object(`/trackers/${this.buddy.aFuid}`)
+        .snapshotChanges()
+        .subscribe((res) => {
+          if(res) this.buddy.location = res;
+          console.log(res);
+          console.log(this.buddy);
+        })
       this.markerDraggable = false;
     }
   }

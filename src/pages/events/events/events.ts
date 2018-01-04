@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, ModalController, AlertController, 
 
 import { Observable, BehaviorSubject, Subscription } from 'rxjs';
 
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { MomentModule } from 'angular2-moment';
 import * as moment  from 'moment';
@@ -28,7 +28,8 @@ export class EventsPage {
   private itemInUpdateMode;
   private refresher;
   public eventModal;
-  public events:FirebaseListObservable<any[]>;
+  public eventsRef: AngularFireList<any>;
+  public events: Observable<any[]>;
   public buddiesEvents: any = [];
   public buddies: any = [] ;
   public oneSignalBuddiesId: any = [];
@@ -159,11 +160,13 @@ export class EventsPage {
 
 
   getEvents(uid){
-    this.events = this.afdb.list(`/events/${uid}`, {
+    /*this.events = this.afdb.list(`/events/${uid}`, {
       query: {
         orderByChild: 'time'
       }
-    })
+    })*/
+    this.eventsRef = this.afdb.list(`/events/${uid}`, ref => ref.orderByChild('time') )
+    this.events = this.eventsRef.snapshotChanges();
 
     this.events.map((events) => {
       let now = moment();
@@ -172,7 +175,7 @@ export class EventsPage {
           let eventTime = moment(event.time);
           if((now.diff(eventTime) >= 0)){
             //automatically remove old events
-            this.events.remove(event.$key);
+            this.eventsRef.remove(event.$key);
           }
           let style = 'default.png';
           if(event.disciplines){
@@ -220,12 +223,12 @@ export class EventsPage {
 
 
   updateEvent(key, data){
-    this.events.update(key, data);
+    this.eventsRef.update(key, data);
   }
 
   addEvent(data){
     return new Promise<any>( (resolve, reject) => {
-      this.events.push(data).then((res) => {
+      this.eventsRef.push(data).set((res) => {
         resolve(res.key)
       }).catch( (err) => {
         console.log(err);
@@ -246,7 +249,7 @@ export class EventsPage {
         {
           text: 'Delete',
           handler: () => {
-            this.events.remove(key);
+            this.eventsRef.remove(key);
           }
         }
       ]

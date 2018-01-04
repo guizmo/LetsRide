@@ -4,16 +4,18 @@ import 'rxjs/add/operator/map';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 
 @Injectable()
 export class BuddiesProvider {
 
-  public buddiesId:FirebaseListObservable<any[]>;
+  public buddiesIdRef:AngularFireList<any[]>;
+  public buddiesId:Observable<any[]>;
   public buddies = new BehaviorSubject<any>([]) ;
   public buddiesRequest = new BehaviorSubject<any>([]) ;
   public buddiesEvents = new BehaviorSubject<any>([]) ;
-  public eventsParticipations:FirebaseObjectObservable<any[]>;
+  public eventsParticipationsRef:AngularFireObject<any>;
+  public eventsParticipations:Observable<any>;
 
   constructor(
     public afdb: AngularFireDatabase,
@@ -21,7 +23,10 @@ export class BuddiesProvider {
   }
 
   setBuddiesList(uid:string){
-    this.buddiesId = this.afdb.list(`/users/${uid}/buddies`);
+    this.buddiesIdRef = this.afdb.list(`/users/${uid}/buddies`)
+    this.buddiesId = this.buddiesIdRef.snapshotChanges().map(changes => {
+      return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
+    });
   }
 
   getBuddies(uid:string){
@@ -40,10 +45,10 @@ export class BuddiesProvider {
           let futureBuddiesRequest = [];
           for(let _buddy of _buddies){
             if(!_buddy.pending){
-              alreadyBuddiesRequest.push( this.afdb.object(`/users/${_buddy.$key}`).first() );
-              eventsBuddiesRequest.push( this.afdb.object(`/events/${_buddy.$key}`).first() );
+              alreadyBuddiesRequest.push( this.afdb.object(`/users/${_buddy.key}`).snapshotChanges().first() );
+              eventsBuddiesRequest.push( this.afdb.object(`/events/${_buddy.key}`).snapshotChanges().first() );
             }else{
-              futureBuddiesRequest.push( this.afdb.object(`/users/${_buddy.$key}`).first() );
+              futureBuddiesRequest.push( this.afdb.object(`/users/${_buddy.key}`).snapshotChanges().first() );
             }
           }
 
@@ -101,7 +106,7 @@ export class BuddiesProvider {
           console.log('buddies list changed', _buddies);
           let buddiesRequest = [];
           for(let _buddy of _buddies){
-            buddiesRequest.push( this.afdb.object(`/events/${_buddy.$key}`).first() );
+            buddiesRequest.push( this.afdb.object(`/events/${_buddy.key}`).snapshotChanges().first() );
           }
           console.log('buddiesRequest', buddiesRequest);
           Observable.forkJoin(buddiesRequest).subscribe((res) => {
@@ -118,12 +123,14 @@ export class BuddiesProvider {
 
   getParticipants(uid: string, eventID: string){
     //this.eventsParticipations = this.afdb.list(`/events_participation`);
-    this.eventsParticipations = this.afdb.object(`/events/${uid}/${eventID}/participants`);
+    this.eventsParticipationsRef = this.afdb.object(`/events/${uid}/${eventID}/participants`);
+    this.eventsParticipations = this.eventsParticipationsRef.snapshotChanges();
     return this.eventsParticipations;
   }
-  updateParticipants(participant: any): firebase.Promise<void> {
+  updateParticipants(participant: any): Promise<void> {
+    // TODO: check firebase.Promise<void>
     //this.eventsParticipations.set(eventID: 'participants', participantID);
-    return this.eventsParticipations.set(participant);
+    return this.eventsParticipationsRef.set(participant);
   }
 
 }

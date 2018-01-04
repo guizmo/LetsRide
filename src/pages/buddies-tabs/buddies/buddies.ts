@@ -7,7 +7,7 @@ import {Observable} from 'rxjs/Observable';
 import { UserProvider, BuddiesProvider, FacebookProvider } from '../../../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 
 
 @IonicPage()
@@ -19,7 +19,7 @@ export class BuddiesPage {
 
   currentUser;
   userData;
-  buddiesId:FirebaseListObservable<any[]>;
+  buddiesId:Observable<any[]>;
   buddies: any = [] ;
   buddiesSubcription;
   showSpinner:boolean = true;

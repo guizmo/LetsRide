@@ -1,14 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
 import { Platform, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Facebook } from '@ionic-native/facebook';
 import { GooglePlus } from '@ionic-native/google-plus';
 
 import { Observable } from "rxjs/Rx";
-
-
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 
@@ -26,10 +23,10 @@ export class UserProvider {
   localUser: any;
   emailVerified: boolean = false;
   checkVerified;
-  userData: FirebaseObjectObservable<any>;
+  userDataRef: AngularFireObject<any>;
+  userData: Observable<any>;
 
   constructor(
-    public http: Http,
     public translate: Translate,
     public afAuth: AngularFireAuth,
     public afdb: AngularFireDatabase,
@@ -44,7 +41,8 @@ export class UserProvider {
     afAuth.authState.subscribe((_user: firebase.User) => {
       if (_user) {
         this.currentUser = _user;
-        this.userData = this.afdb.object(`users/${_user.uid}`);
+        this.userDataRef = this.afdb.object(`/users/${_user.uid}`);
+        this.getUserData();
         this.emailVerified = this.currentUser.emailVerified;
         console.log('afAuth.authState Observable in')
         this.checkOneSignalID();
@@ -53,26 +51,32 @@ export class UserProvider {
       }
 
     });
+  }
 
-
+  getUserData(){
+    this.userData = this.userDataRef.snapshotChanges().map(changes => {
+      return changes.payload.val();
+    });
+    return this.userData;
   }
 
   addUserData(data: Profile) {
     //Create new User with uid Key
-    this.userData = this.afdb.object(`/users/${data.aFuid}`);
+    this.getUserData();
     data.oneSignalId = this.notifications.one_id;
     data.settings = {age: '', city: '', country: '', disciplines: '', displayName: '', gender: '',level: ''};
-    this.userData.set(data);
+    this.userDataRef.set(data);
     return this.userData ;
   }
 
   saveUserData(data: any) {
-    this.userData.set(data);
+    this.userDataRef.set(data);
   }
 
   //updateUserData(data: Profile) {
   updateUserData(data:any) {
-    this.userData.update(data);
+    this.userDataRef.update(data);
+    console.log(this.userData);
     return this.userData;
   }
 
@@ -80,7 +84,7 @@ export class UserProvider {
     let one_id = this.notifications.one_id;
     this.userData.subscribe((userData) => {
       if(one_id && one_id != userData.oneSignalId){
-        this.userData.update({'oneSignalId': one_id});
+        this.userDataRef.update({'oneSignalId': one_id});
       }
     });
   }
@@ -89,12 +93,14 @@ export class UserProvider {
 
 
   //OK
-  signInUser(email: string, password: string): firebase.Promise<any> {
+  //TODO: firebase.Promise
+  signInUser(email: string, password: string): Promise<any> {
     return this.afAuth.auth.signInWithEmailAndPassword(email, password);
   }
 
   //OK
-  signUpUser(name: string, newEmail: string, newPassword: string): firebase.Promise<any> {
+  //TODO: firebase.Promise
+  signUpUser(name: string, newEmail: string, newPassword: string): Promise<any> {
     let infos = {name, newEmail};
     return this.afAuth.auth.createUserWithEmailAndPassword(newEmail, newPassword)
       .then((newUser) => {
@@ -123,13 +129,15 @@ export class UserProvider {
   }
 
   //OK
-  resetPassword(email: string): firebase.Promise<any> {
+  //TODO: firebase.Promise
+  resetPassword(email: string): Promise<any> {
     return this.afAuth.auth.sendPasswordResetEmail(email);
   }
 
 
   //OK
-  signInWithProvider(provider:string): firebase.Promise<any> {
+  //TODO: firebase.Promise
+  signInWithProvider(provider:string): Promise<any> {
 
     const providers = {
       gp : 'Google+',

@@ -25,7 +25,7 @@
         </ion-card-content>
       </ion-card>
     </div>
-    <ng-container  *ngFor="let place of places; let last = last" >
+    <ng-container  *ngFor="let place of places; let last = last; let i = index" >
       <ion-card no-margin f-width margin-bottom  no-radius [class.last-item]="last">
         <div class="img-holder">
           <div
@@ -43,10 +43,10 @@
           <ion-fab right bottom edge #fab>
             <button class="open-edits" color="brand" ion-fab mini (click)="closeFabs(fab)"><ion-icon name="ios-add"></ion-icon></button>
             <ion-fab-list side="left">
-              <button ion-fab color="brand_dark" (click)="presentModal('update', place.$key, fab)">
+              <button ion-fab color="brand_dark" (click)="presentModal('update', place.key, fab)">
                 <ion-icon name="md-create"></ion-icon>
               </button>
-              <button ion-fab color="danger" (click)="delete(place.$key, fab)">
+              <button ion-fab color="danger" (click)="delete(place.key, fab)">
                 <ion-icon name="md-trash"></ion-icon>
               </button>
             </ion-fab-list>

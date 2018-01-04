@@ -1,20 +1,24 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers, Response, URLSearchParams }from '@angular/http';
+import { HttpClient, HttpHeaders, HttpResponse, HttpParams }from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
+
+const httpOptions = {
+    headers: new HttpHeaders({'Access-Control-Allow-Origin': '*' })
+};
 
 @Injectable()
 export class CloudFunctionsProvider {
   private functionUrl = 'https://us-central1-lets-ride-a073c.cloudfunctions.net/';
 
-  constructor(public http: Http) {
+  constructor(public http: HttpClient) {
     console.log('CloudFunctionsProvider Provider');
   }
 
   deleteOldTrackers(){
-    let headers = new Headers({'Access-Control-Allow-Origin': '*' });
-    //let params: URLSearchParams = new URLSearchParams();
-    return this.http.post(this.functionUrl + 'deleteOldTrackers', {}, headers)
+    let headers = new HttpHeaders({'Access-Control-Allow-Origin': '*' });
+    //let params: HttpParams = new HttpParams();
+    return this.http.post(this.functionUrl + 'deleteOldTrackers', {}, httpOptions)
       .toPromise()
       .then( res => console.log(res) );
   }

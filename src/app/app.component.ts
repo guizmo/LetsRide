@@ -9,6 +9,8 @@ import { ListPage} from '../pages';
 import { Translate, NotificationsProvider, LocationTrackerProvider } from '../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
+import 'rxjs/add/operator/map';
+
 
 @Component({
   templateUrl: 'app.html',

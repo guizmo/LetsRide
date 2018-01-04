@@ -1,66 +1,55 @@
 import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
-import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 
 import { UserProvider} from '../providers';
-/*
-  Generated class for the PlacesProvider provider.
 
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular DI.
-*/
 @Injectable()
 export class PlacesProvider {
 
-  places: FirebaseListObservable<any[]>;
+  placesRef: AngularFireList<any[]>;
+  places: Observable<any[]>;
 
   constructor(
     public db: AngularFireDatabase,
     public userProvider: UserProvider,
   ) {
-    this.places = this.db.list('/places', {
-        query: {
-          orderByChild: 'name'
-        }
-      });
-
-    console.log(this)
+    this.placesRef = this.db.list('/places', ref => ref.orderByChild('name') );
+    this.places = this.placesRef.snapshotChanges()
   }
-
-
-
 
   getAll(){
     return this.places
-      .map(res => res)
+      .map(changes => {
+        return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
+      })
       .catch(this.handleError);
   }
 
   getAllByUser(uid:string){
-    return this.db.list('/places', {
-        query: {
-          orderByChild: 'userId',
-          equalTo: uid
-        }
+    return this.db.list('/places', ref => ref.orderByChild('userId').equalTo(uid))
+      .snapshotChanges()
+      .map(changes => {
+        return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
       })
-      .map(res => res)
       .catch(this.handleError);
+
   }
 
 
   add(item: any) {
-    this.places.push(item);
+    this.placesRef.push(item);
   }
   update(key: string, props: any) {
-    this.places.update(key, props)
+    this.placesRef.update(key, props)
       .then(res => console.log(res))
   }
   delete(key: string) {
-    this.places.remove(key);
+    this.placesRef.remove(key);
   }
   deleteEverything() {
-    this.places.remove();
+    this.placesRef.remove();
   }
   handleError(error) {
       console.error(error);

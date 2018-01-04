@@ -7,7 +7,7 @@ import { OneSignal } from '@ionic-native/onesignal';
 import { Subscription } from 'rxjs/Subscription';
 
 import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { UserProvider, LocationTrackerProvider, NotificationsProvider, PermissionsProvider} from '../../providers';
 
 declare var myWindow:any;
@@ -24,7 +24,7 @@ export class MainPage {
   isTrackingSubject: Subscription;
   activeItemSliding: ItemSliding = null;
   private onResumeSubscription;
-  private items: FirebaseListObservable<any[]>;
+  private items: AngularFireList<any[]>;
   private state: any;
   private searchDone: boolean = null;
   private noResults: boolean = false;
@@ -56,7 +56,7 @@ export class MainPage {
     this.afAuth.authState.subscribe((user) => {
       if(user){
         this.currentUser = user.toJSON();
-        this.userProvider.userData.subscribe((settings) => this.userSettings = settings);
+        this.userProvider.getUserData().subscribe((settings) => this.userSettings = settings);
       }
     });
     console.log(this);

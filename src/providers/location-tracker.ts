@@ -9,7 +9,7 @@ import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/observable/forkJoin';
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 
 import { PermissionsProvider } from './permissions';
 import { CloudFunctionsProvider } from './cloud-functions';
@@ -23,8 +23,10 @@ export class LocationTrackerProvider {
   public watch: any;
   public lat: number = 0;
   public lng: number = 0;
-  public tracker: FirebaseObjectObservable<any>;
-  public trackers: FirebaseListObservable<any>;
+  public trackerRef: AngularFireObject<any>;
+  public tracker: Observable<any>;
+  public trackersRef: AngularFireList<any>;
+  public trackers: Observable<any>;
   public trackerSubsciption;
   public is_tracking: boolean = false;
   public isTrackingSubject = new Subject() ;
@@ -104,7 +106,8 @@ export class LocationTrackerProvider {
 
   trackInBackground(uid: string){
     this.uid = uid;
-    this.tracker = this.afdb.object(`/trackers/${uid}`);
+    this.trackerRef = this.afdb.object(`/trackers/${uid}`);
+    this.tracker = this.trackerRef.snapshotChanges();
     this.timeTracker = moment();
 
     console.log('trackInBackground', this);
@@ -133,7 +136,7 @@ export class LocationTrackerProvider {
 
         console.log(this.timeTracker);
 
-        this.tracker.set({
+        this.trackerRef.set({
           lat: location.latitude,
           lng: location.longitude,
           timestamp: location.time,
@@ -189,8 +192,8 @@ export class LocationTrackerProvider {
     this.is_tracking = false;
     this.isTrackingSubject.next(this.is_tracking);
 
-    if(this.tracker){
-      this.tracker.remove();
+    if(this.trackerRef){
+      this.trackerRef.remove();
     }else if(this.uid){
       let tracker = this.afdb.object(`/trackers/${this.uid}`);
       if(tracker){
@@ -205,7 +208,8 @@ export class LocationTrackerProvider {
     //clean up old trackers
     this.cloudFunctions.deleteOldTrackers();
 
-    this.trackers = this.afdb.list('/trackers');
+    this.trackersRef = this.afdb.list('/trackers');
+    this.trackers = this.trackersRef.snapshotChanges();
     return new Promise<any>( (resolve, reject) => {
 
       this.geolocation.getCurrentPosition().then((position) => {
@@ -231,7 +235,9 @@ export class LocationTrackerProvider {
             let buddiesRequest = [];
             if(peopleAround.length > 0){
               for(let persone of peopleAround){
-                buddiesRequest.push( this.afdb.object(`/users/${persone.$key}`, { preserveSnapshot: true }).first() );
+                //TODO
+                //buddiesRequest.push( this.afdb.object(`/users/${persone.$key}`, { preserveSnapshot: true }).first() );
+                buddiesRequest.push( this.afdb.object(`/users/${persone.$key}`).snapshotChanges().first() );
               }
             }else{
               return resolve([]);
