@@ -81,29 +81,34 @@ export class NotificationsPage {
     let now = moment();
     this.buddiesEventsSubscription = this.buddiesProvider.buddiesEvents.subscribe((events) => {
       let _events = [];
-      let buddyEvents = events.filter((event) => event).map((event) => {
-        let bud = this.buddies.filter((_bud) => _bud.$key === event.$key);
-        bud = bud[0] || null;
+      let buddyEvents = Object.keys(events).filter((bud_key) => Object.keys(events[bud_key]).length != 0 )
+        .map((bud_key) => {
+          let bud_events = events[bud_key];
+          let bud = this.buddies.filter((_bud) => _bud.aFuid === bud_key );
+          bud = bud[0] || null;
         if(bud){
-          let buddy = {
+          let buddyEvent = {
             displayName: bud.settings.displayName,
             oneSignalId: bud.oneSignalId || null,
-            aFuid: bud.$key
+            aFuid: bud.aFuid
           };
 
 
-          for (let key in event) {
-            event[key].participates = false;
-            let eventTime = moment(event[key].time);
+          for (let key in bud_events) {
+            let event = bud_events[key];
+            event.key = key;
+            event.participates = false;
+            let eventTime = moment(event.time);
             if (eventTime.diff(now) >= 0){
-              if(event[key].participants && event[key].participants[this.currentUser.uid]){
-                event[key].participates = true;
+              if(event.participants && event.participants[this.currentUser.uid]){
+                event.participates = true;
               }
-              _events.push(Object.assign({key}, event[key], buddy));
+              _events.push(Object.assign(event, buddyEvent));
             }
           }
 
         }
+        console.log(_events);
         return _events;
       })
       _events.sort(function(a,b) {
