@@ -66,7 +66,7 @@ export class EventsPage {
         //this.getEvents(user.uid);
         this.getBuddies();
 
-        this.userProvider.userData.subscribe((settings) => {
+        this.userProvider.getUserData().subscribe((settings) => {
           if(settings){
             this.userData = settings;
           }
@@ -98,9 +98,8 @@ export class EventsPage {
   }
 
   presentEventModal(event:any = null){
-
     if(event){
-      this.itemInUpdateMode = event.$key;
+      this.itemInUpdateMode = event.key;
     }
     this.eventModal = this.modalCtrl.create('EventsModalPage', {values: event}, { cssClass: 'inset-modal' })
     this.eventModal.present();
@@ -110,50 +109,54 @@ export class EventsPage {
 
 
   getBuddiesEvents(){
-    this.buddiesProvider.getBuddies(this.currentUser.uid);
     let now = moment();
-    //this.buddiesProvider.getBuddiesEvents(this.currentUser.uid);
+    this.buddiesProvider.getBuddies(this.currentUser.uid);
     this.buddiesEventsSubscription = this.buddiesProvider.buddiesEvents.subscribe((events) => {
       let _events = [];
+      let buddyEvents = Object.keys(events).filter((bud_key) => Object.keys(events[bud_key]).length != 0 )
+        .map((bud_key) => {
+          let bud_events = events[bud_key];
 
-      let buddyEvents = events.filter((event) => event.$exists()).map((event) => {
+          let bud = this.buddies.filter((_bud) => {
+            return _bud.aFuid === bud_key;
+          });
 
-        let bud = this.buddies.filter((_bud) => _bud.$key === event.$key);
-        bud = bud[0] || null;
+          bud = bud[0] || null;
+
 
         if(bud){
           let buddyEvent = {
             displayName: bud.settings.displayName,
             oneSignalId: bud.oneSignalId || null,
-            aFuid: bud.$key,
+            aFuid: bud.aFuid,
             buddy: true
           };
 
 
-          for (let key in event) {
-            let eventTime = moment(event[key].time);
+          for (let key in bud_events) {
+            let event = bud_events[key];
+            let eventTime = moment(event.time);
             let style = 'default.png';
-            if(event[key].disciplines){
-              style = this.getRidingStyle(event[key].disciplines)+'.jpg';
+            if(event.disciplines){
+              style = this.getRidingStyle(event.disciplines)+'.jpg';
             }
-            event[key].backgroundImage = `./assets/img/styles/${style}`;
-            event[key].$key = key;
+            event.backgroundImage = `./assets/img/styles/${style}`;
+            event.key = key;
             if (eventTime.diff(now) >= 0){
-              if(event[key].participants && event[key].participants[this.currentUser.uid]){
-                event[key].participates = true;
+              if(event.participants && event.participants[this.currentUser.uid]){
+                event.participates = true;
               }
-              _events.push(Object.assign(event[key], buddyEvent));
+              _events.push(Object.assign(event, buddyEvent));
             }
-          }
+          }//for loop
 
-        }
+        }//if bud
 
         return _events;
       })
 
       this.buddiesEvents = _events;
       this.getEvents(this.currentUser.uid);
-      //this.mergeEvents();
 
     })
   }
@@ -170,12 +173,12 @@ export class EventsPage {
 
     this.events.map((events) => {
       let now = moment();
-      return events
-        .map((event) => {
+      return events.map((changes) => {
+        let event = { key: changes.key, ...changes.payload.val() };
           let eventTime = moment(event.time);
           if((now.diff(eventTime) >= 0)){
             //automatically remove old events
-            this.eventsRef.remove(event.$key);
+            this.eventsRef.remove(event.key);
           }
           let style = 'default.png';
           if(event.disciplines){
@@ -211,10 +214,12 @@ export class EventsPage {
           this.updateEvent(this.itemInUpdateMode, event);
           eventKey = this.itemInUpdateMode;
           message.headings = `${name} has updated an event`;
-          this.sendEventToBuddies(message, eventKey)
+          //this.sendEventToBuddies(message, eventKey)
         }else{
           message.headings = `${name} has created an event`;
-          this.addEvent(event).then((eventKey) => this.sendEventToBuddies(message, eventKey))
+          this.addEvent(event).then((eventKey) => {
+            //this.sendEventToBuddies(message, eventKey)
+          })
         }
         this.itemInUpdateMode = null;
       }
@@ -228,9 +233,10 @@ export class EventsPage {
 
   addEvent(data){
     return new Promise<any>( (resolve, reject) => {
-      this.eventsRef.push(data).set((res) => {
+      this.eventsRef.push(data).then((res) => {
         resolve(res.key)
-      }).catch( (err) => {
+      })
+      .catch( (err) => {
         console.log(err);
         reject(err);
       });
@@ -310,7 +316,6 @@ export class EventsPage {
       let headings = {
         'en': message.headings
       }
-      console.log('sendMessage', data);
       this.notifications.sendMessage(this.oneSignalBuddiesId, data, contents, headings);
     }
   }
@@ -338,7 +343,7 @@ export class EventsPage {
     }, 2000)
 
     if(this.navParams.data && this.navParams.data.type == 'newEvent'){
-      let event = this.eventsListing.filter(event => event.$key == this.navParams.data.eventId);
+      let event = this.eventsListing.filter(event => event.key == this.navParams.data.eventId);
       if(event.length){
         this.presentPopover(event[0]);
       }

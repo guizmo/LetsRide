@@ -47,7 +47,7 @@ export class NotificationsPage {
   ) {
     this.afAuth.authState.subscribe((user) => {
       if(user){
-        this.userProvider.userData.subscribe((settings) => {
+        this.userProvider.getUserData().subscribe((settings) => {
           if(settings){
             this.userData = settings;
             this.currentUser = user.toJSON();
@@ -81,7 +81,7 @@ export class NotificationsPage {
     let now = moment();
     this.buddiesEventsSubscription = this.buddiesProvider.buddiesEvents.subscribe((events) => {
       let _events = [];
-      let buddyEvents = events.filter((event) => event.$exists()).map((event) => {
+      let buddyEvents = events.filter((event) => event).map((event) => {
         let bud = this.buddies.filter((_bud) => _bud.$key === event.$key);
         bud = bud[0] || null;
         if(bud){

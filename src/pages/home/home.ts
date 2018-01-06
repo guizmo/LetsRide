@@ -83,7 +83,7 @@ export class MainPage {
 
   }
   ionViewWillLeave(){
-    console.log('ionViewWillLeave', this);
+    //console.log('ionViewWillLeave', this);
     this.canTrackSubject.unsubscribe();
     this.isTrackingSubject.unsubscribe();
   }

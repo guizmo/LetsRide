@@ -31,23 +31,41 @@ export class BuddiesPage {
     public navParams: NavParams,
     public afdb: AngularFireDatabase,
     private buddiesProvider: BuddiesProvider,
+    private afAuth: AngularFireAuth,
     private userProvider: UserProvider,
     private fb: FacebookProvider
   ) {
-    console.log(this);
+    //this.fetchUserData();
   }
-  ionViewDidLeave(){
+
+  fetchUserData(){
+    this.afAuth.authState.subscribe((user) => {
+      if(user){
+        this.getBuddies(user.uid);
+        this.userProvider.getUserData().subscribe((settings) => {
+          if(settings){
+            this.userData = settings;
+            this.currentUser =  user.toJSON();
+          }
+        });
+      }
+    });
   }
+
+  ionViewDidLeave(){ }
+
   ionViewWillUnload(){
     this.buddiesSubcription.unsubscribe();
   }
 
   ionViewDidLoad() {
     //Fired only when a view is stored in memory. This event is NOT fired on entering a view that is already cached. It’s a nice place for init related tasks.
+    console.log('ionViewDidLoad');
     this.getCurrentUser();
   }
 
   ionViewDidEnter() {
+    console.log('ionViewDidEnter');
   }
 
   goto(page){
@@ -58,8 +76,8 @@ export class BuddiesPage {
   }
 
   getCurrentUser() {
-
     if(this.navParams.data.value){
+      console.log('this.navParams.data.value');
       let values = this.navParams.data.value;
       for (let key in values) {
         this[key] = values[key];
@@ -67,6 +85,7 @@ export class BuddiesPage {
       this.getBuddies(this.currentUser.uid);
       return;
     }else{
+      console.log('this.navParams.data.value else else else');
       this.navParams.data.subscribe((values) => {
         if(values){
           for (let key in values) {
@@ -78,7 +97,7 @@ export class BuddiesPage {
       });
     }
 
-    this.navParams.data.subscribe(
+    /*this.navParams.data.subscribe(
       values => {
         if(values){
           let key = Object.keys(values)[0];
@@ -89,7 +108,7 @@ export class BuddiesPage {
       },
       error => console.log('error'),
       () => { }
-    );
+    );*/
   }
 
   getBuddies(uid:string){

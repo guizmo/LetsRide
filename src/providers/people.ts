@@ -18,20 +18,9 @@ export class PeopleProvider {
   }
 
   getPeople(start = null, end = null, limitToFirst = null): Observable<any> {
-
     /*let query:any = {
       orderByChild : 'settings/displayName'
-    };
-
-    if(start){
-      query.startAt = start;
-    }
-    if(end){
-      query.endAt = end;
-    }
-    if(limitToFirst){
-      query.limitToFirst = limitToFirst;
-    }*/
+    };*/
     /*query: {
       orderByChild: 'settings/displayName',
       limitToFirst: 10,
@@ -42,9 +31,24 @@ export class PeopleProvider {
     //return this.afdb.list('/users', { query: query })
     //TODO: https://github.com/angular/angularfire2/blob/master/docs/rtdb/querying-lists.md
     //Dynamic querying
+    //return ref.orderByChild('settings/displayName').startAt(start).endAt(end).limitToFirst(limitToFirst)
+
     return this.afdb.list('/users',
-      ref => ref.orderByChild('settings/displayName').startAt(start).endAt(end).limitToFirst(limitToFirst)
-    ).snapshotChanges();
+      ref => {
+        let newRef = ref.orderByChild('settings/displayName');
+
+        if(start){
+          newRef = newRef.startAt(start);
+        }
+        if(end){
+          newRef = newRef.endAt(end);
+        }
+        if(limitToFirst){
+          newRef = newRef.limitToFirst(limitToFirst);
+        }
+        return newRef;
+      }
+    ).valueChanges();
   }
 
 

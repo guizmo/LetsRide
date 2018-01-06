@@ -17,6 +17,7 @@ import { Diagnostic } from '@ionic-native/diagnostic';
 
 import { MomentModule } from 'angular2-moment';
 import { VirtualScrollModule } from 'angular2-virtual-scroll';
+import { NgPipesModule, LatinisePipe } from 'ngx-pipes';
 
 //import 'web-animations-js/web-animations.min';
 //import { AgmCoreModule } from '@agm/core';
@@ -51,7 +52,8 @@ import {
   FacebookProvider,
   PeopleProvider,
   PermissionsProvider,
-  CloudFunctionsProvider
+  CloudFunctionsProvider,
+  StringManipulationProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -68,6 +70,7 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 
 import { GbLogoutButtonModule } from '../components/gb-logout-button/gb-logout-button.module';
+
 
 export const firebaseConfig = {
   apiKey: "AIzaSyBvmBNw3scf3o1dSZGQRGjFUGfhlOQw0a0",
@@ -112,7 +115,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     AngularFireDatabaseModule,
     AngularFireAuthModule,
     ReactiveFormsModule,
-    MomentModule
+    MomentModule,
+    NgPipesModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -154,7 +158,9 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     Diagnostic,
     PermissionsProvider,
     VirtualScrollModule,
-    CloudFunctionsProvider
+    CloudFunctionsProvider,
+    LatinisePipe,
+    StringManipulationProvider
   ]
 })
 export class AppModule {}

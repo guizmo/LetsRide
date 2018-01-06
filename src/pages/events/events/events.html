@@ -61,7 +61,7 @@
 
           <ion-row *ngIf="!event.buddy">
             <ion-col text-right>
-              <button ion-button color="danger" icon-left clear small (click)="deleteEvent(event.$key)">
+              <button ion-button color="danger" icon-left clear small (click)="deleteEvent(event.key)">
                 <ion-icon color="dark" ios="ios-trash-outline" md="md-trash"></ion-icon>
                 <div>Delete</div>
               </button>

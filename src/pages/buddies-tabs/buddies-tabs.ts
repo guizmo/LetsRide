@@ -17,24 +17,27 @@ export class BuddiesTabsPage {
   userLoaded = false;
   tabsParams = new BehaviorSubject<any>(null);
 
+
   searchRoot = 'SearchPage';
   buddiesRoot = 'BuddiesPage';
-  messagesRoot = 'MessagesPage';
+  //messagesRoot = 'MessagesPage';
 
 
   constructor(
     public navCtrl: NavController,
     private afAuth: AngularFireAuth,
     private buddiesProvider: BuddiesProvider,
-    private userProvider: UserProvider
+    private userProvider: UserProvider,
   ) {
+    this.fetchUserData();
+  }
 
+  fetchUserData(){
     this.afAuth.authState.subscribe((user) => {
       if(user){
-        this.userProvider.userData.subscribe((settings) => {
+        this.userProvider.getUserData().subscribe((settings) => {
           if(settings){
             this.userLoaded = true;
-            console.log('this.tabsParams.next({userData: settings,currentUser: user.toJSON()});');
             this.tabsParams.next({userData: settings,currentUser: user.toJSON()});
             this.tabsParams.complete();
           }
@@ -43,8 +46,13 @@ export class BuddiesTabsPage {
     });
   }
 
+  ionViewDidLoad() {
+    //console.log('tabs ionViewDidLoad');
+  }
+
   ionViewDidEnter() {
-    console.log('tabs ionViewDidLoad');
+    //console.log('tabs ionViewDidEnter');
+
     //to redirect
     /*let _self = this;
     setTimeout(function(){
@@ -54,11 +62,11 @@ export class BuddiesTabsPage {
   }
 
   ionViewDidLeave(){
-    console.log('tabs ionViewDidLeave');
+    //console.log('tabs ionViewDidLeave');
     //this.buddiesProvider.buddies.complete();
   }
   ionViewWillUnload(){
-    console.log('tabs ionViewWillUnload');
+    //console.log('tabs ionViewWillUnload');
     //this.buddiesProvider.buddies.complete();
   }
 

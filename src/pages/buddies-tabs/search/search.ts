@@ -4,7 +4,14 @@ import { IonicPage, NavController, NavParams, Content, ModalController } from 'i
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subject } from 'rxjs/Subject'
 
-import { UserProvider, NotificationsProvider, PeopleProvider, DisciplinesProvider, CountriesProvider } from '../../../providers';
+import {
+  UserProvider,
+  NotificationsProvider,
+  PeopleProvider,
+  DisciplinesProvider,
+  CountriesProvider,
+  StringManipulationProvider
+} from '../../../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase } from 'angularfire2/database';
@@ -38,28 +45,51 @@ export class SearchPage {
     public userProvider: UserProvider,
     public modalCtrl: ModalController,
     private notifications: NotificationsProvider,
-    private peoplePvr: PeopleProvider
+    private peoplePvr: PeopleProvider,
+    private strManip: StringManipulationProvider
   ) {
     console.log(this);
-    this.getCurrentUser();
     //this.filters = [{"value":["Cross Country (XC)", "Downhill", "Enduro", "Road", "All-mountain"],"alias":"disciplines"},{"value":"New Caledonia","alias":"country"},{"value":"Male","alias":"gender"},{"value":"Nouméa","alias":"city"},{"value":3,"alias":"level"}];
+    //this.fetchUserData();
+  }
+  ionViewDidLoad() {
+    this.getCurrentUser();
   }
 
-  getPeople() {
+  fetchUserData(){
+    this.afAuth.authState.subscribe((user) => {
+      if(user){
+        this.getPeople();
+        console.log('this.userProvider.userData', this.userProvider.userData);
+        this.userProvider.getUserData().subscribe((settings) => {
+          console.log('settings', settings);
+          if(settings){
+            //this.userLoaded = true;
+            this.userData = settings;
+            this.currentUser =  user.toJSON();
+            console.log(this);
+          }
+        });
+      }
+    });
+  }
 
+
+
+  getPeople(){
+    console.log('getPeople');
     this.peoplePvr.getPeople()
       .subscribe(people => {
         if(people.length){
 
           people.map((person) => {
             person.avatarLoaded = false;
-            console.log(this.currentUser.uid);
             if(person.buddies && person.buddies[this.currentUser.uid]){
               if(person.buddies[this.currentUser.uid].pending){
-                person.iconName = 'contacts';
+                person.iconName = 'checkmark';
               }else {
                 //if person.requestSent
-                person.iconName = 'checkmark';
+                person.iconName = 'contacts';
               }
             }else{
               person.iconName = null;
@@ -91,9 +121,6 @@ export class SearchPage {
   }
 
 
-  ionViewDidEnter() {
-    //this.getCurrentUser();
-  }
 
 
   showOptions(){
@@ -144,7 +171,7 @@ export class SearchPage {
       return;
     }
 
-    this.navParams.data.subscribe(
+    /*this.navParams.data.subscribe(
       values => {
         if(values){
           let key = Object.keys(values)[0];
@@ -156,7 +183,7 @@ export class SearchPage {
       },
       error => console.log('error'),
       () => { }
-    );
+    );*/
   }
 
 
@@ -201,15 +228,12 @@ export class SearchPage {
     //this.isSearching = true;
     if($event){
       q = $event.target.value;
-      console.log('event.target.value', q);
 
       if (this.filters.filter(f => f.alias == 'displayName').length > 0) {
-        console.log('display filter exist');
         if(!q){
           this.filters = this.filters.filter(f => f.alias != 'displayName');
         }else{
           this.filters.map((filter) => {
-            console.log('map filters for displayName');
             if(filter.alias == 'displayName'){
               filter.value = q;
             }
@@ -252,7 +276,8 @@ export class SearchPage {
           if(_filter.alias == 'displayName'){
             if(_filter.value) {
               let q = _filter.value;
-              if (person.settings.displayName.toLowerCase().indexOf(q.toLowerCase()) > -1) {
+              let displayName = this.strManip.toLatineLowerCase(person.settings.displayName);
+              if (displayName.indexOf(this.strManip.toLatineLowerCase(q)) > -1) {
                 person.score++;
               }
             }
@@ -267,6 +292,11 @@ export class SearchPage {
               }
             }
 
+          }else if(_filter.alias == 'city' ){
+            let city = this.strManip.toLatineLowerCase(settings[_filter.alias]);
+            if(city.indexOf(this.strManip.toLatineLowerCase(_filter.value)) > -1){
+              person.score++;
+            }
           }else{
             if(settings[_filter.alias] == _filter.value){
               person.score++;
