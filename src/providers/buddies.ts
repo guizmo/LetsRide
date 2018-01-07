@@ -23,7 +23,7 @@ export class BuddiesProvider {
   }
 
   setBuddiesList(uid:string){
-    console.log('setBuddiesList');
+    console.log('setBuddiesList', uid);
     this.buddiesIdRef = this.afdb.list(`/users/${uid}/buddies`)
     this.buddiesId = this.buddiesIdRef.snapshotChanges().map(changes => {
       return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
@@ -31,7 +31,7 @@ export class BuddiesProvider {
   }
 
   getBuddies(uid:string){
-    //console.log('getBuddies in provider');
+    console.log('getBuddies in provider', uid);
     if(!this.buddiesId){
       //console.log('if !this.buddiesId getBuddies');
       this.setBuddiesList(uid);
@@ -55,7 +55,7 @@ export class BuddiesProvider {
           if(alreadyBuddiesRequest.length > 0){
             Observable.forkJoin(alreadyBuddiesRequest).subscribe((res) => {
               if(res){
-                res = res.map((_bud:any) => _bud.payload.val() );
+                res = res.filter((_bud:any) => _bud.key ).map((_bud:any) => _bud.payload.val() );
                 this.buddies.next(res);
               }
             });
@@ -66,7 +66,7 @@ export class BuddiesProvider {
           if(futureBuddiesRequest.length > 0){
             Observable.forkJoin(futureBuddiesRequest).subscribe((res) => {
               if(res){
-                res = res.map((_bud:any) => _bud.payload.val() );
+                res = res.filter((_bud:any) => _bud.key ).map((_bud:any) => _bud.payload.val() );
                 this.buddiesRequest.next(res);
               }
             });
@@ -79,7 +79,7 @@ export class BuddiesProvider {
               if(res){
                 //res = res.map((_bud:any) => ({ aFuid: _bud.payload.key, ..._bud.payload.val() }));
                 let events = {};
-                res.map((_bud:any) => {
+                res.filter((_bud:any) => _bud.key ).map((_bud:any) => {
                   let event = {};
                   events[_bud.payload.key] = _bud.payload.val() ;
                 });
@@ -97,9 +97,29 @@ export class BuddiesProvider {
 
   }
 
+  refreshBuddiesEvents(buddy_id){
+    return this.afdb.object(`/events/${buddy_id}`).valueChanges();
+  }
 
+  getBuddiesEvents(buddies){
+    let buddiesEventRequest = [];
+    for(let buddy of buddies){
+      buddiesEventRequest.push( this.afdb.object(`/events/${buddy.aFuid}`).snapshotChanges().first() );
+    }
+    Observable.forkJoin(buddiesEventRequest).subscribe((res) => {
+      if(res){
+        let events = {};
+        res.map(ev => {
+          let event = {};
+          events[ev.payload.key] = ev.payload.val() ;
+        })
+        this.buddiesEvents.next(events);
+      }
+    });
+  }
 
-  getBuddiesEvents(uid:string){
+  /*getBuddiesEvents(uid:string){
+
     if(!this.buddiesId){
       //console.log('if !this.buddiesId getBuddiesEvents');
       this.setBuddiesList(uid);
@@ -127,7 +147,7 @@ export class BuddiesProvider {
       error => console.log('error'),
       () => console.log('finished')
     );
-  }
+  }*/
 
   getParticipants(uid: string, eventID: string){
     //this.eventsParticipations = this.afdb.list(`/events_participation`);

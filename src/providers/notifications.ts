@@ -133,8 +133,12 @@ export class NotificationsProvider {
   }
 
   fetchById(uid:string){
-    this.fetch_by_idRef = this.afdb.list(`/notifications/${uid}`, ref => ref.orderByChild('read'));
+    this.fetch_by_idRef = this.afdb.list(`/notifications/${uid}`, ref => ref.orderByChild('data/event/timestamp'));
     this.fetch_by_id = this.fetch_by_idRef.snapshotChanges();
     return this.fetch_by_id;
+  }
+
+  setNotifState(key, state){
+    this.fetch_by_idRef.update(key, { read: state });
   }
 }

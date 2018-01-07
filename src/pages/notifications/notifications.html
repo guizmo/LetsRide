@@ -8,7 +8,7 @@
   </ion-navbar>
 
   <ion-toolbar no-border-top>
-    <ion-segment [(ngModel)]="messages" color="light">
+    <ion-segment [(ngModel)]="messages" color="light" (ionChange)="segmentChanged($event)">
       <ion-segment-button value="events">
         EVENTS
         <ion-badge class="left-badge" *ngIf="badges.events" color="danger" item-end>{{badges.events}}</ion-badge>

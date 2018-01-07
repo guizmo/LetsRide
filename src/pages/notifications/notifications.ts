@@ -16,8 +16,8 @@ import { UserProvider, NotificationsProvider, BuddiesProvider} from '../../provi
 })
 export class NotificationsPage {
 
-  eventNotifications = null;
-  requestNotifications = null;
+  public eventsNotifications: any = [] ;
+  public requestsNotifications: any = [] ;
 
   public badges = {
     requests: 0,
@@ -45,6 +45,10 @@ export class NotificationsPage {
     private buddiesProvider: BuddiesProvider,
     private notifications: NotificationsProvider
   ) {
+    //test
+    //this.messages = 'requests';
+    //test
+
     this.afAuth.authState.subscribe((user) => {
       if(user){
         this.userProvider.getUserData().subscribe((settings) => {
@@ -59,8 +63,14 @@ export class NotificationsPage {
     });
   }
 
-  ionViewDidLoad() {
-    console.log(this, 'ionViewDidLoad NotificationsPage');
+  ionViewDidEnter() {
+    console.log(this);
+  }
+
+  ionViewWillUnload(){
+    this.buddiesSubcription.unsubscribe();
+    this.buddiesEventsSubscription.unsubscribe();
+    this.buddiesRequestSubscription.unsubscribe();
   }
 
   loadAll(){
@@ -72,16 +82,36 @@ export class NotificationsPage {
 
   getBuddies(uid:string){
     this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((buddies) => {
-      this.buddies = buddies;
+      if(buddies.length){
+        this.buddies = buddies;
+        console.log('buddies', buddies);
+        this.listenToBuddiesEvents(buddies);
+      }
+    });
+
+    this.buddiesProvider.buddiesId.subscribe((buddies) => {
+      if(buddies.length){
+        //auto refresh: subscribe to all buddies events
+        //this.listenToBuddiesEvents(buddies);
+      }
     })
   }
 
+  listenToBuddiesEvents(buddies){
+    for(let buddy of buddies){
+      this.buddiesProvider.refreshBuddiesEvents(buddy.aFuid).subscribe((events) => {
+        if(events){
+          this.buddiesProvider.getBuddiesEvents(buddies);
+        }
+      })
+    }
+  }
 
   getBuddiesEvents(uid:string){
     let now = moment();
     this.buddiesEventsSubscription = this.buddiesProvider.buddiesEvents.subscribe((events) => {
       let _events = [];
-      let buddyEvents = Object.keys(events).filter((bud_key) => Object.keys(events[bud_key]).length != 0 )
+      let buddyEvents = Object.keys(events).filter((bud_key) => events[bud_key] )
         .map((bud_key) => {
           let bud_events = events[bud_key];
           let bud = this.buddies.filter((_bud) => _bud.aFuid === bud_key );
@@ -92,7 +122,6 @@ export class NotificationsPage {
             oneSignalId: bud.oneSignalId || null,
             aFuid: bud.aFuid
           };
-
 
           for (let key in bud_events) {
             let event = bud_events[key];
@@ -106,9 +135,7 @@ export class NotificationsPage {
               _events.push(Object.assign(event, buddyEvent));
             }
           }
-
         }
-        console.log(_events);
         return _events;
       })
       _events.sort(function(a,b) {
@@ -120,7 +147,6 @@ export class NotificationsPage {
 
   getBuddiesRequest(uid:string){
     this.buddiesRequestSubscription = this.buddiesProvider.buddiesRequest.subscribe((friendRequests) => {
-      console.log('getBuddiesRequest', friendRequests);
       friendRequests.map((_buddy) => {
         _buddy.sortByName = _buddy.settings.displayName;
 
@@ -151,9 +177,6 @@ export class NotificationsPage {
         this.loadAll();
       });
   }
-
-
-
 
   acceptFriendRequest(index){
     let buddy = this.buddiesRequest[index];
@@ -213,31 +236,48 @@ export class NotificationsPage {
       contents['en'] = `${name} is going to your event "${eventName}"`;
       contents['fr'] = `${name} participe à votre événement "${eventName}"`;
     }
-    console.log(data);
+
     this.notifications.sendMessage([oneSignalId], data, contents, null );
   }
 
   getBadges(uid:string){
     this.notifications.fetchById(uid).subscribe(res => {
-      console.log(res);
       if(res){
-        let toRead = res.filter(res => {
+        let toRead = res.map((changes) => ({ key: changes.key, ...changes.payload.val() }) ).filter(res => {
           return res.read === false;
-        })
+        });
 
-        this.eventNotifications = toRead.filter(res => res.data.type === 'joinedEvent');
-        this.requestNotifications = toRead.filter(res => res.data.type === 'friendRequest' || res.data.type === 'friendRequestAccepted');
+        let eventsTmp = {};
+        let uniq = toRead.reverse().filter( notif => {
+          let event_id = notif.data.event.id;
+          if(!eventsTmp[event_id]){
+            eventsTmp[event_id] = notif;
+            return true;
+          }
+        });
 
-        this.badges['events'] = this.eventNotifications.length;
-        this.badges['requests'] = this.requestNotifications.length;
+        this.eventsNotifications = uniq.filter(res => res.data.type === 'joinedEvent');
+        this.requestsNotifications = uniq.filter(res => res.data.type === 'friendRequest' || res.data.type === 'friendRequestAccepted');
+
+        this.badges['events'] = this.eventsNotifications.length;
+        this.badges['requests'] = this.requestsNotifications.length;
+
+        this.clearBadges(this.messages);
       }
     });
   }
 
-
-  ionViewWillUnload(){
-    this.buddiesSubcription.unsubscribe();
-    this.buddiesEventsSubscription.unsubscribe();
-    this.buddiesRequestSubscription.unsubscribe();
+  clearBadges(type:string){
+    /*setTimeout(() => {
+      let notifsToUpdate = this[`${this.messages}Notifications`];
+      for(let notif of notifsToUpdate){
+        this.notifications.setNotifState(notif.key, true);
+      }
+    }, 2000);*/
   }
+
+  segmentChanged(action){
+    this.clearBadges(action.value);
+  }
+
 }

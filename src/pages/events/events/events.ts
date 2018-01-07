@@ -113,41 +113,39 @@ export class EventsPage {
     this.buddiesProvider.getBuddies(this.currentUser.uid);
     this.buddiesEventsSubscription = this.buddiesProvider.buddiesEvents.subscribe((events) => {
       let _events = [];
-      let buddyEvents = Object.keys(events).filter((bud_key) => Object.keys(events[bud_key]).length != 0 )
-        .map((bud_key) => {
-          let bud_events = events[bud_key];
-          let bud = this.buddies.filter((_bud) => _bud.aFuid === bud_key );
-          bud = bud[0] || null;
+      let buddyEvents = Object.keys(events).filter((bud_key) => events[bud_key] ).map((bud_key) => {
+        let bud_events = events[bud_key];
+        let bud = this.buddies.filter((_bud) => _bud.aFuid === bud_key );
+        bud = bud[0] || null;
 
-          if(bud){
-            let buddyEvent = {
-              displayName: bud.settings.displayName,
-              oneSignalId: bud.oneSignalId || null,
-              aFuid: bud.aFuid,
-              buddy: true
-            };
+        if(bud){
+          let buddyEvent = {
+            displayName: bud.settings.displayName,
+            oneSignalId: bud.oneSignalId || null,
+            aFuid: bud.aFuid,
+            buddy: true
+          };
 
 
-            for (let key in bud_events) {
-              let event = bud_events[key];
-              let eventTime = moment(event.time);
-              let style = 'default.png';
-              if(event.disciplines){
-                style = this.getRidingStyle(event.disciplines)+'.jpg';
+          for (let key in bud_events) {
+            let event = bud_events[key];
+            let eventTime = moment(event.time);
+            let style = 'default.png';
+            if(event.disciplines){
+              style = this.getRidingStyle(event.disciplines)+'.jpg';
+            }
+            event.backgroundImage = `./assets/img/styles/${style}`;
+            event.key = key;
+            if (eventTime.diff(now) >= 0){
+              if(event.participants && event.participants[this.currentUser.uid]){
+                event.participates = true;
               }
-              event.backgroundImage = `./assets/img/styles/${style}`;
-              event.key = key;
-              if (eventTime.diff(now) >= 0){
-                if(event.participants && event.participants[this.currentUser.uid]){
-                  event.participates = true;
-                }
-                _events.push(Object.assign(event, buddyEvent));
-              }
-            }//for loop
+              _events.push(Object.assign(event, buddyEvent));
+            }
+          }//for loop
 
-          }//if bud
+        }//if bud
 
-          return _events;
       })
 
       this.buddiesEvents = _events;
@@ -285,6 +283,7 @@ export class EventsPage {
 
   getBuddies(){
     this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((_buddies) => {
+      console.log(_buddies);
       if(_buddies){
         this.buddies = _buddies;
         this.oneSignalBuddiesId = _buddies.filter(buddie => buddie.oneSignalId).map(buddie => buddie.oneSignalId);

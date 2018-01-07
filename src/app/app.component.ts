@@ -75,10 +75,19 @@ export class LetsRide {
   getBadges(uid:string){
     this.notifications.fetchById(uid).subscribe(res => {
       if(res){
-        let newRes = res.filter(res => {
+        let toRead = res.map((changes) => ({ key: changes.key, ...changes.payload.val() }) ).filter(res => {
           return res.read === false;
         })
-        this.badges = newRes;
+        let eventsTmp = {};
+        let uniq = toRead.reverse().filter( notif => {
+          let event_id = notif.data.event.id;
+          if(!eventsTmp[event_id]){
+            eventsTmp[event_id] = notif;
+            return true;
+          }
+        });
+
+        this.badges = uniq;
         this.pages[5].counter = this.badges.length;
       }
     });
