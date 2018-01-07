@@ -256,11 +256,11 @@ export class NotificationsPage {
           }
         });
 
-        this.eventsNotifications = uniq.filter(res => res.data.type === 'joinedEvent');
-        this.requestsNotifications = uniq.filter(res => res.data.type === 'friendRequest' || res.data.type === 'friendRequestAccepted');
+        this.eventsNotifications = toRead.filter(res => res.data.type === 'joinedEvent');
+        this.requestsNotifications = toRead.filter(res => res.data.type === 'friendRequest' || res.data.type === 'friendRequestAccepted');
 
-        this.badges['events'] = this.eventsNotifications.length;
-        this.badges['requests'] = this.requestsNotifications.length;
+        this.badges['events'] = uniq.filter(res => res.data.type === 'joinedEvent').length;
+        this.badges['requests'] = uniq.filter(res => res.data.type === 'friendRequest' || res.data.type === 'friendRequestAccepted').length;
 
         this.clearBadges(this.messages);
       }
@@ -268,12 +268,12 @@ export class NotificationsPage {
   }
 
   clearBadges(type:string){
-    /*setTimeout(() => {
+    setTimeout(() => {
       let notifsToUpdate = this[`${this.messages}Notifications`];
       for(let notif of notifsToUpdate){
         this.notifications.setNotifState(notif.key, true);
       }
-    }, 2000);*/
+    }, 2000);
   }
 
   segmentChanged(action){
