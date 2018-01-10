@@ -15,6 +15,22 @@
   .segment-button {
     max-width: 175px !important;
   }
+  ion-card-content{
+    padding-bottom: 0;
+    ion-icon{
+      color: $brand;
+    }
+
+    .date{
+      overflow: hidden;
+      h2{
+        margin-bottom: 1.5rem !important;
+        color: #444;
+        font-weight: 600 !important;
+        margin-right: 3rem !important;
+      }
+    }
+  }
 
   /*.segment-button {
     //border: 0 !important;

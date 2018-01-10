@@ -40,6 +40,10 @@ const errorMessages = {
   databaseGenerique: {
     title: 'Connection error !',
     subTitle: 'An error occured! Please try again later.'
+  },
+  noPlacesYet: {
+    title: 'No places yet!',
+    subTitle: 'You need to add "Places" first. Use the "quick create" here or go to your places in the menu.'
   }
 };
 
@@ -373,6 +377,13 @@ export class AlertProvider {
         this.alert = this.alertCtrl.create({
           title: errorMessages.passwordsDoNotMatch["title"],
           subTitle: errorMessages.passwordsDoNotMatch["subTitle"],
+          buttons: ['OK']
+        }).present();
+        break;
+      case 'places/none':
+        this.alert = this.alertCtrl.create({
+          title: errorMessages.noPlacesYet["title"],
+          subTitle: errorMessages.noPlacesYet["subTitle"],
           buttons: ['OK']
         }).present();
         break;

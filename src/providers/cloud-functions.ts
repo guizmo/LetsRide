@@ -18,9 +18,11 @@ export class CloudFunctionsProvider {
   deleteOldTrackers(){
     let headers = new HttpHeaders({'Access-Control-Allow-Origin': '*' });
     //let params: HttpParams = new HttpParams();
-    return this.http.post(this.functionUrl + 'deleteOldTrackers', {}, httpOptions)
+    //TODO: BUG 
+    /*return this.http.post(this.functionUrl + 'deleteOldTrackers', {}, httpOptions)
       .toPromise()
       .then( res => console.log(res) );
+    */
   }
 
 }

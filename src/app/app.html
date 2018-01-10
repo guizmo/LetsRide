@@ -34,6 +34,7 @@
   </ion-content>
 
   <ion-footer>
+      <ion-item *ngIf="appliVersion" class="appVersion" no-margin no-line transparent>{{appliName}} : v{{appliVersion}}</ion-item>
       <ion-item
         menuClose
         *ngIf="!currentUser"

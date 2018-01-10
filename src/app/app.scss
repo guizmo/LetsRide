@@ -15,3 +15,12 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 @import 'theme/letsride';
+
+.appVersion{
+  background: transparent !important;
+  .item-inner{
+    color: #ccc;
+    font-size: 13px;
+    border: none !important;
+  }
+}

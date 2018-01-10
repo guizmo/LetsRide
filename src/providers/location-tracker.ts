@@ -45,17 +45,17 @@ export class LocationTrackerProvider {
     private perm: PermissionsProvider,
     private cloudFunctions: CloudFunctionsProvider
   ) {
-    console.log(this);
-    console.log('is_tracking', this.is_tracking);
+    //console.log(this);
+    //console.log('is_tracking', this.is_tracking);
 
     this.platform.ready().then((res) => {
       this.checkLocationPermissions();
-      console.log('ready : cantrack = ', this);
+      //console.log('ready : cantrack = ', this);
     })
 
     this.platform.resume.subscribe((res) => {
       this.checkLocationPermissions();
-      console.log('resume : cantrack = ', this);
+      //console.log('resume : cantrack = ', this);
     })
 
   }
@@ -70,17 +70,17 @@ export class LocationTrackerProvider {
   checkLocationPermissions(){
     this.perm.isLocationAuthorized().then((res) => {
       if(res){
-        console.log('isLocationAuthorized then success' , res);
+        //console.log('isLocationAuthorized then success' , res);
         this.can_track = true;
         this.canTrackSubject.next(this.can_track);
       }else{
-        console.log('isLocationAuthorized then fail', res);
+        //console.log('isLocationAuthorized then fail', res);
         this.can_track = false;
         this.canTrackSubject.next(this.can_track);
         if(this.is_tracking) this.stopTracking();
       }
     }).catch((res) => {
-      console.log('isLocationAuthorized catch', res);
+      //console.log('isLocationAuthorized catch', res);
       this.can_track = false;
       this.canTrackSubject.next(this.can_track);
       if(this.is_tracking) this.stopTracking();
@@ -91,13 +91,13 @@ export class LocationTrackerProvider {
 
 
   startTracking(uid: string) {
-    console.log('startTracking : cantrack = ', this.can_track);
+    //console.log('startTracking : cantrack = ', this.can_track);
 
     if(this.can_track){
-      console.log('startTracking => this.trackInBackground(uid)', this.can_track);
+      //console.log('startTracking => this.trackInBackground(uid)', this.can_track);
       this.trackInBackground(uid);
     }else{
-      console.log('startTracking => this.perm.showMessage()', this.can_track);
+      //console.log('startTracking => this.perm.showMessage()', this.can_track);
       this.is_tracking = false;
       this.perm.showMessage();
     }
@@ -110,7 +110,7 @@ export class LocationTrackerProvider {
     this.tracker = this.trackerRef.snapshotChanges();
     this.timeTracker = moment();
 
-    console.log('trackInBackground', this);
+    //console.log('trackInBackground', this);
     // Background Tracking
     let config = {
       desiredAccuracy: 100,
@@ -124,17 +124,17 @@ export class LocationTrackerProvider {
       locationProvider:0 //android
     };
     this.backgroundGeolocation.configure(config).subscribe((location) => {
-      console.log('this.backgroundGeolocation.configure', location);
+      //console.log('this.backgroundGeolocation.configure', location);
       let checkTimeTracking = this.checkTimeTracking();
 
 
       if(location && checkTimeTracking){
-        console.log('has location');
+        //console.log('has location');
         // Run update inside of Angular's zone
         this.is_tracking = true;
         this.isTrackingSubject.next(this.is_tracking);
 
-        console.log(this.timeTracker);
+        //console.log(this.timeTracker);
 
         this.trackerRef.set({
           lat: location.latitude,
@@ -153,9 +153,9 @@ export class LocationTrackerProvider {
 
 
     this.backgroundGeolocation.start().then((success) => {
-      console.log('this.backgroundGeolocation.start success', success);
+      //console.log('this.backgroundGeolocation.start success', success);
     }).catch((err) => {
-      console.log('this.backgroundGeolocation.start err', err);
+      //console.log('this.backgroundGeolocation.start err', err);
       if (this.platform.is('ios')) {
         this.backgroundGeolocation.finish().then((data) => console.log('finish ', data) );
       }
@@ -186,7 +186,7 @@ export class LocationTrackerProvider {
   }
 
   stopTracking() {
-    console.log('stopTracking()');
+    //console.log('stopTracking()');
     this.backgroundGeolocation.stop();
     this.timeTracker = null;
     this.is_tracking = false;
@@ -209,7 +209,10 @@ export class LocationTrackerProvider {
     this.cloudFunctions.deleteOldTrackers();
 
     this.trackersRef = this.afdb.list('/trackers');
-    this.trackers = this.trackersRef.snapshotChanges();
+    this.trackers = this.trackersRef.snapshotChanges().map(changes => {
+      return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
+    });
+
     return new Promise<any>( (resolve, reject) => {
 
       this.geolocation.getCurrentPosition().then((position) => {
@@ -225,19 +228,19 @@ export class LocationTrackerProvider {
         this.trackerSubsciption = this.trackers.subscribe(data => {
           if(data){
             let key_distance_obj = {};
-            let _trackers = data.filter( _tracker => _tracker.$key !== settings.uid);
+            let _trackers = data.filter( _tracker => _tracker.key !== settings.uid);
             let peopleAround = this.applyHaversine(_trackers, userLocation);
 
             peopleAround = peopleAround.filter( location => location.distance < distanceMax);
             peopleAround = peopleAround.sort((locationA, locationB) => locationA.distance - locationB.distance );
-            peopleAround.map( (obj) => key_distance_obj[obj.$key] = {distance:obj.distance, lat:obj.lat, lng:obj.lng}  );
+            peopleAround.map( (obj) => key_distance_obj[obj.key] = {distance:obj.distance, lat:obj.lat, lng:obj.lng}  );
 
             let buddiesRequest = [];
             if(peopleAround.length > 0){
               for(let persone of peopleAround){
                 //TODO
-                //buddiesRequest.push( this.afdb.object(`/users/${persone.$key}`, { preserveSnapshot: true }).first() );
-                buddiesRequest.push( this.afdb.object(`/users/${persone.$key}`).snapshotChanges().first() );
+                //buddiesRequest.push( this.afdb.object(`/users/${persone.key}`, { preserveSnapshot: true }).first() );
+                buddiesRequest.push( this.afdb.object(`/users/${persone.key}`).valueChanges().first() );
               }
             }else{
               return resolve([]);
@@ -250,22 +253,18 @@ export class LocationTrackerProvider {
             let buddies = [];
             Observable.forkJoin(buddiesRequest).subscribe((snapshots) => {
               if(snapshots){
-                let snapshotsMaped:any = snapshots.map( (snap:any) => snap.val() );
-                for (let snapshot of snapshotsMaped) {
-                  if(snapshot){
-                    let profileImg = (snapshot.profileImg && snapshot.profileImg.url) ? snapshot.profileImg.url : null;
-                    let buddy = {
-                      displayName: snapshot.settings.displayName,
-                      aFuid: snapshot.aFuid,
-                      oneSignalId: snapshot.oneSignalId || null,
-                      buddies: snapshot.buddies || null,
-                      photoURL: snapshot.photoURL || profileImg || null,
-                      location: key_distance_obj[snapshot.aFuid]
-                    }
-                    buddies.push(buddy);
+                snapshots.map( (snapshot:any) => {
+                  let profileImg = (snapshot.profileImg && snapshot.profileImg.url) ? snapshot.profileImg.url : null;
+                  let buddy = {
+                    displayName: snapshot.settings.displayName,
+                    aFuid: snapshot.aFuid,
+                    oneSignalId: snapshot.oneSignalId || null,
+                    buddies: snapshot.buddies || null,
+                    photoURL: snapshot.photoURL || profileImg || null,
+                    location: key_distance_obj[snapshot.aFuid]
                   }
-                }
-
+                  buddies.push(buddy);
+                });
                 resolve(buddies);
                 this.trackerSubsciption.unsubscribe();
               }else{

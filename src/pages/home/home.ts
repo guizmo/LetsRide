@@ -232,7 +232,7 @@ export class MainPage {
   openMap(index){
     let person = this.peopleAround[index];
     let modal = this.modalCtrl.create('ModalNavPage', {
-      state: 'display',
+      state: 'display_trackers',
       key: null,
       values: null,
       page:'MapPage',
@@ -246,9 +246,6 @@ export class MainPage {
     modal.onDidDismiss(data => {
       console.log('dismiss map', data);
     });
-
-
-
   }
 
   avatarLoaded(index){

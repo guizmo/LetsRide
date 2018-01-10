@@ -4,9 +4,10 @@ import { Nav, Platform, MenuController} from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Dialogs } from '@ionic-native/dialogs';
+import { AppVersion } from '@ionic-native/app-version';
 
 import { ListPage} from '../pages';
-import { Translate, NotificationsProvider, LocationTrackerProvider } from '../providers';
+import { Translate, NotificationsProvider, LocationTrackerProvider, HotUpdateProvider } from '../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import 'rxjs/add/operator/map';
@@ -31,6 +32,8 @@ export class LetsRide {
   ]
 
   currentUser: any = null;
+  appliVersion = null;
+  appliName = null;
 
   constructor(
     private translate: Translate,
@@ -41,7 +44,9 @@ export class LetsRide {
     private afAuth: AngularFireAuth,
     public menuCtrl: MenuController,
     private locationTracker: LocationTrackerProvider,
-    private notifications: NotificationsProvider
+    private notifications: NotificationsProvider,
+    private appVersion: AppVersion,
+    private hotUpdate: HotUpdateProvider
   ) {
     this.translate.init();
 
@@ -56,7 +61,6 @@ export class LetsRide {
 
     });
     this.initializeApp();
-    console.log(this);
   }
 
   initializeApp() {
@@ -64,10 +68,16 @@ export class LetsRide {
       this.menuCtrl.enable(false, 'mainMenu');
 
       if(this.platform.is('cordova')){
+        if(this.hotUpdate.loader){
+          this.hotUpdate.loader.dismiss();
+        }
+        this.hotUpdate.init();
         this.statusBar.styleDefault();
         this.splashScreen.hide();
         this.notifications.init(this.nav);
         this.locationTracker.initLocation();
+        this.appVersion.getVersionNumber().then(res => this.appliVersion = res);
+        this.appVersion.getAppName().then(res => this.appliName = res);
       }
     });
   }
@@ -107,4 +117,5 @@ export class LetsRide {
     this.nav.setRoot(page);
     this.is_active = page;
   }
+
 }

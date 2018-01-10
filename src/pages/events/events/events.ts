@@ -8,7 +8,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { MomentModule } from 'angular2-moment';
 import * as moment  from 'moment';
 
-import { UserProvider, NotificationsProvider, DisciplinesProvider, BuddiesProvider} from '../../../providers';
+import { UserProvider, NotificationsProvider, DisciplinesProvider, BuddiesProvider, PlacesProvider} from '../../../providers';
 
 //https://forum.ionicframework.com/t/click-to-slide-open-ion-item-sliding-instead-of-swiping/54642/5
 //http://blog.ihsanberahim.com/2017/05/trigger-ionitemsliding-using-click-event.html
@@ -22,6 +22,7 @@ export class EventsPage {
   @ViewChildren('eventsItem') eventsItem: QueryList<Item>;
   @ViewChildren('eventsSliding') eventsSliding: QueryList<ItemSliding>;
 
+  public places: any = [];
   private activeItemSliding:boolean = false;
   private userData;
   private currentUser;
@@ -51,6 +52,7 @@ export class EventsPage {
     private afAuth: AngularFireAuth,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
+    private placesProvider: PlacesProvider,
     private popoverCtrl: PopoverController
   ) {
     moment.locale('en-gb');
@@ -65,6 +67,8 @@ export class EventsPage {
         this.getBuddiesEvents();
         //this.getEvents(user.uid);
         this.getBuddies();
+
+        this.listPlaces(user.uid);
 
         this.userProvider.getUserData().subscribe((settings) => {
           if(settings){
@@ -101,7 +105,7 @@ export class EventsPage {
     if(event){
       this.itemInUpdateMode = event.key;
     }
-    this.eventModal = this.modalCtrl.create('EventsModalPage', {values: event}, { cssClass: 'inset-modal' })
+    this.eventModal = this.modalCtrl.create('EventsModalPage', { values: event, places: this.places }, { cssClass: 'inset-modal' })
     this.eventModal.present();
 
     this.onDismiss();
@@ -156,11 +160,6 @@ export class EventsPage {
 
 
   getEvents(uid){
-    /*this.events = this.afdb.list(`/events/${uid}`, {
-      query: {
-        orderByChild: 'time'
-      }
-    })*/
     this.eventsRef = this.afdb.list(`/events/${uid}`, ref => ref.orderByChild('time') )
     this.events = this.eventsRef.snapshotChanges();
 
@@ -194,24 +193,35 @@ export class EventsPage {
   }
 
   onDismiss(){
-    this.eventModal.onDidDismiss(event => {
-      if(event != null && event != 'cancel'){
+    this.eventModal.onDidDismiss(data => {
+      if(data != null && data != 'cancel'){
+        let event = data.event;
         let name = this.userData.settings.displayName;
         let message:any = {} ;
         let time = moment(event.time).format('lll');
         //Add or update
         message.contents = `Riding "${event.name}" @ ${time}`;
-
         let eventKey;
+
+
         if(this.itemInUpdateMode){
-          this.updateEvent(this.itemInUpdateMode, event);
           eventKey = this.itemInUpdateMode;
+          if(data.create_place){
+            let place = {userId:this.currentUser.uid, name: event.where};
+            this.addPlace(place, eventKey);
+          }else{
+            this.updateEvent(eventKey, event);
+          }
           message.headings = `${name} has updated an event`;
-          //this.sendEventToBuddies(message, eventKey)
+          this.sendEventToBuddies(message, eventKey);
         }else{
           message.headings = `${name} has created an event`;
-          this.addEvent(event).then((eventKey) => {
-            //this.sendEventToBuddies(message, eventKey)
+          this.addEvent(event).then((event) => {
+            this.sendEventToBuddies(message, event.key);
+            if(data.create_place){
+              let place = {userId:this.currentUser.uid, name: event.where};
+              this.addPlace(place, event.key);
+            }
           })
         }
         this.itemInUpdateMode = null;
@@ -219,21 +229,18 @@ export class EventsPage {
     });
   }
 
+  addPlace(place:any, event_key:any) {
+    this.placesProvider.add(place).then( res => {
+      this.updateEvent(event_key, { place_id: res.key, where: place.name});
+    })
+  }
 
   updateEvent(key, data){
     this.eventsRef.update(key, data);
   }
 
   addEvent(data){
-    return new Promise<any>( (resolve, reject) => {
-      this.eventsRef.push(data).then((res) => {
-        resolve(res.key)
-      })
-      .catch( (err) => {
-        console.log(err);
-        reject(err);
-      });
-    });
+    return this.eventsRef.push(data);
   }
 
   deleteEvent(key){
@@ -344,9 +351,15 @@ export class EventsPage {
 
     }
   }
+
   refreshList(refresher) {
     this.refresher = refresher;
     this.getBuddiesEvents();
   }
 
+  listPlaces(uid:string){
+    this.placesProvider.getAllByUser(uid).subscribe((data) => {
+      this.places = data;
+    });
+  }
 }

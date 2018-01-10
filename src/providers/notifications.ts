@@ -89,10 +89,10 @@ export class NotificationsProvider {
       notificationObj.headings = headings;
     }
 
-    console.log('notificationObj ', JSON.stringify(notificationObj));
+    //console.log('notificationObj ', JSON.stringify(notificationObj));
 
     this.oneSignal.postNotification(notificationObj).then(res => {
-      console.log('postNotification ', JSON.stringify(res));
+      //console.log('postNotification ', JSON.stringify(res));
       if(!res.errors){
         this.saveNotification(res.id, notificationObj);
       }
@@ -125,7 +125,7 @@ export class NotificationsProvider {
     let data = payload.additionalData;
 
     console.log(data);
-    console.log(JSON.stringify(data));
+    console.log('handleNotificationOpened', JSON.stringify(data));
 
     if(data.type && data.type == 'newEvent'){
       this.navCtrl.setRoot('EventsPage', data);

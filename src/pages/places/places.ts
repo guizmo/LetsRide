@@ -1,15 +1,9 @@
 import { Component, ViewChildren } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, AlertController, FabContainer } from 'ionic-angular';
 
-
 import { UserProvider, AlertProvider, PlacesProvider, CaptureProvider} from '../../providers';
 
-/**
- * Generated class for the PlacesPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+
 @IonicPage()
 @Component({
   selector: 'page-places',
@@ -61,7 +55,7 @@ export class PlacesPage {
   presentModal(state: string, key: string = null, fab: FabContainer){
 
     let page = 'PlacesModalPage';
-    if(state == 'create'){
+    if(state == 'create' || state == 'display_place'){
       page = 'MapPage';
     }
     let modal = this.modalCtrl.create('ModalNavPage', {

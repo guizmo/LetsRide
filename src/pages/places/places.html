@@ -42,6 +42,11 @@
           </div>
           <ion-fab right bottom edge #fab>
             <button class="open-edits" color="brand" ion-fab mini (click)="closeFabs(fab)"><ion-icon name="ios-add"></ion-icon></button>
+            <ion-fab-list side="top">
+              <button ion-fab color="brand_dark" (click)="presentModal('display_place', place.key, fab)">
+                <ion-icon name="map"></ion-icon>
+              </button>
+            </ion-fab-list>
             <ion-fab-list side="left">
               <button ion-fab color="brand_dark" (click)="presentModal('update', place.key, fab)">
                 <ion-icon name="md-create"></ion-icon>

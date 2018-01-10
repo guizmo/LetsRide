@@ -96,19 +96,25 @@
                 {{event.name}}
               </p>
             </ion-card-content>
-            <button *ngIf="event.participates" ion-button color="brand" no-margin icon-left full (click)="joinEvent(event, null)">
-              <ion-icon color="light" name="checkmark-circle-outline"></ion-icon>
-              <div>Going</div>
-            </button>
-            <button *ngIf="!event.participates" ion-button color="brand" no-margin icon-left full (click)="joinEvent(event, true)">
-              <ion-icon color="light" name="close-circle"></ion-icon>
-              <div>Not going</div>
-            </button>
+            <ion-row>
+              <ion-col text-right>
+                <button ion-button icon-left outline small color="brand" (click)="joinEvent(event, true)">
+                  <ion-icon name="checkmark-circle-outline" color="brand"></ion-icon>
+                  <div>Going</div>
+                </button>
+              </ion-col>
+              <ion-col align-self-center>
+                <button ion-button icon-left outline small color="brand" (click)="joinEvent(event, false)">
+                  <ion-icon name="close" color="brand"></ion-icon>
+                  <div>Ignore</div>
+                </button>
+              </ion-col>
+            </ion-row>
           </ion-card>
         </ng-container>
       </ion-list>
       <h3 [style.color]="'#555'" text-center *ngIf="!buddiesEvents || !buddiesEvents.length" class="no-result">
-        There is no events coming up
+        There is no events notifications
       </h3>
 
 

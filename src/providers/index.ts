@@ -16,3 +16,4 @@ export { PeopleProvider } from './people';
 export { PermissionsProvider } from './permissions';
 export { CloudFunctionsProvider } from './cloud-functions';
 export { StringManipulationProvider } from './string-manipulation';
+export { HotUpdateProvider } from './hot-update';

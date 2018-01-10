@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActionSheetController, ToastController, Platform, LoadingController, Loading } from 'ionic-angular';
+import { ActionSheetController, ToastController, Platform, LoadingController, Loading, normalizeURL } from 'ionic-angular';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -166,7 +166,7 @@ export class CaptureProvider {
     if (imgPath === null || typeof(cordova) == 'undefined') {
       return '';
     } else {
-      return cordova.file.dataDirectory + imgPath;
+      return normalizeURL(cordova.file.dataDirectory) + imgPath;
     }
   }
 

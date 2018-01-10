@@ -116,27 +116,30 @@ export class NotificationsPage {
           let bud_events = events[bud_key];
           let bud = this.buddies.filter((_bud) => _bud.aFuid === bud_key );
           bud = bud[0] || null;
-        if(bud){
-          let buddyEvent = {
-            displayName: bud.settings.displayName,
-            oneSignalId: bud.oneSignalId || null,
-            aFuid: bud.aFuid
-          };
+          if(bud){
+            let buddyEvent = {
+              displayName: bud.settings.displayName,
+              oneSignalId: bud.oneSignalId || null,
+              aFuid: bud.aFuid
+            };
 
-          for (let key in bud_events) {
-            let event = bud_events[key];
-            event.key = key;
-            event.participates = false;
-            let eventTime = moment(event.time);
-            if (eventTime.diff(now) >= 0){
-              if(event.participants && event.participants[this.currentUser.uid]){
-                event.participates = true;
+            for (let key in bud_events) {
+              let event = bud_events[key];
+              event.key = key;
+              event.participates = false;
+              let eventTime = moment(event.time);
+              if (eventTime.diff(now) >= 0){
+                if(event.participants){
+                  if(event.participants[this.currentUser.uid] != null){
+                    //event.participates = true;
+                    return;
+                  }
+                }
+                _events.push(Object.assign(event, buddyEvent));
               }
-              _events.push(Object.assign(event, buddyEvent));
             }
           }
-        }
-        return _events;
+          return _events;
       })
       _events.sort(function(a,b) {
         return new Date(a.time).getTime() - new Date(b.time).getTime();

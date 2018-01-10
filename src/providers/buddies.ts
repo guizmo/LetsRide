@@ -80,8 +80,9 @@ export class BuddiesProvider {
                 //res = res.map((_bud:any) => ({ aFuid: _bud.payload.key, ..._bud.payload.val() }));
                 let events = {};
                 res.filter((_bud:any) => _bud.key ).map((_bud:any) => {
-                  let event = {};
-                  events[_bud.payload.key] = _bud.payload.val() ;
+                  if(_bud.payload){
+                    events[_bud.key] = _bud.payload.val() ;
+                  }
                 });
                 this.buddiesEvents.next(events);
               }
@@ -109,9 +110,10 @@ export class BuddiesProvider {
     Observable.forkJoin(buddiesEventRequest).subscribe((res) => {
       if(res){
         let events = {};
-        res.map(ev => {
-          let event = {};
-          events[ev.payload.key] = ev.payload.val() ;
+        res.map((ev:any) => {
+          if(ev.payload){
+            events[ev.key] = ev.payload.val() ;
+          }
         })
         this.buddiesEvents.next(events);
       }

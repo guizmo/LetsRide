@@ -38,6 +38,7 @@ export class MapPage {
 
   public map: any = {};
   backButton: string = 'Cancel';
+  saveButton: string = 'Save';
   buddy:any = null;
   markerDraggable:boolean = true;
   private searchControlForm: FormGroup;
@@ -88,23 +89,27 @@ export class MapPage {
     //this.autocomplete();
 
 
-    if(this.navParams.get('values')){
-      this.state = 'update';
-      let {name, lat, lng } = this.navParams.get('values')
-      this.map.lat = lat;
-      this.map.lng = lng;
-      this.marker.lat = lat;
-      this.marker.lng = lng;
-      this.marker.name = name;
-
-    }else{
+    if(this.modalNavPage.navParams.get('state')){
       this.state = this.modalNavPage.navParams.get('state');
-      this.setCurrentPosition();
-    }
-    this.marker.userId = this.modalNavPage.navParams.get('userId');
-    console.log(this);
+      if(this.state == 'update' || this.state == 'display_place'){
+        let {name, lat, lng } = this.modalNavPage.navParams.get('values')
+        this.map.lat = lat;
+        this.map.lng = lng;
+        this.marker.lat = lat;
+        this.marker.lng = lng;
+        this.marker.name = name;
 
-    if(this.state == 'display'){
+        this.backButton = (this.state == 'display_place') ? 'Back' : 'Cancel';
+        this.saveButton = (this.state == 'update') ? 'Done' : 'Save';
+
+      }else if(this.state == 'create'){
+        this.setCurrentPosition();
+      }
+    }
+
+    this.marker.userId = this.modalNavPage.navParams.get('userId');
+
+    if(this.state == 'display_trackers'){
       this.backButton = 'Back';
       this.buddy = this.modalNavPage.navParams.get('buddy');
       this.afdb.object(`/trackers/${this.buddy.aFuid}`)
@@ -115,6 +120,8 @@ export class MapPage {
           console.log(this.buddy);
         })
       this.markerDraggable = false;
+    }else{
+      console.log('display_place');
     }
   }
 

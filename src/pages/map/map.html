@@ -6,9 +6,9 @@
         {{backButton}}
       </button>
     </ion-buttons>
-    <ion-buttons *ngIf="state != 'display'" end>
+    <ion-buttons *ngIf="state == 'create' || state == 'update'" end>
       <button ion-button icon-right (click)="onSave()">
-        Save
+        {{saveButton}}
         <ion-icon name="lr-add-location"></ion-icon>
       </button>
     </ion-buttons>

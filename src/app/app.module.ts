@@ -14,6 +14,8 @@ import { Camera } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
 import { FilePath } from '@ionic-native/file-path';
 import { Diagnostic } from '@ionic-native/diagnostic';
+import { AppVersion } from '@ionic-native/app-version';
+import { CodePush } from '@ionic-native/code-push';
 
 import { MomentModule } from 'angular2-moment';
 import { VirtualScrollModule } from 'angular2-virtual-scroll';
@@ -53,7 +55,8 @@ import {
   PeopleProvider,
   PermissionsProvider,
   CloudFunctionsProvider,
-  StringManipulationProvider
+  StringManipulationProvider,
+  HotUpdateProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -156,11 +159,14 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     FacebookProvider,
     PeopleProvider,
     Diagnostic,
+    CodePush,
+    AppVersion,
     PermissionsProvider,
     VirtualScrollModule,
     CloudFunctionsProvider,
     LatinisePipe,
-    StringManipulationProvider
+    StringManipulationProvider,
+    HotUpdateProvider
   ]
 })
 export class AppModule {}

@@ -20,11 +20,10 @@ export class PlacesProvider {
   }
 
   getAll(){
-    return this.places
-      .map(changes => {
-        return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
-      })
-      .catch(this.handleError);
+    return this.places.map(changes => {
+      return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
+    })
+    .catch(this.handleError);
   }
 
   getAllByUser(uid:string){
@@ -39,11 +38,10 @@ export class PlacesProvider {
 
 
   add(item: any) {
-    this.placesRef.push(item);
+    return this.placesRef.push(item);
   }
   update(key: string, props: any) {
     this.placesRef.update(key, props)
-      .then(res => console.log(res))
   }
   delete(key: string) {
     this.placesRef.remove(key);
@@ -52,8 +50,8 @@ export class PlacesProvider {
     this.placesRef.remove();
   }
   handleError(error) {
-      console.error(error);
-      return Observable.throw(error.json().error || 'Server error');
+    console.error(error);
+    return Observable.throw(error.json().error || 'Server error');
   }
 
 }

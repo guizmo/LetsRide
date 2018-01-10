@@ -11,7 +11,8 @@ ion-modal.inset-modal {
   .content{
     background: transparent!important;
     .inset-modal-content{
-      padding: 20vh 10vw;
+      padding: 20vh 2vw;
+      width: 100%;
     }
   }
 }
