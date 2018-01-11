@@ -31,7 +31,7 @@ export class NotificationsProvider {
     private afdb: AngularFireDatabase,
     private app: App,
   ) {
-    console.log('OneSignal', this);
+    //console.log('OneSignal', this);
     //this.navCtrl = this.app.getRootNav();
     this.fetchAllRef = this.afdb.list(`/notifications`);
     this.fetchAll = this.fetchAllRef.snapshotChanges();

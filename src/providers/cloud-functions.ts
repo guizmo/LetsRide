@@ -12,13 +12,12 @@ export class CloudFunctionsProvider {
   private functionUrl = 'https://us-central1-lets-ride-a073c.cloudfunctions.net/';
 
   constructor(public http: HttpClient) {
-    console.log('CloudFunctionsProvider Provider');
   }
 
   deleteOldTrackers(){
     let headers = new HttpHeaders({'Access-Control-Allow-Origin': '*' });
     //let params: HttpParams = new HttpParams();
-    //TODO: BUG 
+    //TODO: BUG
     /*return this.http.post(this.functionUrl + 'deleteOldTrackers', {}, httpOptions)
       .toPromise()
       .then( res => console.log(res) );

@@ -42,8 +42,8 @@ const errorMessages = {
     subTitle: 'An error occured! Please try again later.'
   },
   noPlacesYet: {
-    title: 'No places yet!',
-    subTitle: 'You need to add "Places" first. Use the "quick create" here or go to your places in the menu.'
+    title: 'No localisation!',
+    subTitle: 'There is no localisation for this place yet.'
   }
 };
 

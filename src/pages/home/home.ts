@@ -56,23 +56,24 @@ export class MainPage {
     this.afAuth.authState.subscribe((user) => {
       if(user){
         this.currentUser = user.toJSON();
-        this.userProvider.getUserData().subscribe((settings) => this.userSettings = settings);
+        this.userProvider.getUserData().subscribe((settings) => {
+          this.userSettings = settings;
+          this.userProvider.checkProviderInfos(settings);
+        });
       }
     });
-    console.log(this);
   }
 
   ionViewWillEnter(){
-    console.log('ionViewWillEnter', this);
     this.canTrackSubject = this.locationTracker.getCanTrack().subscribe((can_track) => {
-      console.log('subscribe this.canTrackSubject', can_track);
+      //console.log('subscribe this.canTrackSubject', can_track);
       if(this.state.enabled && !can_track){
         this.state.enabled = can_track;
       }
     });
 
     this.isTrackingSubject = this.locationTracker.getIsTracking().subscribe((is_tracking) => {
-      console.log('subscribe this.isTrackingSubject', is_tracking);
+      //console.log('subscribe this.isTrackingSubject', is_tracking);
       if(this.locationTracker.can_track){
         this.state.enabled = is_tracking;
       }else{

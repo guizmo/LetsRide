@@ -19,6 +19,11 @@ export class PlacesProvider {
     this.places = this.placesRef.snapshotChanges()
   }
 
+  getById(key:string){
+    return this.db.object(`/places/${key}`).valueChanges()
+      .catch(this.handleError);
+  }
+
   getAll(){
     return this.places.map(changes => {
       return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
@@ -33,7 +38,6 @@ export class PlacesProvider {
         return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
       })
       .catch(this.handleError);
-
   }
 
 

@@ -18,6 +18,7 @@ import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 export class BuddiesPage {
 
   currentUser;
+  avatarDefault = './assets/img/man.svg';
   userData;
   buddiesId:Observable<any[]>;
   buddies: any = [] ;
@@ -36,6 +37,7 @@ export class BuddiesPage {
     private fb: FacebookProvider
   ) {
     //this.fetchUserData();
+    console.log(this);
   }
 
   fetchUserData(){
@@ -73,6 +75,10 @@ export class BuddiesPage {
   }
   appInvite(){
     this.fb.appInvite();
+  }
+
+  updateUrl(event, index) {
+    this.buddies[index].avatar = this.avatarDefault;
   }
 
   getCurrentUser() {
@@ -132,7 +138,7 @@ export class BuddiesPage {
         }else if(_buddy.photoURL){
           _buddy.avatar = _buddy.photoURL;
         }else{
-          _buddy.avatar = './assets/img/man.svg';
+          _buddy.avatar = this.avatarDefault;
         }
 
       });

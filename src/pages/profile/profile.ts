@@ -41,7 +41,6 @@ export class ProfilePage implements OnInit, OnDestroy {
     public menuCtrl: MenuController,
     private fileProvider: FileProvider
   ) {
-    console.log('profile', this)
     this.userAuth();
     this.disciplinesProvider.findAll().subscribe(
       data => this.disciplines = data
@@ -129,22 +128,17 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   userAuth(){
     this.userProvider.afAuth.authState.subscribe((_user: firebase.User) => {
-      console.log('component afAuth.authState');
       if (_user) {
-        console.log('_user = ', _user);
         this.userProvider.getUserData().subscribe((data) => {
-          console.log('this.userProvider.userData = ', data);
           this.userData = data;
           this.displayName = (data.settings && data.settings.displayName) ? data.settings.displayName : _user.displayName;
-
           if(data.profileImg && data.profileImg.url){
             this.profileImg = data.profileImg.url;
-          }else if(_user.photoURL){
-            this.profileImg = _user.photoURL;
+          }else if(data.photoURL){
+            this.profileImg = data.photoURL;
           }else{
             this.profileImg = './assets/img/man.svg';
           }
-
         });
         this.emailVerified =  (_user.providerData[0].providerId == 'facebook.com') ? true : _user.emailVerified;
         this.currentUser = _user;

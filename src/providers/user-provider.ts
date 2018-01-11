@@ -15,7 +15,7 @@ import { LoadingProvider } from './loading';
 import { AlertProvider } from './alert';
 import { NotificationsProvider } from './notifications';
 
-
+//https://angularfirebase.com/snippets/angularfire2-version-4-authentication-service/
 @Injectable()
 export class UserProvider {
 
@@ -44,13 +44,32 @@ export class UserProvider {
         this.userDataRef = this.afdb.object(`/users/${_user.uid}`);
         this.getUserData();
         this.emailVerified = this.currentUser.emailVerified;
-        console.log('afAuth.authState Observable in')
+        //console.log('afAuth.authState Observable in')
         this.checkOneSignalID();
       } else {
-        console.log('afAuth.authState Observable out')
+        //console.log('afAuth.authState Observable out')
       }
 
     });
+  }
+
+  checkProviderInfos(user){
+    if(user.providerId && user.providerId == 'facebook.com'){
+      this.getFacebookProfile(user.uid).then(res => {
+        if(res && res.picture.data.url != user.photoURL){
+          //update user in database
+          user.photoURL = res.picture.data.url;
+          this.updateUserData(user);
+        }
+      }).catch(e => {
+        //console.log(e);
+      });;
+    }
+
+  }
+
+  getFacebookProfile(fb_uid:string){
+    return this.fb.api(`/${fb_uid}?fields=name,picture.width(200)`, ['public_profile'])
   }
 
   getUserData(){
@@ -93,18 +112,15 @@ export class UserProvider {
 
 
   //OK
-  //TODO: firebase.Promise
   signInUser(email: string, password: string): Promise<any> {
     return this.afAuth.auth.signInWithEmailAndPassword(email, password);
   }
 
   //OK
-  //TODO: firebase.Promise
   signUpUser(name: string, newEmail: string, newPassword: string): Promise<any> {
     let infos = {name, newEmail};
     return this.afAuth.auth.createUserWithEmailAndPassword(newEmail, newPassword)
       .then((newUser) => {
-
         newUser.sendEmailVerification()
           .then((success) => {
             console.log("please verify your email")
@@ -125,25 +141,23 @@ export class UserProvider {
           });
 
       });
-
   }
 
+
+
   //OK
-  //TODO: firebase.Promise
   resetPassword(email: string): Promise<any> {
     return this.afAuth.auth.sendPasswordResetEmail(email);
   }
 
 
   //OK
-  //TODO: firebase.Promise
   signInWithProvider(provider:string): Promise<any> {
 
     const providers = {
       gp : 'Google+',
       fb : 'Facebook'
     }
-
 
     let signInGP;
     let is_cordova = this.platform.is('cordova');
@@ -154,8 +168,6 @@ export class UserProvider {
     }else{
       throw 'need provider';
     }
-
-
     return signInGP.then(res => {
       if(is_cordova){
         let sdkCredential = (provider == providers.fb) ? firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken) : firebase.auth.GoogleAuthProvider.credential(res.idToken);

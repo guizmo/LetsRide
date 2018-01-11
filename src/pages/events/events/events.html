@@ -28,7 +28,7 @@
       </ion-card-content>
     </ion-card>
   </div>
-  <ng-container *ngFor="let event of eventsListing; let last = last" >
+  <ng-container *ngFor="let event of eventsListing; let last = last; let i = index" >
     <ion-card *ngIf="event.participates || !event.aFuid"  no-margin f-width margin-bottom no-radius no-shadow [class.last-item]="last">
       <ion-row>
         <ion-col class="cover-img" col-12 col-sm-4 no-padding>
@@ -50,13 +50,13 @@
                 <ion-icon ios="ios-time-outline" md="md-time"></ion-icon>
                 {{event.time | amDateFormat: 'HH:mm'}}
               </h3>
-
             </div>
 
-            <p class="where" icon-left *ngIf="event.where || event.disciplines">
-              <ion-icon ios="ios-map-outline" md="md-map"></ion-icon>
+            <button ion-button small block color="brand" class="where" [disabled]="event.showMapIsEnabled != null && !event.showMapIsEnabled" icon-left *ngIf="event.where || event.disciplines" (click)="showMap(i)">
+              <ion-spinner *ngIf="event.showMapIsEnabled != null && !event.showMapIsEnabled" color="light"></ion-spinner>
+              <ion-icon *ngIf="event.showMapIsEnabled == null" color="light" ios="ios-map-outline" md="md-map"></ion-icon>
               {{event.where}}<span *ngIf="event.where && event.disciplines" > - </span>{{event.disciplines}}
-            </p>
+            </button>
           </ion-card-content>
 
           <ion-row *ngIf="!event.buddy">

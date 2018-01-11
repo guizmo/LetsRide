@@ -28,77 +28,30 @@ export class PermissionsProvider {
   isLocationAuthorized(){
     var promise = new Promise<any>((resolve, reject) => {
 
-      console.log('isLocationAuthorized promise start');
+      //console.log('isLocationAuthorized promise start');
 
       this.diagnostic.isLocationAuthorized()
         .then((res) => {
-          console.log('isLocationAuthorized', res);
+          //console.log('isLocationAuthorized', res);
           if(res){
-            console.log('isLocationAuthorized success', res);
+            //console.log('isLocationAuthorized success', res);
             this.diagnostic.getLocationAuthorizationStatus().then((res) => {
               if(res == 'authorized'){
-                console.log('getLocationAuthorizationStatus authorized', res);
+                //console.log('getLocationAuthorizationStatus authorized', res);
                 resolve(res);
               }else{
-                console.log('getLocationAuthorizationStatus fail', res);
+                //console.log('getLocationAuthorizationStatus fail', res);
                 reject(res);
-                /*this.alertCtrl.create({
-                  title: this.bgAlertMsg.title,
-                  message: this.bgAlertMsg.message,
-                  buttons: [
-                    {
-                      text: 'Close',
-                      handler: () => {
-                        this.diagnostic.switchToSettings()
-                          .then(() => {
-                            console.log('switchToSettings then');
-                            reject('changing_settings');
-                          }).catch(() => {
-                            console.log('switchToSettings catch');
-                            reject('changing_settings_fails');
-                          });
-                      }
-                    },
-                  ]
-                }).present();*/
               }
             })
 
           }else{
-            console.error('isLocationAuthorized fail', res);
+            //console.error('isLocationAuthorized fail', res);
             reject(res);
-            /*this.alertCtrl.create({
-              title: this.bgAlertMsg.title,
-              message: this.bgAlertMsg.message,
-              buttons: [
-                {
-                  text: 'No',
-                  handler: () => {
-                    reject('not_changing_settings');
-                  }
-                },
-                {
-                  text: 'Yes',
-                  handler: () => {
-
-                    this.diagnostic.switchToSettings()
-                      .then(() => {
-                        console.log(res);
-                        console.log('switchToSettings then');
-                        reject('changing_settings');
-                      }).catch(() => {
-                        console.log('switchToSettings catch');
-                        reject('changing_settings_fails');
-                      });
-
-                  }
-                }
-              ]
-            }).present();*/
           }
         })
         .catch((res) => {
-          console.error('isLocationAuthorized check failed');
+          //console.error('isLocationAuthorized check failed');
           //show alert message maybe
           reject(false);
         })

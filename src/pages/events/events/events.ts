@@ -8,7 +8,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { MomentModule } from 'angular2-moment';
 import * as moment  from 'moment';
 
-import { UserProvider, NotificationsProvider, DisciplinesProvider, BuddiesProvider, PlacesProvider} from '../../../providers';
+import { UserProvider, NotificationsProvider, DisciplinesProvider, BuddiesProvider, PlacesProvider, AlertProvider} from '../../../providers';
 
 //https://forum.ionicframework.com/t/click-to-slide-open-ion-item-sliding-instead-of-swiping/54642/5
 //http://blog.ihsanberahim.com/2017/05/trigger-ionitemsliding-using-click-event.html
@@ -28,7 +28,8 @@ export class EventsPage {
   private currentUser;
   private itemInUpdateMode;
   private refresher;
-  public eventModal;
+  private eventModal;
+  private mapModal;
   public eventsRef: AngularFireList<any>;
   public events: Observable<any[]>;
   public buddiesEvents: any = [];
@@ -53,6 +54,7 @@ export class EventsPage {
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
     private placesProvider: PlacesProvider,
+    private alertProvider: AlertProvider,
     private popoverCtrl: PopoverController
   ) {
     moment.locale('en-gb');
@@ -109,6 +111,13 @@ export class EventsPage {
     this.eventModal.present();
 
     this.onDismiss();
+  }
+
+  presentMapModal(event, place){
+    let values = { event, place };
+    console.log(values);
+    this.mapModal = this.modalCtrl.create('ModalNavPage', { state: 'display_place',values: place, page: 'MapPage', event });
+    this.mapModal.present();
   }
 
 
@@ -361,5 +370,22 @@ export class EventsPage {
     this.placesProvider.getAllByUser(uid).subscribe((data) => {
       this.places = data;
     });
+  }
+
+  showMap(index){
+    let event = this.eventsListing[index];
+    if(event.place_id){
+      event.showMapIsEnabled = false;
+      this.placesProvider.getById(event.place_id).subscribe(place => {
+        if(place && place.lat && place.lng){
+          this.presentMapModal(event, place);
+        }else{
+          this.alertProvider.showErrorMessage('places/none');
+        }
+        event.showMapIsEnabled = null;
+      });
+    }else{
+      this.alertProvider.showErrorMessage('places/none');
+    }
   }
 }

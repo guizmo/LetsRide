@@ -22,6 +22,7 @@ page-events {
     }
   }
   ion-card-content{
+    padding-bottom: 0 !important;
     ion-icon{
       color: $brand;
     }
@@ -33,5 +34,10 @@ page-events {
       }
     }
   }
-
+  .where{
+    ion-spinner{
+      height: $button-md-small-icon-font-size;
+      float: left;
+    }
+  }
 }

@@ -32,7 +32,7 @@ export class CaptureProvider {
     public platform: Platform,
     public loadingCtrl: LoadingController
   ) {
-    console.log('capture provider',this);
+    //console.log('capture provider',this);
     this.createLetsrideDir();
   }
 
@@ -155,7 +155,7 @@ export class CaptureProvider {
     .catch(err => {
       this.file.createDir(this.file.dataDirectory, 'letsride', false).then( dir => {
       }).catch(err => {
-        console.log(err);
+        //console.log(err);
       });
     });
 

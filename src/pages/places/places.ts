@@ -30,17 +30,14 @@ export class PlacesPage {
   }
 
   ionViewDidLoad() {
-    console.log('places', this);
     this.userProvider.afAuth.authState.subscribe((user) => {
       if(user){
         this.user = user.toJSON();
         this.placesProvider.getAllByUser(this.user.uid).subscribe((data) => {
-          console.log('getAllByUser', data);
           this.places = data;
           this.showNoResult = (data.length < 1) ? true : false ;
-
           this.showSpinner = false;
-
+          console.log(this);
         });
       }
     });
@@ -85,7 +82,6 @@ export class PlacesPage {
 
     modal.present();
     if(fab){
-      console.log(fab);
       fab.close();
     }
   }

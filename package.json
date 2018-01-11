@@ -35,7 +35,6 @@
         "@ionic-native/file": "^4.5.2",
         "@ionic-native/file-path": "^4.5.2",
         "@ionic-native/geolocation": "^4.5.2",
-        "@ionic-native/google-maps": "^4.5.2",
         "@ionic-native/google-plus": "^4.5.2",
         "@ionic-native/native-page-transitions": "^4.5.2",
         "@ionic-native/network": "^4.5.2",
@@ -50,6 +49,7 @@
         "angular2-virtual-scroll": "^0.3.1",
         "angularfire2": "^5.0.0-rc.4",
         "code-push": "^2.0.4",
+        "cordova-android": "^6.2.3",
         "cordova-ios": "^4.4.0",
         "cordova-plugin-app-version": "^0.1.9",
         "cordova-plugin-camera": "^4.0.1",
@@ -72,7 +72,7 @@
         "cordova-plugin-statusbar": "^2.4.1",
         "cordova-plugin-whitelist": "^1.3.3",
         "cordova-plugin-zip": "^3.1.0",
-        "cordova.plugins.diagnostic": "^3.8.1",
+        "cordova.plugins.diagnostic": "^3.9.1",
         "firebase": "^4.8.0",
         "install": "^0.10.2",
         "ionic-angular": "3.9.2",
@@ -123,12 +123,13 @@
             },
             "onesignal-cordova-plugin": {},
             "cordova-plugin-filepath": {},
-            "cordova.plugins.diagnostic": {},
             "cordova-plugin-ionic-webview": {},
             "cordova-plugin-code-push": {},
-            "cordova-plugin-app-version": {}
+            "cordova-plugin-app-version": {},
+            "cordova.plugins.diagnostic": {}
         },
         "platforms": [
+            "android",
             "ios"
         ]
     }

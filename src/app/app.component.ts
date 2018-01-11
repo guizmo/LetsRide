@@ -49,7 +49,6 @@ export class LetsRide {
     private hotUpdate: HotUpdateProvider
   ) {
     this.translate.init();
-
     afAuth.authState.subscribe((user) => {
       if (!user) {
         this.nav.setRoot('LoginPage');

@@ -38,7 +38,7 @@
         <ion-item-sliding *ngFor="let buddy of buddies | orderBy : ['sortByName']; let i = index">
           <ion-item >
             <ion-avatar item-start>
-              <img src="{{buddy.avatar}}">
+              <img src="{{buddy.avatar}}" (error)="updateUrl($event, i)">
             </ion-avatar>
             <h2 *ngIf="buddy.settings">{{buddy.settings.displayName}}</h2>
             <h3 *ngIf="buddy.settings">{{buddy.settings.country}}</h3>
