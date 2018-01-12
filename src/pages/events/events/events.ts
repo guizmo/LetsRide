@@ -116,7 +116,7 @@ export class EventsPage {
   presentMapModal(event, place){
     let values = { event, place };
     console.log(values);
-    this.mapModal = this.modalCtrl.create('ModalNavPage', { state: 'display_place',values: place, page: 'MapPage', event });
+    this.mapModal = this.modalCtrl.create('ModalNavPage', { state: 'display_place_event',values: place, page: 'MapPage', event });
     this.mapModal.present();
   }
 
@@ -373,7 +373,22 @@ export class EventsPage {
   }
 
   showMap(index){
+
     let event = this.eventsListing[index];
+
+    for(let uid in event.participants){
+      if(event.participants[uid] === true){
+        this.buddiesProvider.getParticipant(uid).subscribe(res => {
+          if(res){
+            this.buddiesProvider.eventsParticipantsList.push(res)
+          }
+        });
+      }
+    }
+
+
+
+
     if(event.place_id){
       event.showMapIsEnabled = false;
       this.placesProvider.getById(event.place_id).subscribe(place => {

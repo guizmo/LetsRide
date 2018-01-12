@@ -10,6 +10,8 @@ import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angular
 import { ModalNavPage } from '../modal-nav/modal-nav';
 import { MapStyle } from '../../constants/mapStyle';
 
+import { BuddiesProvider} from '../../providers';
+
 declare var window: any;
 declare var google:any;
 /**
@@ -62,6 +64,7 @@ export class MapPage {
     private spinnerDialog: SpinnerDialog,
     private formBuilder: FormBuilder,
     private mapsAPILoader: MapsAPILoader,
+    private buddiesProvider: BuddiesProvider,
     private ngZone: NgZone,
     public modalNavPage: ModalNavPage,
     public afdb: AngularFireDatabase,
@@ -72,7 +75,8 @@ export class MapPage {
     // this.searchControlForm = formBuilder.group({
     //   search: '',
     // });
-    this.zoomControlOptions = { position: ControlPosition.RIGHT_TOP};
+    console.log(this.buddiesProvider);
+    this.zoomControlOptions = { position: ControlPosition.RIGHT_CENTER};
   }
 
   ionViewWillEnter(){
@@ -80,6 +84,7 @@ export class MapPage {
   }
   ionViewWillLeave(){
     this.modalNavPage.data = this.marker;
+
   }
   // Load map only after view is initialized
   ionViewDidLoad() {
@@ -91,7 +96,7 @@ export class MapPage {
 
     if(this.modalNavPage.navParams.get('state')){
       this.state = this.modalNavPage.navParams.get('state');
-      if(this.state == 'update' || this.state == 'display_place'){
+      if(this.state == 'update' || this.state.includes('display_place') ){
         let {name, lat, lng } = this.modalNavPage.navParams.get('values')
         this.map.lat = lat;
         this.map.lng = lng;
@@ -99,7 +104,7 @@ export class MapPage {
         this.marker.lng = lng;
         this.marker.name = name;
 
-        this.backButton = (this.state == 'display_place') ? 'Back' : 'Cancel';
+        this.backButton = (this.state.includes('display_place')) ? 'Back' : 'Cancel';
         this.saveButton = (this.state == 'update') ? 'Done' : 'Save';
 
       }else if(this.state == 'create'){
@@ -112,16 +117,16 @@ export class MapPage {
     if(this.state == 'display_trackers'){
       this.backButton = 'Back';
       this.buddy = this.modalNavPage.navParams.get('buddy');
+      this.setCurrentPosition();
       this.afdb.object(`/trackers/${this.buddy.aFuid}`)
-        .snapshotChanges()
+        .valueChanges()
         .subscribe((res) => {
           if(res) this.buddy.location = res;
-          console.log(res);
-          console.log(this.buddy);
         })
+    }
+    
+    if(this.state.includes('display')){
       this.markerDraggable = false;
-    }else{
-      console.log('display_place');
     }
   }
 
@@ -137,7 +142,6 @@ export class MapPage {
       this.geocoder = new google.maps.Geocoder();
       this.autocompleteService = new google.maps.places.AutocompleteService();
       this.mapAPI_loaded = true;
-
     });
   }
 
@@ -189,7 +193,7 @@ export class MapPage {
 
 
   markerDragEnd(m: marker, $event: any) {
-    if(this.state == 'display'){
+    if( this.state.includes('display') ){
       return;
     }
     this.marker.lat = $event.coords.lat;
@@ -200,7 +204,7 @@ export class MapPage {
   }
 
   mapClicked($event: any) {
-    if(this.state == 'display'){
+    if( this.state.includes('display') ){
       return;
     }
     this.marker.lat = $event.coords.lat;
@@ -222,8 +226,11 @@ export class MapPage {
         this.map.lat = lat;
         this.map.lng = lng;
         this.map.zoom = 16;
-        this.marker.lat = lat;
-        this.marker.lng = lng;
+
+        if( !this.state.includes('display_place') ){
+          this.marker.lat = lat;
+          this.marker.lng = lng;
+        }
 
 
         if(this.buddy && this.mapAPI_loaded){
@@ -293,6 +300,7 @@ export class MapPage {
   }
 
   dismiss(){
+    this.buddiesProvider.eventsParticipantsList = [];
     this.modalNavPage.dismissModal({state: 'cancel'});
   }
 

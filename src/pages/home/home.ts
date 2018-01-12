@@ -134,11 +134,9 @@ export class MainPage {
       })
       .then((res) => {
         subscribtion_is_done = true;
-
         if(this.search.friends){
           res = this.filterByBuddies(res);
         }
-
         if(timer_is_done){
           this.setPeople(res);
         }else{
@@ -231,19 +229,17 @@ export class MainPage {
   }
 
   openMap(index){
-    let person = this.peopleAround[index];
-    let modal = this.modalCtrl.create('ModalNavPage', {
+    let data = {
       state: 'display_trackers',
       key: null,
       values: null,
       page:'MapPage',
       userId: this.currentUser.uid,
-      buddy: person
-    });
-
+      buddy: this.peopleAround[index]
+    }
+    console.log(data);
+    let modal = this.modalCtrl.create('ModalNavPage', data);
     modal.present();
-
-
     modal.onDidDismiss(data => {
       console.log('dismiss map', data);
     });

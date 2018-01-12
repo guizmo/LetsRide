@@ -1,9 +1,18 @@
 https://golb.hplar.ch/p/Hot-deploy-updates-to-Ionic-2-apps-with-CodePush
 https://microsoft.github.io/code-push/docs/cordova.html#link-2
+
+IOS
 Production │ Z-ZuKdNU8vmreYavzWVczopxDH65414cfb21-70f9-45f6-b230-ec93fe7572de
 Staging    │ sfQqO3tipDdTgJ7g-8kzMGy_L95g414cfb21-70f9-45f6-b230-ec93fe7572de
 
-<platform name="ios">
+Android
+Production │ XYW7plIw1T_Lt1ijplAseG-9vwa9414cfb21-70f9-45f6-b230-ec93fe7572de
+Staging    │ ykdxLsuF-Xjr_Fi1NLrHU5dU41p_414cfb21-70f9-45f6-b230-ec93fe7572de
 
+<platform name="ios">
     <preference name="CodePushDeploymentKey" value="sfQqO3tipDdTgJ7g-8kzMGy_L95g414cfb21-70f9-45f6-b230-ec93fe7572de" />
+</platform>
+
+<platform name="android">
+    <preference name="CodePushDeploymentKey" value="ykdxLsuF-Xjr_Fi1NLrHU5dU41p_414cfb21-70f9-45f6-b230-ec93fe7572de" />
 </platform>

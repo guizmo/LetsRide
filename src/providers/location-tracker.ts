@@ -68,25 +68,35 @@ export class LocationTrackerProvider {
   }
 
   checkLocationPermissions(){
+    //console.log('checkLocationPermissions' );
     this.perm.isLocationAuthorized().then((res) => {
+      //console.log('isLocationAuthorized', res );
+      let status = false;
       if(res){
-        //console.log('isLocationAuthorized then success' , res);
-        this.can_track = true;
-        this.canTrackSubject.next(this.can_track);
-      }else{
-        //console.log('isLocationAuthorized then fail', res);
-        this.can_track = false;
-        this.canTrackSubject.next(this.can_track);
-        if(this.is_tracking) this.stopTracking();
+        status = true;
       }
+      this.checkLocationPermissionsDone(status);
     }).catch((res) => {
-      //console.log('isLocationAuthorized catch', res);
-      this.can_track = false;
-      this.canTrackSubject.next(this.can_track);
-      if(this.is_tracking) this.stopTracking();
+      let status = false;
+      if(res == 'GRANTED'){
+        status = true;
+      }
+      this.checkLocationPermissionsDone(status);
     })
   }
 
+
+  checkLocationPermissionsDone(status){
+    this.can_track = status;
+    if(status){
+      //console.log('isLocationAuthorized then success' , status);
+      this.canTrackSubject.next(this.can_track);
+    }else{
+      //console.log('isLocationAuthorized then fail', status);
+      this.canTrackSubject.next(this.can_track);
+      if(this.is_tracking) this.stopTracking();
+    }
+  }
 
 
 

@@ -17,7 +17,7 @@
 </ion-header>
 
 
-<ion-content no-padding>
+<ion-content no-padding [ngClass]="state">
 
   <div class="searchblock" *ngIf="state != 'display'">
     <ion-toolbar [hidden]="!mapAPI_loaded" no-padding transparent >
@@ -59,6 +59,7 @@
     (mapClick)="mapClicked($event)"
     [streetViewControl]="false"
     [zoomControlOptions]="zoomControlOptions"
+    [zoomControl]="false"
     [styles]="mapStyle"
     >
     <!-- [disableDefaultUI]="false"

@@ -148,7 +148,7 @@ export class MessagesPage {
 
 
   joinEvent(event, state){
-    this.buddiesProvider.getParticipants(event.aFuid, event.key);
+    this.buddiesProvider.getParticipantsID(event.aFuid, event.key);
     let participant = {};
     participant[this.currentUser.uid] = state;
 

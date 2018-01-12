@@ -3,7 +3,7 @@
     <name>LetsRide</name>
     <description>Tinder for riders</description>
     <author email="guillaumebartolini@gmail" href="https://www.facebook.com/guillaume.bartolini">Guillaume Bartolini</author>
-    <content original-src="index.html" src="http://192.168.1.7:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-navigation href="*" />
     <allow-intent href="http://*/*" />

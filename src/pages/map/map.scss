@@ -6,7 +6,21 @@ page-map {
     top: 0;
     bottom: 0;
     position: absolute;
+
   }
+  .display_place_event{
+    agm-map {
+      height: 50%;
+      bottom: auto;
+      .agm-map-container-inner{
+        height: 100%;
+      }
+    }
+    ion-fab[bottom] {
+      bottom: 52%;
+    }
+  }
+
 
   .searchblock {
       position: absolute;
