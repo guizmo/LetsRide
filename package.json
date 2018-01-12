@@ -49,7 +49,8 @@
         "angular2-virtual-scroll": "^0.3.1",
         "angularfire2": "^5.0.0-rc.4",
         "code-push": "^2.0.4",
-        "cordova-android": "^6.2.3",
+        "cordova-android": "^6.4.0",
+        "cordova-android-support-gradle-release": "^1.1.5",
         "cordova-ios": "^4.4.0",
         "cordova-plugin-app-version": "^0.1.9",
         "cordova-plugin-camera": "^4.0.1",
@@ -115,7 +116,8 @@
                 "GEOLOCATION_USAGE_DESCRIPTION": "Let's Ride uses your geolocation"
             },
             "cordova-plugin-mauron85-background-geolocation": {
-                "ALWAYS_USAGE_DESCRIPTION": "This app always requires location tracking"
+                "ALWAYS_USAGE_DESCRIPTION": "This app always requires location tracking",
+                "GOOGLE_PLAY_SERVICES_VERSION": "11.0.1"
             },
             "cordova-plugin-network-information": {},
             "cordova-plugin-googleplus": {
@@ -126,7 +128,10 @@
             "cordova-plugin-ionic-webview": {},
             "cordova-plugin-code-push": {},
             "cordova-plugin-app-version": {},
-            "cordova.plugins.diagnostic": {}
+            "cordova.plugins.diagnostic": {},
+            "cordova-android-support-gradle-release": {
+                "ANDROID_SUPPORT_VERSION": "25.+"
+            }
         },
         "platforms": [
             "android",
