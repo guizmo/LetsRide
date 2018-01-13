@@ -6,6 +6,7 @@
         {{backButton}}
       </button>
     </ion-buttons>
+    <ion-title *ngIf="event">{{event.name}}</ion-title>
     <ion-buttons *ngIf="state == 'create' || state == 'update'" end>
       <button ion-button icon-right (click)="onSave()">
         {{saveButton}}
@@ -17,9 +18,10 @@
 </ion-header>
 
 
-<ion-content no-padding [ngClass]="state">
+<ion-content no-padding [ngClass]="pageClass">
 
-  <div class="searchblock" *ngIf="state != 'display'">
+  <div class="searchblock" *ngIf="fullscreen && searchVisible">
+  <!-- <div class="searchblock" *ngIf="state != 'display'"> -->
     <ion-toolbar [hidden]="!mapAPI_loaded" no-padding transparent >
       <ion-searchbar
         color="dark"
@@ -44,15 +46,23 @@
   </div>
 
 
-  <ion-fab [hidden]="!mapAPI_loaded" bottom right>
+  <!-- <ion-fab [hidden]="!mapAPI_loaded" bottom right> -->
+  <ion-fab class="fabPos" *ngIf="fullscreen && mapAPI_loaded" bottom right>
     <button color="brand" ion-fab class="fab-map" mini (click)="setCurrentPosition()">
       <ion-icon name="ios-navigate-outline"></ion-icon>
     </button>
   </ion-fab>
 
+  <ion-fab right top *ngIf="state == 'display_place_event'">
+    <button color="light" ion-fab class="fab-map" mini (click)="resize(!fullscreen)">
+      <ion-icon *ngIf="!fullscreen" color="brand" name="lr-fullscreen"></ion-icon>
+      <ion-icon *ngIf="fullscreen" color="brand" name="lr-fullscreen-exit"></ion-icon>
+    </button>
+  </ion-fab>
 
   <agm-map
-    #gm
+    *ngIf="map.lat && map.lng"
+    #AgmMap
     [latitude]="map.lat"
     [longitude]="map.lng"
     [zoom]="map.zoom"
@@ -61,6 +71,7 @@
     [zoomControlOptions]="zoomControlOptions"
     [zoomControl]="false"
     [styles]="mapStyle"
+    (mapReady)="onMapReady($event)"
     >
     <!-- [disableDefaultUI]="false"
     [zoomControl]="false" -->
@@ -94,6 +105,58 @@
 
 
     </agm-marker>
-
   </agm-map>
+
+  <ion-scroll scrollY="true" class="event" *ngIf="state == 'display_place_event'" >
+    <div class="inner-wrapper" border-top>
+      <ion-list>
+        <ion-list-header>
+          Event details
+        </ion-list-header>
+
+        <ion-item>
+          <ion-icon name="contact" color="dark" item-start></ion-icon>
+          {{event.displayName}}
+        </ion-item>
+
+
+        <ion-item>
+          <ion-icon color="dark" name="calendar" item-start></ion-icon>
+          {{event.time | amDateFormat: 'DD/MM/YY'}}
+        </ion-item>
+
+        <ion-item>
+          <ion-icon color="dark" name="time" item-start></ion-icon>
+          {{event.time | amDateFormat: 'HH:mm'}}
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="lr-bike" color="dark" item-start></ion-icon>
+          {{event.disciplines}}
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="lr-city" color="dark" item-start></ion-icon>
+          {{place.city}}
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="fa-globe" color="dark" item-start></ion-icon>
+          {{place.country}}
+        </ion-item>
+      </ion-list>
+
+      <ion-list no-margin *ngIf="buddiesProvider.eventsParticipantsList.length">
+        <ion-list-header>
+          They are going to ...
+        </ion-list-header>
+        <ion-item *ngFor="let buddy of buddiesProvider.eventsParticipantsList; let i = index;">
+          <ion-avatar item-start>
+            <img src="{{buddy.photoURL}}" (error)="updateUrl($event, i)">
+          </ion-avatar>
+          {{buddy.displayName}}
+        </ion-item>
+      </ion-list>
+    </div>
+  </ion-scroll>
 </ion-content>

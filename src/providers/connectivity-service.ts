@@ -3,14 +3,9 @@ import 'rxjs/add/operator/map';
 import { Network } from '@ionic-native/network';
 import { Platform } from 'ionic-angular';
 
-declare var Connection;
+//declare var Connection;
 //http://blog.ionic.io/building-an-ionic-app-with-offline-support-part-2/
-/*
-  Generated class for the ConnectivityServicesProvider provider.
 
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular DI.
-*/
 @Injectable()
 export class ConnectivityService {
 
@@ -18,7 +13,7 @@ export class ConnectivityService {
 
   constructor(
     public platform: Platform,
-    private network: Network
+    //private network: Network
   ){
       this.onDevice = this.platform.is('cordova');
 

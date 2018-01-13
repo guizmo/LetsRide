@@ -3,7 +3,7 @@ import { Validators, FormBuilder, FormGroup } from "@angular/forms";
 import { IonicPage, NavController, LoadingController, NavParams, ViewController } from 'ionic-angular';
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 
-import {GoogleMapsAPIWrapper, MapsAPILoader} from '@agm/core';
+import { MapsAPILoader } from '@agm/core';
 import {GoogleMap, ZoomControlOptions, MapTypeStyle, ControlPosition} from '@agm/core/services/google-maps-types';
 import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 
@@ -37,8 +37,16 @@ interface marker {
   templateUrl: 'map.html'
 })
 export class MapPage {
+  @ViewChild('AgmMap') agmMap;
 
   public map: any = {};
+  public gmap: any ;
+  public place: any;
+  public event: any;
+  pageClass: string = '';
+  noLocation:boolean = false;
+  searchVisible:boolean = true;
+  fullscreen:boolean = true;
   backButton: string = 'Cancel';
   saveButton: string = 'Save';
   buddy:any = null;
@@ -68,15 +76,18 @@ export class MapPage {
     private ngZone: NgZone,
     public modalNavPage: ModalNavPage,
     public afdb: AngularFireDatabase,
-    public viewCtrl: ViewController
+    public viewCtrl: ViewController,
   ) {
     console.log('MAP',this);
     //this.spinnerDialog.show('Loading map ...', '', false, {overlayOpacity:0.8});
     // this.searchControlForm = formBuilder.group({
     //   search: '',
     // });
-    console.log(this.buddiesProvider);
+
     this.zoomControlOptions = { position: ControlPosition.RIGHT_CENTER};
+    if(this.modalNavPage.navParams.get('state')){
+      this.initMap();
+    }
   }
 
   ionViewWillEnter(){
@@ -84,36 +95,40 @@ export class MapPage {
   }
   ionViewWillLeave(){
     this.modalNavPage.data = this.marker;
-
+  }
+  onMapReady(map) {
+    this.gmap = map;
   }
   // Load map only after view is initialized
-  ionViewDidLoad() {
+  initMap() {
 
     this.map.zoom = 15;
     this.setMapAPI();
     //this.autocomplete();
 
-
-    if(this.modalNavPage.navParams.get('state')){
-      this.state = this.modalNavPage.navParams.get('state');
-      if(this.state == 'update' || this.state.includes('display_place') ){
-        let {name, lat, lng } = this.modalNavPage.navParams.get('values')
-        this.map.lat = lat;
-        this.map.lng = lng;
-        this.marker.lat = lat;
-        this.marker.lng = lng;
-        this.marker.name = name;
-
-        this.backButton = (this.state.includes('display_place')) ? 'Back' : 'Cancel';
-        this.saveButton = (this.state == 'update') ? 'Done' : 'Save';
-
-      }else if(this.state == 'create'){
-        this.setCurrentPosition();
-      }
-    }
-
     this.marker.userId = this.modalNavPage.navParams.get('userId');
+    this.state = this.modalNavPage.navParams.get('state');
+    this.pageClass = this.state;
+    if(this.state == 'update' || this.state.includes('display_place') ){
+      let {name, lat, lng } = this.modalNavPage.navParams.get('values')
+      this.map.lat = lat;
+      this.map.lng = lng;
+      this.marker.lat = lat;
+      this.marker.lng = lng;
+      this.marker.name = name;
 
+      this.backButton = (this.state.includes('display_place')) ? 'Back' : 'Cancel';
+      this.saveButton = (this.state == 'update') ? 'Done' : 'Save';
+    }
+    if( this.state == 'display_place_event' ){
+      this.fullscreen = false;
+      this.event = this.modalNavPage.navParams.get('event');
+      this.place = this.modalNavPage.navParams.get('values');
+    }
+    if( this.state.includes('display') ){
+      this.searchVisible = false;
+      this.markerDraggable = false;
+    }
     if(this.state == 'display_trackers'){
       this.backButton = 'Back';
       this.buddy = this.modalNavPage.navParams.get('buddy');
@@ -124,10 +139,15 @@ export class MapPage {
           if(res) this.buddy.location = res;
         })
     }
-    
-    if(this.state.includes('display')){
-      this.markerDraggable = false;
+    if( this.state == 'create' ){
+      this.setCurrentPosition();
+    }else{
+      if(!this.map.lat){
+        this.noLocation = true;
+        this.pageClass = this.state + ' noLocation';
+      }
     }
+
   }
 
   presentLoader(message){
@@ -304,5 +324,18 @@ export class MapPage {
     this.modalNavPage.dismissModal({state: 'cancel'});
   }
 
+  resize(state){
+    this.fullscreen = state;
+    if(state === true){
+      this.pageClass = this.state + ' fullscreen';
+    }else{
+      this.pageClass = this.state;
+    }
+    this.agmMap.triggerResize(true);
+  }
+
+  updateUrl(event, index) {
+    this.buddiesProvider.eventsParticipantsList[index].photoURL = './assets/img/man.svg';
+  }
 
 }

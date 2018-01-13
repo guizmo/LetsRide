@@ -14,7 +14,7 @@ export class BuddiesProvider {
   public buddies = new BehaviorSubject<any>([]) ;
   public buddiesRequest = new BehaviorSubject<any>([]) ;
   public buddiesEvents = new BehaviorSubject<any>([]) ;
-  public eventsParticipantsList: Array = [];
+  public eventsParticipantsList: Array<any> = [];
   public eventsParticipationsRef:AngularFireObject<any>;
   public eventsParticipations:Observable<any>;
 

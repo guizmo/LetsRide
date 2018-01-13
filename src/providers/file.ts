@@ -57,7 +57,7 @@ export class FileProvider {
 
   uploadImage(data, fileName) {
 
-    let blob = this.dataURItoBlob(data);
+    //let blob = this.dataURItoBlob(data);
 
     return new Promise<any>( (resolve, reject) => {
 

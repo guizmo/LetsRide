@@ -195,7 +195,7 @@ export class SearchPage {
     let name = person.settings.displayName;
 
     let contents = {
-      'en': `${name} sent you a friend request!`
+      'en': `${this.userData.displayName} sent you a friend request!`
     }
 
     let data = {
@@ -208,6 +208,7 @@ export class SearchPage {
       displayName: name
     };
 
+
     this.afdb.list(`/users/${key}/buddies`).update(this.userData.aFuid, data.from);
 
     if(this.userData.oneSignalId && oneSignalId){
@@ -215,11 +216,6 @@ export class SearchPage {
     }
 
   }
-
-
-
-
-
 
 
   applySearchFilter($event = null){

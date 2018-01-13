@@ -1,16 +1,13 @@
-import { Component, ElementRef } from '@angular/core';
-import { IonicPage, NavController, ModalController, NavParams, ItemSliding, Item, ItemOptions } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { IonicPage, NavController, ModalController, NavParams, ItemSliding, Item } from 'ionic-angular';
 
-import { NativePageTransitions, NativeTransitionOptions } from '@ionic-native/native-page-transitions';
-import { OneSignal } from '@ionic-native/onesignal';
+import { NativePageTransitions } from '@ionic-native/native-page-transitions';
 
 import { Subscription } from 'rxjs/Subscription';
 
 import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
-import { UserProvider, LocationTrackerProvider, NotificationsProvider, PermissionsProvider} from '../../providers';
+import { UserProvider, LocationTrackerProvider, NotificationsProvider} from '../../providers';
 
-declare var myWindow:any;
 
 @IonicPage()
 @Component({
@@ -23,8 +20,7 @@ export class MainPage {
   canTrackSubject: Subscription;
   isTrackingSubject: Subscription;
   activeItemSliding: ItemSliding = null;
-  private onResumeSubscription;
-  private items: AngularFireList<any[]>;
+  //private onResumeSubscription;
   private state: any;
   private searchDone: boolean = null;
   private noResults: boolean = false;
@@ -37,12 +33,9 @@ export class MainPage {
     friends: false
   };
 
-
   constructor(
     private navCtrl: NavController,
-    private navParams: NavParams,
     public modalCtrl: ModalController,
-    private afDB: AngularFireDatabase,
     private userProvider: UserProvider,
     public afAuth: AngularFireAuth,
     private nativePageTransitions: NativePageTransitions,

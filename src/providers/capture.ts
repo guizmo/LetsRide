@@ -20,7 +20,7 @@ export class CaptureProvider {
 
   public imageName = new BehaviorSubject<any>(null);
   public userKey: string = null;
-  private loading: Loading;
+  //private loading: Loading;
 
 
   constructor(

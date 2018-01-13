@@ -114,8 +114,8 @@ export class EventsPage {
   }
 
   presentMapModal(event, place){
+    if(!event.displayName) event.displayName = this.userData.displayName;
     let values = { event, place };
-    console.log(values);
     this.mapModal = this.modalCtrl.create('ModalNavPage', { state: 'display_place_event',values: place, page: 'MapPage', event });
     this.mapModal.present();
   }
@@ -299,7 +299,6 @@ export class EventsPage {
 
   getBuddies(){
     this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((_buddies) => {
-      console.log(_buddies);
       if(_buddies){
         this.buddies = _buddies;
         this.oneSignalBuddiesId = _buddies.filter(buddie => buddie.oneSignalId).map(buddie => buddie.oneSignalId);
@@ -309,12 +308,18 @@ export class EventsPage {
 
   sendEventToBuddies(message, key){
     if(this.oneSignalBuddiesId.length && this.userData.oneSignalId){
+      let buddiesId = [];
+      this.buddies.map(buddy => buddiesId.push(buddy.aFuid))
+
       let name = this.userData.settings.displayName;
       let data = {
         type: 'newEvent',
         from: {
           oneSignalId: this.userData.oneSignalId,
           user_id: this.userData.aFuid
+        },
+        to: {
+          user_ids: buddiesId
         },
         eventId:key,
         displayName: name
@@ -385,13 +390,17 @@ export class EventsPage {
         });
       }
     }
-
-
-
-
     if(event.place_id){
+      this.placesProvider.getById(event.place_id).subscribe(place => {
+        this.presentMapModal(event, place);
+      });
+    }else{
+      this.presentMapModal(event, {});
+    }
+    /*if(event.place_id){
       event.showMapIsEnabled = false;
       this.placesProvider.getById(event.place_id).subscribe(place => {
+        this.presentMapModal(event, place);
         if(place && place.lat && place.lng){
           this.presentMapModal(event, place);
         }else{
@@ -401,6 +410,6 @@ export class EventsPage {
       });
     }else{
       this.alertProvider.showErrorMessage('places/none');
-    }
+    }*/
   }
 }

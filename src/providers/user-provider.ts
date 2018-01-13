@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Platform, Events } from 'ionic-angular';
+import { Platform } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Facebook } from '@ionic-native/facebook';
 import { GooglePlus } from '@ionic-native/google-plus';
 
 import { Observable } from "rxjs/Rx";
-import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireObject } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 

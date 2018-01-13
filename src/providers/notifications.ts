@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { IonicPage, App } from 'ionic-angular';
+import { App } from 'ionic-angular';
 
 import {OneSignal} from '@ionic-native/onesignal';
 
-import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
 
 
@@ -47,11 +47,9 @@ export class NotificationsProvider {
     this.oneSignal.setSubscription(true);
     this.oneSignal.handleNotificationReceived().subscribe((data) => {
       // handle received here how you wish.
-      console.log(data);
     });
     this.oneSignal.handleNotificationOpened().subscribe((data) => {
       // handle opened here how you wish.
-      console.log(data);
 
       if(data.notification.payload.additionalData){
         this.handleNotificationOpened(data.notification.payload);
@@ -60,7 +58,6 @@ export class NotificationsProvider {
 
 
     this.oneSignal.getIds().then((ids) => {
-      console.log('oneSignal.getIds', ids);
       this.one_id = ids.userId;
     });
 
@@ -71,13 +68,12 @@ export class NotificationsProvider {
 
 
 
-  sendMessage(userIds: string[], payload, contents:any = null, headings:any = null){
+  sendMessage(onesignalIds: string[], payload, contents:any = null, headings:any = null){
     //let template = (payload.friendRequest) ? this.templates.friendRequest : (payload.friendRequestAccepted) ? this.templates.friendRequestAccepted : '' ;
-
     let template = this.templates[payload.type];
 
     let notificationObj:any = {
-      include_player_ids: userIds,
+      include_player_ids: onesignalIds,
       data: payload,
       template_id: template
     };
@@ -93,18 +89,20 @@ export class NotificationsProvider {
 
     this.oneSignal.postNotification(notificationObj).then(res => {
       //console.log('postNotification ', JSON.stringify(res));
-      if(!res.errors){
-        this.saveNotification(res.id, notificationObj);
+      if(res.errors && res.errors.invalid_player_ids){
+        let include_player_ids = notificationObj.include_player_ids.filter(val => !res.errors.invalid_player_ids.includes(val))
+        notificationObj.include_player_ids = include_player_ids;
       }
+      this.saveNotification(res.id, notificationObj);
     })
   }
 
 
   saveNotification(id:string, notificationObj:any){
-    let uids = notificationObj.include_player_ids;
+    let uids = notificationObj.data.to.user_ids;
     for (let i = 0; i < uids.length; i++) {
         //let onesignal_uid = uids[i];
-        let uid = notificationObj.data.to.user_id;
+        let uid = uids[i];
         let obj = {};
         notificationObj.read = false;
         obj[id] = notificationObj
@@ -118,14 +116,10 @@ export class NotificationsProvider {
 
   handleNotificationOpened(payload){
     if(!this.navCtrl){
-      console.log('init(this.nav) did not work');
       this.navCtrl = this.app.getRootNav();
       this.navParams = this.navCtrl.getActive().getNavParams();
     }
     let data = payload.additionalData;
-
-    console.log(data);
-    console.log('handleNotificationOpened', JSON.stringify(data));
 
     if(data.type && data.type == 'newEvent'){
       this.navCtrl.setRoot('EventsPage', data);

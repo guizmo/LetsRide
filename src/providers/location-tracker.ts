@@ -2,7 +2,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { Platform } from 'ionic-angular';
 
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
-import { Geolocation, Geoposition } from '@ionic-native/geolocation';
+import { Geolocation } from '@ionic-native/geolocation';
 
 import { Subject } from 'rxjs/Subject'
 import { Observable } from 'rxjs/Observable';
