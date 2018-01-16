@@ -7,8 +7,7 @@ import * as firebase from 'firebase/app';
 
 import { EmailValidator } from '../../validators/email';
 
-import { UserProvider, LoadingProvider, AlertProvider } from '../../providers';
-import { TranslateService } from '@ngx-translate/core';
+import { UserProvider, LoadingProvider, Translate, AlertProvider } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -29,11 +28,11 @@ export class LoginPage {
   private loginErrorString: string;
 
   constructor(
+    private translate: Translate,
     public navCtrl: NavController,
     public afAuth: AngularFireAuth,
     public userProvider: UserProvider,
     public toastCtrl: ToastController,
-    public translateService: TranslateService,
     private formBuilder: FormBuilder,
     public alertProvider: AlertProvider,
     public menuCtrl: MenuController,
@@ -47,21 +46,16 @@ export class LoginPage {
       }
     });
 
-
-
     this.signInForm = formBuilder.group({
       email: ['', Validators.compose([EmailValidator.isValid, Validators.required])],
       password: ['', Validators.compose([Validators.required])]
     });
 
-
     this.resetPasswordForm = formBuilder.group({
       email: ['', Validators.compose([Validators.required, EmailValidator.isValid])]
     });
 
-    this.translateService.get('LOGIN_ERROR').subscribe((value) => {
-      this.loginErrorString = value;
-    })
+    this.loginErrorString = this.translate.getString('LOGIN_ERROR');
   }
 
   slideTo(index) {

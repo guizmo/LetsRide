@@ -6,7 +6,6 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { Dialogs } from '@ionic-native/dialogs';
 import { AppVersion } from '@ionic-native/app-version';
 
-import { ListPage} from '../pages';
 import { Translate, NotificationsProvider, LocationTrackerProvider, HotUpdateProvider } from '../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -48,7 +47,7 @@ export class LetsRide {
     private notifications: NotificationsProvider,
     private appVersion: AppVersion,
     private hotUpdate: HotUpdateProvider,
-    public events: Events
+    public events: Events,
   ) {
     this.translate.init();
     this.handleEvents();
@@ -60,6 +59,8 @@ export class LetsRide {
         this.currentUser = {...user.providerData[0], ...{'aFuid': user.uid} };
         this.getBadges(user.uid);
       }
+
+
     });
     this.initializeApp();
   }

@@ -45,6 +45,10 @@
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
+        <feature name="CDVWKWebViewEngine">
+            <param name="ios-package" value="CDVWKWebViewEngine" />
+        </feature>
+        <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />
         <preference name="CodePushDeploymentKey" value="sfQqO3tipDdTgJ7g-8kzMGy_L95g414cfb21-70f9-45f6-b230-ec93fe7572de" />
         <preference name="deployment-target" value="8.0" />
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />

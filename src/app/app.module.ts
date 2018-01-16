@@ -35,7 +35,6 @@ import {
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { LetsRide } from './app.component';
-import { ListPage} from '../pages';
 
 import {
   UserProvider,
@@ -94,7 +93,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 @NgModule({
   declarations: [
     LetsRide,
-    ListPage,
   ],
   imports: [
     BrowserModule,
@@ -124,7 +122,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
   bootstrap: [IonicApp],
   entryComponents: [
     LetsRide,
-    ListPage,
   ],
   providers: [
     UserProvider,
