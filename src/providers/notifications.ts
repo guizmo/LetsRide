@@ -99,7 +99,20 @@ export class NotificationsProvider {
 
 
   saveNotification(id:string, notificationObj:any){
-    let uids = notificationObj.data.to.user_ids;
+    console.log('saveNotification', id);
+    console.log(notificationObj);
+
+    let uids = [];
+    if(notificationObj.data.to){
+      if(notificationObj.data.to.user_ids){
+        uids = notificationObj.data.to.user_ids;
+      }else if(notificationObj.data.to.user_id){
+        uids.push(notificationObj.data.to.user_id);
+      }
+    }else{
+      return;
+    }
+
     for (let i = 0; i < uids.length; i++) {
         //let onesignal_uid = uids[i];
         let uid = uids[i];
@@ -130,6 +143,10 @@ export class NotificationsProvider {
     this.fetch_by_idRef = this.afdb.list(`/notifications/${uid}`, ref => ref.orderByChild('data/event/timestamp'));
     this.fetch_by_id = this.fetch_by_idRef.snapshotChanges();
     return this.fetch_by_id;
+  }
+
+  deleteNotif(uid:string, key:string){
+    return this.afdb.object(`/notifications/${uid}/${key}`).remove();
   }
 
   setNotifState(key, state){

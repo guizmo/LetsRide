@@ -34,7 +34,19 @@ export class LocationTrackerProvider {
   public canTrackSubject = new Subject() ;
   public timeTracker;
   public uid;
+  private bgGeolocConf;
 
+  private config = {
+    desiredAccuracy: 100,
+    accuracy: 100,
+    stationaryRadius: 20,
+    distanceFilter: 10,
+    debug: false,
+    interval: 5000, //android
+    activityType: 'Fitness',//ios,
+    pauseLocationUpdates: false, //ios
+    locationProvider:0 //android
+  };
 
   constructor(
     public backgroundGeolocation: BackgroundGeolocation,
@@ -122,18 +134,11 @@ export class LocationTrackerProvider {
 
     //console.log('trackInBackground', this);
     // Background Tracking
-    let config = {
-      desiredAccuracy: 100,
-      accuracy: 100,
-      stationaryRadius: 20,
-      distanceFilter: 10,
-      debug: false,
-      interval: 5000, //android
-      activityType: 'Fitness',//ios,
-      pauseLocationUpdates: false, //ios
-      locationProvider:0 //android
-    };
-    this.backgroundGeolocation.configure(config).subscribe((location) => {
+
+    if(!this.bgGeolocConf){
+      this.bgGeolocConf = this.backgroundGeolocation.configure(this.config);
+    }
+    this.bgGeolocConf.subscribe((location) => {
       //console.log('this.backgroundGeolocation.configure', location);
       let checkTimeTracking = this.checkTimeTracking();
 
@@ -143,8 +148,6 @@ export class LocationTrackerProvider {
         // Run update inside of Angular's zone
         this.is_tracking = true;
         this.isTrackingSubject.next(this.is_tracking);
-
-        //console.log(this.timeTracker);
 
         this.trackerRef.set({
           lat: location.latitude,
@@ -209,6 +212,9 @@ export class LocationTrackerProvider {
       if(tracker){
         tracker.remove();
       }
+    }
+    if(this.bgGeolocConf){
+      this.bgGeolocConf = null;
     }
 
   }
@@ -297,13 +303,22 @@ export class LocationTrackerProvider {
 
 
   initLocation(){
-    this.perm.isLocationAuthorized().then().catch((res) => {
-      this.backgroundGeolocation.start();
-      if (this.platform.is('ios')) {
-        this.backgroundGeolocation.finish();
-      }
-      this.backgroundGeolocation.stop();
+    this.bgGeolocConf = this.backgroundGeolocation.configure(this.config);
 
+    this.perm.isLocationAuthorized().then((res) => {
+      //console.log('initLocation then', res);
+    }).catch((res) => {
+      if(res == 'GRANTED') return;
+      //console.log('initLocation catch', res);
+      //console.log(this.backgroundGeolocation);
+
+      this.backgroundGeolocation.start().then((res) => {
+        //console.log('start', res);
+        if (this.platform.is('ios')) {
+          this.backgroundGeolocation.finish();
+        }
+        this.backgroundGeolocation.stop();
+      });
     })
   }
 

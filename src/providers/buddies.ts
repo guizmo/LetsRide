@@ -162,7 +162,7 @@ export class BuddiesProvider {
 
   updateParticipants(participant: any): Promise<void> {
     //this.eventsParticipations.set(eventID: 'participants', participantID);
-    return this.eventsParticipationsRef.set(participant);
+    return this.eventsParticipationsRef.update(participant);
   }
 
   getParticipant(uid: string){

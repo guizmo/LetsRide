@@ -46,10 +46,10 @@ export class HotUpdateProvider {
       // facing some zoning problems here !!
       // why ??
       // forcing to run in the ngzone
-      this.ngZone.run(() => {
+      /*this.ngZone.run(() => {
         this.messageText = 'App is up to date !';
         //this.events.publish('root:nav-to-home');
-      });
+      });*/
     }
 
     // not facing zoning issue here ?

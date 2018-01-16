@@ -87,7 +87,7 @@ export const firebaseConfig = {
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
 export function HttpLoaderFactory(httpClient: HttpClient) {
-  return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
+  return new TranslateHttpLoader(httpClient, 'assets/i18n/', '.json');
 }
 
 

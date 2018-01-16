@@ -5,12 +5,7 @@ import { UserProvider, Translate, LocationTrackerProvider } from '../../provider
 import { Dialogs } from '@ionic-native/dialogs';
 
 
-/**
- * Generated class for the GbLogoutButton component.
- *
- * See https://angular.io/docs/ts/latest/api/core/index/ComponentMetadata-class.html
- * for more info on Angular Components.
- */
+
 @Component({
   selector: 'gb-logout-button',
   templateUrl: 'gb-logout-button.html',
@@ -43,9 +38,10 @@ export class GbLogoutButton {
         [btn1,btn2]
       )
       .then((res) => {
-        if(res === 1)
+        if(res === 1){
           this.locationTracker.stopTracking();
           this.userProvider.logout();
+        }
       })
       .catch(e => console.log('Error displaying dialog', e));
     }else{

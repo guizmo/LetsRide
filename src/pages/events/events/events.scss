@@ -20,6 +20,9 @@ page-events {
     &.last-item{
       margin-bottom: 0 !important;
     }
+    &.active-map{
+      opacity: 0.4;
+    }
   }
   ion-card-content{
     padding-bottom: 0 !important;

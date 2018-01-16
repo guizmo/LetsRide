@@ -156,7 +156,7 @@ export class MessagesPage {
       .updateParticipants(participant)
       .then(res => {
         if(state && event.oneSignalId){
-          this.sendMessageToFriend(event.oneSignalId, this.userData.settings.displayName, 'joinedEvent', event);
+          this.buildMessageToFriend(event.oneSignalId, this.userData.settings.displayName, 'joinedEvent', event);
         }
         this.loadAll();
       });
@@ -183,7 +183,7 @@ export class MessagesPage {
         this.afdb.object(`/users/${aFuid}/buddies/${_userData.aFuid}`).update(asker);
         //send message to the ASKER
         if(oneSignalId && _userData.oneSignalId){
-          this.sendMessageToFriend(oneSignalId, this.userData.settings.displayName, 'friendRequestAccepted', _userData);
+          this.buildMessageToFriend(oneSignalId, this.userData.settings.displayName, 'friendRequestAccepted', _userData);
         }
         buddy.pending = false;
         this.requestAccepted.push(buddy);
@@ -193,7 +193,7 @@ export class MessagesPage {
   }
 
 
-  sendMessageToFriend(oneSignalId, name, type, recipientData = null){
+  buildMessageToFriend(oneSignalId, name, type, recipientData = null){
     let data = {
       type: type,
       from: {

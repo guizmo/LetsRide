@@ -41,6 +41,7 @@ export class EventsPage {
   private showNoResult:boolean = false;
   private buddiesEventsSubscription;
   private buddiesSubcription;
+  private showMapIsEnabled: string = null;
 
   constructor(
     public disciplinesProvider: DisciplinesProvider,
@@ -103,7 +104,8 @@ export class EventsPage {
     this.navParams.data = null;
   }
 
-  presentEventModal(event:any = null){
+  presentEventModal(clickEvent: Event, event:any = null){
+    clickEvent.stopPropagation();
     if(event){
       this.itemInUpdateMode = event.key;
     }
@@ -118,6 +120,9 @@ export class EventsPage {
     let values = { event, place };
     this.mapModal = this.modalCtrl.create('ModalNavPage', { state: 'display_place_event',values: place, page: 'MapPage', event });
     this.mapModal.present();
+    this.mapModal.onDidDismiss(data => {
+      this.showMapIsEnabled = null;
+    })
   }
 
 
@@ -152,8 +157,8 @@ export class EventsPage {
             if (eventTime.diff(now) >= 0){
               if(event.participants && event.participants[this.currentUser.uid]){
                 event.participates = true;
+                _events.push(Object.assign(event, buddyEvent));
               }
-              _events.push(Object.assign(event, buddyEvent));
             }
           }//for loop
 
@@ -252,7 +257,8 @@ export class EventsPage {
     return this.eventsRef.push(data);
   }
 
-  deleteEvent(key){
+  deleteEvent(clickEvent: Event, key){
+    clickEvent.stopPropagation();
 
     let confirm = this.alertCtrl.create({
       title: 'Deleting !',
@@ -312,6 +318,7 @@ export class EventsPage {
       this.buddies.map(buddy => buddiesId.push(buddy.aFuid))
 
       let name = this.userData.settings.displayName;
+      let timestamp = moment().unix();
       let data = {
         type: 'newEvent',
         from: {
@@ -321,7 +328,10 @@ export class EventsPage {
         to: {
           user_ids: buddiesId
         },
-        eventId:key,
+        event: {
+          id: key,
+          timestamp: timestamp
+        },
         displayName: name
       };
 
@@ -378,38 +388,28 @@ export class EventsPage {
   }
 
   showMap(index){
+    if(this.showMapIsEnabled === null){
+      this.showMapIsEnabled = index;
+      let event = this.eventsListing[index];
 
-    let event = this.eventsListing[index];
-
-    for(let uid in event.participants){
-      if(event.participants[uid] === true){
-        this.buddiesProvider.getParticipant(uid).subscribe(res => {
-          if(res){
-            this.buddiesProvider.eventsParticipantsList.push(res)
-          }
+      for(let uid in event.participants){
+        if(event.participants[uid] === true){
+          this.buddiesProvider.getParticipant(uid).subscribe(res => {
+            if(res){
+              this.buddiesProvider.eventsParticipantsList.push(res)
+            }
+          });
+        }
+      }
+      if(event.place_id){
+        this.placesProvider.getById(event.place_id).subscribe(place => {
+          this.presentMapModal(event, place);
         });
+      }else{
+        this.presentMapModal(event, {});
       }
     }
-    if(event.place_id){
-      this.placesProvider.getById(event.place_id).subscribe(place => {
-        this.presentMapModal(event, place);
-      });
-    }else{
-      this.presentMapModal(event, {});
-    }
-    /*if(event.place_id){
-      event.showMapIsEnabled = false;
-      this.placesProvider.getById(event.place_id).subscribe(place => {
-        this.presentMapModal(event, place);
-        if(place && place.lat && place.lng){
-          this.presentMapModal(event, place);
-        }else{
-          this.alertProvider.showErrorMessage('places/none');
-        }
-        event.showMapIsEnabled = null;
-      });
-    }else{
-      this.alertProvider.showErrorMessage('places/none');
-    }*/
+
   }
+
 }

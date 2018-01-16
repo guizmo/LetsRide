@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 
 import 'rxjs/add/observable/forkJoin';
 import {Observable} from 'rxjs/Observable';
@@ -7,7 +7,7 @@ import * as moment  from 'moment';
 import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 
-import { UserProvider, NotificationsProvider, BuddiesProvider} from '../../providers';
+import { UserProvider, NotificationsProvider, BuddiesProvider, PlacesProvider} from '../../providers';
 
 @IonicPage()
 @Component({
@@ -18,7 +18,8 @@ export class NotificationsPage {
 
   public eventsNotifications: any = [] ;
   public requestsNotifications: any = [] ;
-
+  private showMapIsEnabled: string = null;
+  private mapModal;
   public badges = {
     requests: 0,
     events: 0
@@ -32,6 +33,8 @@ export class NotificationsPage {
   public requestAccepted: any = [];
   private buddiesEventsSubscription;
   private buddiesRequestSubscription;
+  private badgesNotifSubscription;
+  private refreshBuddiesEventsSubscription: any = [];
   private buddiesSubcription;
 
   public messages: string = "events";
@@ -40,14 +43,13 @@ export class NotificationsPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private afAuth: AngularFireAuth,
+    private placesProvider: PlacesProvider,
     private afdb: AngularFireDatabase,
     private userProvider: UserProvider,
+    private modalCtrl: ModalController,
     private buddiesProvider: BuddiesProvider,
     private notifications: NotificationsProvider
   ) {
-    //test
-    //this.messages = 'requests';
-    //test
 
     this.afAuth.authState.subscribe((user) => {
       if(user){
@@ -55,8 +57,7 @@ export class NotificationsPage {
           if(settings){
             this.userData = settings;
             this.currentUser = user.toJSON();
-            this.loadAll();
-            this.getBadges(this.currentUser.uid);
+            this.init();
           }
         });
       }
@@ -69,84 +70,81 @@ export class NotificationsPage {
 
   ionViewWillUnload(){
     this.buddiesSubcription.unsubscribe();
-    this.buddiesEventsSubscription.unsubscribe();
+    this.badgesNotifSubscription.unsubscribe();
     this.buddiesRequestSubscription.unsubscribe();
+    for(let uid in this.refreshBuddiesEventsSubscription){
+      if(this.refreshBuddiesEventsSubscription[uid]){
+        this.refreshBuddiesEventsSubscription[uid].unsubscribe();
+      }
+    }
   }
 
-  loadAll(){
-    this.buddiesProvider.getBuddies(this.currentUser.uid);
+  init(){
     this.getBuddies(this.currentUser.uid);
-    this.getBuddiesEvents(this.currentUser.uid);
     this.getBuddiesRequest(this.currentUser.uid);
+    this.getBadges(this.currentUser.uid);
   }
 
   getBuddies(uid:string){
+    this.buddiesProvider.getBuddies(this.currentUser.uid);
     this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((buddies) => {
       if(buddies.length){
         this.buddies = buddies;
-        console.log('buddies', buddies);
         this.listenToBuddiesEvents(buddies);
       }
     });
-
-    this.buddiesProvider.buddiesId.subscribe((buddies) => {
-      if(buddies.length){
-        //auto refresh: subscribe to all buddies events
-        //this.listenToBuddiesEvents(buddies);
-      }
-    })
   }
 
   listenToBuddiesEvents(buddies){
     for(let buddy of buddies){
-      this.buddiesProvider.refreshBuddiesEvents(buddy.aFuid).subscribe((events) => {
-        if(events){
-          this.buddiesProvider.getBuddiesEvents(buddies);
-        }
-      })
+      if(!this.refreshBuddiesEventsSubscription[buddy.aFuid]){
+        let subscription = this.buddiesProvider.refreshBuddiesEvents(buddy.aFuid).subscribe((events) => {
+          if(events){
+            this.buildEventList(buddy, events);
+          }
+        });
+        this.refreshBuddiesEventsSubscription[buddy.aFuid] = subscription;
+      }
     }
   }
 
-  getBuddiesEvents(uid:string){
+  buildEventList(bud, bud_events){
     let now = moment();
-    this.buddiesEventsSubscription = this.buddiesProvider.buddiesEvents.subscribe((events) => {
-      let _events = [];
-      let buddyEvents = Object.keys(events).filter((bud_key) => events[bud_key] )
-        .map((bud_key) => {
-          let bud_events = events[bud_key];
-          let bud = this.buddies.filter((_bud) => _bud.aFuid === bud_key );
-          bud = bud[0] || null;
-          if(bud){
-            let buddyEvent = {
-              displayName: bud.settings.displayName,
-              oneSignalId: bud.oneSignalId || null,
-              aFuid: bud.aFuid
-            };
+    let buddyEvent = {
+      displayName: bud.settings.displayName,
+      oneSignalId: bud.oneSignalId || null,
+      aFuid: bud.aFuid
+    };
 
-            for (let key in bud_events) {
-              let event = bud_events[key];
-              event.key = key;
-              event.participates = false;
-              let eventTime = moment(event.time);
-              if (eventTime.diff(now) >= 0){
-                if(event.participants){
-                  if(event.participants[this.currentUser.uid] != null){
-                    //event.participates = true;
-                    return;
-                  }
-                }
-                _events.push(Object.assign(event, buddyEvent));
-              }
-            }
+    for (let key in bud_events) {
+      let event = bud_events[key];
+      event.key = key;
+      event.participates = null;
+      let eventTime = moment(event.time);
+
+      if (eventTime.diff(now) >= 0){
+        if(event.participants && typeof(event.participants[this.currentUser.uid]) != 'undefined'){
+          event.participates = event.participants[this.currentUser.uid];
+        }
+
+        let obj = Object.assign(event, buddyEvent);
+        let index = this.buddiesEvents.findIndex(x => x.key === event.key);
+
+        if(index < 0 && event.participates === null){
+          this.buddiesEvents.push(obj);
+        }else{
+          if(event.participates === null){
+            this.buddiesEvents[index] = obj;
           }
-          return _events;
-      })
-      _events.sort(function(a,b) {
-        return new Date(a.time).getTime() - new Date(b.time).getTime();
-      });
-      this.buddiesEvents = _events;
-    })
+        }
+      }
+    }
+
+    this.buddiesEvents.sort(function(a,b) {
+      return new Date(a.time).getTime() - new Date(b.time).getTime();
+    });
   }
+
 
   getBuddiesRequest(uid:string){
     this.buddiesRequestSubscription = this.buddiesProvider.buddiesRequest.subscribe((friendRequests) => {
@@ -166,18 +164,26 @@ export class NotificationsPage {
     })
   }
 
-  joinEvent(event, state){
-    this.buddiesProvider.getParticipantsID(event.aFuid, event.key);
-    let participant = {};
-    participant[this.currentUser.uid] = state;
+  joinEvent(event, state, index, clickEvent: Event){
+    clickEvent.stopPropagation();
+    let currentUserId = this.currentUser.uid;
+    let eventKey = event.key;
 
+    this.buddiesProvider.getParticipantsID(event.aFuid, eventKey);
+    let participant = {};
+    participant[currentUserId] = state;
+
+    let notifs = this.eventsNotifications.filter(res => res.eventKey == eventKey );
+    if(notifs.length){
+      this.notifications.deleteNotif(currentUserId, notifs[0].key);
+    }
+    this.buddiesEvents.splice(index, 1);
     this.buddiesProvider
       .updateParticipants(participant)
-      .then(res => {
+      .then( () => {
         if(state && event.oneSignalId){
-          this.sendMessageToFriend(event.oneSignalId, this.userData.settings.displayName, 'joinedEvent', event);
+          this.buildMessageToFriend(event.oneSignalId, this.userData.settings.displayName, 'joinedEvent', event);
         }
-        this.loadAll();
       });
   }
 
@@ -199,7 +205,7 @@ export class NotificationsPage {
         this.afdb.object(`/users/${aFuid}/buddies/${_userData.aFuid}`).update(asker);
         //send message to the ASKER
         if(oneSignalId && _userData.oneSignalId){
-          this.sendMessageToFriend(oneSignalId, this.userData.settings.displayName, 'friendRequestAccepted', _userData);
+          this.buildMessageToFriend(oneSignalId, this.userData.settings.displayName, 'friendRequestAccepted', _userData);
         }
         buddy.pending = false;
         this.requestAccepted.push(buddy);
@@ -209,7 +215,7 @@ export class NotificationsPage {
   }
 
 
-  sendMessageToFriend(oneSignalId, name, type, recipientData = null){
+  buildMessageToFriend(oneSignalId, name, type, recipientData = null){
     let data = {
       type: type,
       from: {
@@ -244,26 +250,22 @@ export class NotificationsPage {
   }
 
   getBadges(uid:string){
-    this.notifications.fetchById(uid).subscribe(res => {
+    this.badgesNotifSubscription = this.notifications.fetchById(uid).subscribe(res => {
       if(res){
-        let toRead = res.map((changes) => ({ key: changes.key, ...changes.payload.val() }) ).filter(res => {
-          return res.read === false;
-        });
-
-        let eventsTmp = {};
-        let uniq = toRead.reverse().filter( notif => {
-          let event_id = notif.data.event.id;
-          if(!eventsTmp[event_id]){
-            eventsTmp[event_id] = notif;
-            return true;
+        let toRead = res.map((c) => {
+          let eventKey = null;
+          let payload = c.payload.val();
+          if(payload.data.event && payload.data.event.id){
+            eventKey = payload.data.event.id;
           }
+          return { key: c.key, eventKey, ...payload };
         });
 
-        this.eventsNotifications = toRead.filter(res => res.data.type === 'joinedEvent');
+        this.eventsNotifications = toRead.filter(res => res.data.type === 'joinedEvent' || res.data.type === 'newEvent');
         this.requestsNotifications = toRead.filter(res => res.data.type === 'friendRequest' || res.data.type === 'friendRequestAccepted');
 
-        this.badges['events'] = uniq.filter(res => res.data.type === 'joinedEvent').length;
-        this.badges['requests'] = uniq.filter(res => res.data.type === 'friendRequest' || res.data.type === 'friendRequestAccepted').length;
+        this.badges['events'] = this.eventsNotifications.filter(res => res.read === false).length;
+        this.badges['requests'] = this.requestsNotifications.filter(res => res.read === false).length;
 
         this.clearBadges(this.messages);
       }
@@ -281,6 +283,40 @@ export class NotificationsPage {
 
   segmentChanged(action){
     this.clearBadges(action.value);
+  }
+
+  presentMapModal(event, place){
+    if(!event.displayName) event.displayName = this.userData.displayName;
+    let values = { event, place };
+    this.mapModal = this.modalCtrl.create('ModalNavPage', { state: 'display_place_event',values: place, page: 'MapPage', event });
+    this.mapModal.present();
+    this.mapModal.onDidDismiss(data => {
+      this.showMapIsEnabled = null;
+    })
+  }
+  showMap(index){
+    if(this.showMapIsEnabled === null){
+      this.showMapIsEnabled = index;
+      let event = this.buddiesEvents[index];
+
+      for(let uid in event.participants){
+        if(event.participants[uid] === true){
+          this.buddiesProvider.getParticipant(uid).subscribe(res => {
+            if(res){
+              this.buddiesProvider.eventsParticipantsList.push(res)
+            }
+          });
+        }
+      }
+      if(event.place_id){
+        this.placesProvider.getById(event.place_id).subscribe(place => {
+          this.presentMapModal(event, place);
+        });
+      }else{
+        this.presentMapModal(event, {});
+      }
+    }
+
   }
 
 }

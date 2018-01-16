@@ -74,7 +74,7 @@
           Coming Up
         </ion-list-header>
         <ng-container *ngFor="let event of buddiesEvents | orderBy : ['time']; let i = index">
-          <ion-card>
+          <ion-card (click)="showMap(i)" [class.active-map]="showMapIsEnabled == i">
             <ion-card-header>
               <h1>{{event.displayName}}</h1>
             </ion-card-header>
@@ -98,13 +98,13 @@
             </ion-card-content>
             <ion-row>
               <ion-col text-right>
-                <button ion-button icon-left outline small color="brand" (click)="joinEvent(event, true)">
+                <button ion-button icon-left outline small color="brand" (click)="joinEvent(event, true, index, $event)">
                   <ion-icon name="checkmark-circle-outline" color="brand"></ion-icon>
                   <div>Going</div>
                 </button>
               </ion-col>
               <ion-col align-self-center>
-                <button ion-button icon-left outline small color="brand" (click)="joinEvent(event, false)">
+                <button ion-button icon-left outline small color="brand" (click)="joinEvent(event, false, index, $event)">
                   <ion-icon name="close" color="brand"></ion-icon>
                   <div>Ignore</div>
                 </button>

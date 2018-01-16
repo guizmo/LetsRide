@@ -5,7 +5,7 @@
     </button>
     <ion-title>Events</ion-title>
     <ion-buttons icon-only end>
-      <button ion-button icon-only (click)="presentEventModal()">
+      <button ion-button icon-only (click)="presentEventModal($event)">
         <ion-icon name="add"></ion-icon>
       </button>
     </ion-buttons>
@@ -29,11 +29,13 @@
     </ion-card>
   </div>
   <ng-container *ngFor="let event of eventsListing; let last = last; let i = index" >
-    <ion-card *ngIf="event.participates || !event.aFuid"  no-margin f-width margin-bottom no-radius no-shadow [class.last-item]="last">
-      <ion-row>
+    <ion-card *ngIf="event.participates || !event.aFuid"
+      no-margin f-width margin-bottom no-radius no-shadow [class.last-item]="last"
+      [class.active-map]="showMapIsEnabled == i"
+      (click)="showMap(i)">
+      <ion-row><!-- [disabled]="event.showMapIsEnabled != null && !event.showMapIsEnabled" -->
         <ion-col class="cover-img" col-12 col-sm-4 no-padding>
           <div *ngIf="event.backgroundImage" f-height f-width class="cover-style" [style.backgroundImage]="'url(' + event.backgroundImage + ')'"></div>
-
         </ion-col>
 
         <ion-col col-sm-8 col-12 no-padding>
@@ -52,20 +54,19 @@
               </h3>
             </div>
 
-            <button ion-button small block color="brand" class="where" [disabled]="event.showMapIsEnabled != null && !event.showMapIsEnabled" icon-left *ngIf="event.where || event.disciplines" (click)="showMap(i)">
-              <ion-spinner *ngIf="event.showMapIsEnabled != null && !event.showMapIsEnabled" color="light"></ion-spinner>
-              <ion-icon *ngIf="event.showMapIsEnabled == null" color="light" ios="ios-map-outline" md="md-map"></ion-icon>
+            <p *ngIf="event.where || event.disciplines">
+              <ion-icon color="brand" ios="ios-map-outline" md="md-map"></ion-icon>
               {{event.where}}<span *ngIf="event.where && event.disciplines" > - </span>{{event.disciplines}}
-            </button>
+            </p>
           </ion-card-content>
 
           <ion-row *ngIf="!event.buddy">
             <ion-col text-right>
-              <button ion-button color="danger" icon-left clear small (click)="deleteEvent(event.key)">
+              <button ion-button color="danger" icon-left clear small (click)="deleteEvent($event, event.key)">
                 <ion-icon color="dark" ios="ios-trash-outline" md="md-trash"></ion-icon>
                 <div>Delete</div>
               </button>
-              <button  ion-button color="brand" icon-left clear small (click)="presentEventModal(event)">
+              <button  ion-button color="brand" icon-left clear small (click)="presentEventModal($event, event)">
                 <ion-icon color="dark" ios="ios-create-outline" md="md-create"></ion-icon>
                 <div>Edit</div>
               </button>

@@ -1,5 +1,5 @@
 import { Component, ViewChild, NgZone } from '@angular/core';
-import { Nav, Platform, MenuController} from 'ionic-angular';
+import { Nav, Platform, MenuController, Events} from 'ionic-angular';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -34,6 +34,7 @@ export class LetsRide {
   currentUser: any = null;
   appliVersion = null;
   appliName = null;
+  fetchByIdSubscription;
 
   constructor(
     private translate: Translate,
@@ -46,9 +47,11 @@ export class LetsRide {
     private locationTracker: LocationTrackerProvider,
     private notifications: NotificationsProvider,
     private appVersion: AppVersion,
-    private hotUpdate: HotUpdateProvider
+    private hotUpdate: HotUpdateProvider,
+    public events: Events
   ) {
     this.translate.init();
+    this.handleEvents();
     afAuth.authState.subscribe((user) => {
       if (!user) {
         this.nav.setRoot('LoginPage');
@@ -57,7 +60,6 @@ export class LetsRide {
         this.currentUser = {...user.providerData[0], ...{'aFuid': user.uid} };
         this.getBadges(user.uid);
       }
-
     });
     this.initializeApp();
   }
@@ -82,7 +84,8 @@ export class LetsRide {
   }
 
   getBadges(uid:string){
-    this.notifications.fetchById(uid).subscribe(res => {
+    console.log('getBadges');
+    this.fetchByIdSubscription = this.notifications.fetchById(uid).subscribe(res => {
       if(res){
         let toRead = res.map((changes) => ({ key: changes.key, ...changes.payload.val() }) ).filter(res => {
           return res.read === false;
@@ -102,6 +105,11 @@ export class LetsRide {
     });
   }
 
+  handleEvents() {
+    this.events.subscribe('user:logout', () => {
+      this.fetchByIdSubscription.unsubscribe();
+    });
+  }
 
 
   openPage(page) {

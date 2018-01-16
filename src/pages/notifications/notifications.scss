@@ -15,6 +15,9 @@
   .segment-button {
     max-width: 175px !important;
   }
+  ion-card.active-map{
+    opacity: 0.4;
+  }
   ion-card-content{
     padding-bottom: 0;
     ion-icon{

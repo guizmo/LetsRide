@@ -1,13 +1,20 @@
 https://golb.hplar.ch/p/Hot-deploy-updates-to-Ionic-2-apps-with-CodePush
 https://microsoft.github.io/code-push/docs/cordova.html#link-2
+https://github.com/Microsoft/cordova-plugin-code-push
 
 IOS
 Production │ Z-ZuKdNU8vmreYavzWVczopxDH65414cfb21-70f9-45f6-b230-ec93fe7572de
 Staging    │ sfQqO3tipDdTgJ7g-8kzMGy_L95g414cfb21-70f9-45f6-b230-ec93fe7572de
+code-push release-cordova LetsRide ios -m
+code-push deployment ls LetsRide
+code-push deployment history LetsRide Staging
 
 Android
 Production │ XYW7plIw1T_Lt1ijplAseG-9vwa9414cfb21-70f9-45f6-b230-ec93fe7572de
 Staging    │ ykdxLsuF-Xjr_Fi1NLrHU5dU41p_414cfb21-70f9-45f6-b230-ec93fe7572de
+code-push release-cordova LetsRide-1 android -m
+code-push deployment ls LetsRide-1
+code-push deployment history LetsRide-1 Staging
 
 <platform name="ios">
     <preference name="CodePushDeploymentKey" value="sfQqO3tipDdTgJ7g-8kzMGy_L95g414cfb21-70f9-45f6-b230-ec93fe7572de" />
