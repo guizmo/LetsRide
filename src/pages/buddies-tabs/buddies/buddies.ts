@@ -39,6 +39,7 @@ export class BuddiesPage {
   ) {
     //this.navCtrl.parent.select(0);
     this.fetchUserData();
+    console.log(this);
   }
 
   fetchUserData(){
@@ -86,9 +87,12 @@ export class BuddiesPage {
 
   getBuddies(uid:string){
     this.buddiesProvider.getBuddies(uid);
+    let notif_user_id;
+    if(this.navParams.get('notificationID')){
+      notif_user_id = this.navParams.get('additionalData').from.user_id;
+    }
     this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((buddies) => {
       this.showSpinner = false;
-
       this.showNoResult = (buddies.length < 1) ? true : false ;
 
       if(this.showNoResult){
@@ -96,7 +100,10 @@ export class BuddiesPage {
       }
 
       buddies.map((_buddy) => {
-        //console.log(_buddy);
+        _buddy.isNewBud = 'b_false';
+        if(notif_user_id && _buddy.aFuid == notif_user_id){
+          _buddy.isNewBud = 'a_true';
+        }
         if(_buddy)
         _buddy.sortByName = _buddy.settings.displayName;
 
@@ -109,10 +116,14 @@ export class BuddiesPage {
         }
 
       });
+      /*buddies.sort(function(obj1, obj2) {
+      	// Ascending: first age less than the previous
+      	return obj1.age - obj2.age;
+      })*/
       this.buddies = buddies;
+
     })
   }
-
 
   removeFriend(index){
     let { aFuid, displayName } = this.buddies[index];

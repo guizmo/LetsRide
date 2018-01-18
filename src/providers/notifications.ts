@@ -20,6 +20,7 @@ export class NotificationsProvider {
     friendRequestAccepted: '549bdde4-45ea-4197-8161-4255483695f0',
     closeBy: 'a54afeb9-5ef1-4c7b-a226-cddb8a8e83df',
     newEvent: '01bda817-8355-4ff7-86e0-6e340a4bb75e',
+    eventUpdate: '5416d6a8-9f7a-491a-8bf5-1114b194e5eb',
     joinedEvent: '9558f575-afc3-4d51-9eb8-fb7a937a2425'
   }
 
@@ -157,6 +158,9 @@ export class NotificationsProvider {
         case 'joinedEvent':
           page = 'EventsPage'
           break;
+        case 'eventUpdate':
+          page = 'EventsPage'
+          break;
         case 'newEvent':
           page = 'NotificationsPage'
           break;
@@ -165,7 +169,7 @@ export class NotificationsProvider {
       }
 
       params = {
-        data: payload.additionalData,
+        additionalData: payload.additionalData,
         type: payload.additionalData.type,
         notificationID: payload.notificationID,
         message: {
@@ -206,8 +210,7 @@ export class NotificationsProvider {
       buttons: [{
         text: 'OK',
         handler: () => {
-          console.log('Cancel clicked');
-          console.log(this.app);
+          console.log(data);
           this.navCtrl.setRoot(data.page, data);
         }
       }]

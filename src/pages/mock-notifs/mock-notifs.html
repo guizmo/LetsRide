@@ -14,11 +14,29 @@
 
 
 <ion-content padding>
-  <button ion-button block color="firebase" (click)="sendNotif('closeBy')">closeBy</button>
-  <button ion-button block color="facebook" (click)="sendNotif('eventupdate')">eventupdate</button>
-  <button ion-button block color="secondary" (click)="sendNotif('friendRequest')">friendRequest</button>
-  <button ion-button block color="danger" (click)="sendNotif('friendRequestAccepted')">friendRequestAccepted</button>
-  <button ion-button block color="dark" (click)="sendNotif('joinedEvent')">joinedEvent</button>
-  <button ion-button block color="brand" (click)="sendNotif('newEvent')">newEvent</button>
+  <button ion-button icon-start block color="firebase" (click)="sendNotif('closeBy')">
+    <ion-icon name="checkmark-circle"></ion-icon>
+    closeBy
+  </button>
+  <button ion-button icon-start block color="facebook" (click)="sendNotif('eventUpdate')">
+    <ion-icon name="checkmark-circle"></ion-icon>
+    eventUpdate
+  </button>
+  <button ion-button icon-start block color="secondary" (click)="sendNotif('friendRequest')">
+    <ion-icon name="checkmark-circle"></ion-icon>
+    friendRequest
+  </button>
+  <button ion-button icon-start block color="danger" (click)="sendNotif('friendRequestAccepted')">
+    <ion-icon name="checkmark-circle"></ion-icon>
+    friendRequestAccepted
+  </button>
+  <button ion-button icon-start block color="dark" (click)="sendNotif('joinedEvent')">
+    <ion-icon name="checkmark-circle"></ion-icon>
+    joinedEvent
+  </button>
+  <button ion-button icon-start block color="brand" (click)="sendNotif('newEvent')">
+    <ion-icon name="checkmark-circle"></ion-icon>
+    newEvent
+  </button>
 
 </ion-content>

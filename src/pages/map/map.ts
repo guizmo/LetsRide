@@ -14,12 +14,8 @@ import { BuddiesProvider} from '../../providers';
 
 declare var window: any;
 declare var google:any;
-/**
- * Generated class for the MapPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+
+
 interface marker {
   lat?: number;
   lng?: number;

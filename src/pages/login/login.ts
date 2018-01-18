@@ -21,6 +21,7 @@ export class LoginPage {
   pushPage:any;
   slideState: string = null;
 
+  activeMenu = 'AccountPage';
   public signInForm: FormGroup;
   public resetPasswordForm:FormGroup;
 

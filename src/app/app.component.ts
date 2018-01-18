@@ -28,7 +28,7 @@ export class LetsRide {
     { title: 'Friends', component: 'BuddiesTabsPage', icon: 'people', is_active: false },
     { title: 'Events', component: 'EventsPage', icon: 'calendar', is_active: false },
     { title: 'Notifications', component: 'NotificationsPage', icon: 'mail', is_active: false },
-    { title: 'MockNotifsPage', component: 'MockNotifsPage', icon: 'mail', is_active: false },
+    //{ title: 'MockNotifsPage', component: 'MockNotifsPage', icon: 'mail', is_active: false },
   ]
 
   currentUser: any = null;
@@ -63,19 +63,9 @@ export class LetsRide {
       }
     });
     this.initializeApp();
-
   }
 
   initializeApp() {
-    this.app.viewWillEnter.subscribe((view) => {
-      console.log(view);
-      console.log(view.instance.constructor.name);
-      let page = view.component.name;
-      if (page == 'BuddiesPage' || page == 'SearchPage') {
-        page = 'BuddiesTabsPage'
-      }
-      this.is_active = page;
-    });
 
     this.platform.ready().then(() => {
       this.menuCtrl.enable(false, 'mainMenu');
@@ -84,7 +74,7 @@ export class LetsRide {
         if(this.hotUpdate.loader){
           this.hotUpdate.loader.dismiss();
         }
-        //this.hotUpdate.init();
+        this.hotUpdate.init();
         this.statusBar.styleDefault();
         this.splashScreen.hide();
         this.notifications.init(this.nav);
@@ -96,23 +86,17 @@ export class LetsRide {
   }
 
   getBadges(uid:string){
-    console.log('getBadges');
     this.fetchByIdSubscription = this.notifications.fetchById(uid).subscribe(res => {
       if(res){
         let toRead = res.map((changes) => ({ key: changes.key, ...changes.payload.val() }) ).filter(res => {
           return res.read === false;
         })
-        let eventsTmp = {};
-        let uniq = toRead.reverse().filter( notif => {
-          let event_id = notif.data.event.id;
-          if(!eventsTmp[event_id]){
-            eventsTmp[event_id] = notif;
-            return true;
+        toRead = toRead.filter(res => res.data.type === 'newEvent' || res.data.type === 'friendRequest');
+        this.pages.map(page => {
+          if(page.component == 'NotificationsPage'){
+            page.counter = toRead.length;
           }
-        });
-
-        this.badges = uniq;
-        this.pages[5].counter = this.badges.length;
+        })
       }
     });
   }
@@ -121,12 +105,17 @@ export class LetsRide {
     this.events.subscribe('user:logout', () => {
       this.fetchByIdSubscription.unsubscribe();
     });
+
+    this.app.viewWillEnter.subscribe((view) => {
+      if (view.instance && view.instance.activeMenu) {
+        let name = view.instance.activeMenu;
+        this.is_active = name;
+      }
+    });
   }
 
 
   openPage(page) {
-    // Reset the content nav to have just this page
-    // we wouldn't want the back button to show in this scenario
     this.nav.setRoot(page);
     this.is_active = page;
   }

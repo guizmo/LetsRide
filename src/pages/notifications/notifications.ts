@@ -17,6 +17,7 @@ import { UserProvider, NotificationsProvider, BuddiesProvider, PlacesProvider} f
 export class NotificationsPage {
 
   activeMenu = 'NotificationsPage';
+  notifEventId = null;
   public eventsNotifications: any = [] ;
   public requestsNotifications: any = [] ;
   private showMapIsEnabled: string = null;
@@ -51,6 +52,14 @@ export class NotificationsPage {
     private buddiesProvider: BuddiesProvider,
     private notifications: NotificationsProvider
   ) {
+    if(this.navParams.get('notificationID')){
+      let eventType = this.navParams.get('type');
+      if(eventType == 'friendRequest'){
+        this.messages = 'requests';
+      }else{
+        this.notifEventId = this.navParams.get('additionalData').event.id;
+      }
+    }
 
     this.afAuth.authState.subscribe((user) => {
       if(user){
@@ -119,6 +128,10 @@ export class NotificationsPage {
 
     for (let key in bud_events) {
       let event = bud_events[key];
+      event.isNewNotif = false;
+      if(this.notifEventId && key == this.notifEventId){
+        event.isNewNotif = true;
+      }
       event.key = key;
       event.participates = null;
       let eventTime = moment(event.time);
@@ -140,9 +153,10 @@ export class NotificationsPage {
         }
       }
     }
-
     this.buddiesEvents.sort(function(a,b) {
       return new Date(a.time).getTime() - new Date(b.time).getTime();
+    }).sort(function(a,b) {
+      return (a.isNewNotif === b.isNewNotif)? 0 : a.isNewNotif? -1 : 1;
     });
   }
 
@@ -266,8 +280,10 @@ export class NotificationsPage {
           return { key: c.key, eventKey, ...payload };
         });
 
-        this.eventsNotifications = toRead.filter(res => res.data.type === 'joinedEvent' || res.data.type === 'newEvent');
-        this.requestsNotifications = toRead.filter(res => res.data.type === 'friendRequest' || res.data.type === 'friendRequestAccepted');
+        //this.eventsNotifications = toRead.filter(res => res.data.type === 'joinedEvent' || res.data.type === 'newEvent');
+        //this.requestsNotifications = toRead.filter(res => res.data.type === 'friendRequest' || res.data.type === 'friendRequestAccepted');
+        this.eventsNotifications = toRead.filter(res => res.data.type === 'newEvent');
+        this.requestsNotifications = toRead.filter(res => res.data.type === 'friendRequest');
 
         this.badges['events'] = this.eventsNotifications.filter(res => res.read === false).length;
         this.badges['requests'] = this.requestsNotifications.filter(res => res.read === false).length;

@@ -19,9 +19,9 @@ export class EventPage {
     this.event = this.navParams.get('values');
   }
 
-  ionViewDidLoad() {
+  /*ionViewDidLoad() {
     console.log(this);
-  }
+  }*/
 
   dismiss() {
     this.viewCtrl.dismiss();

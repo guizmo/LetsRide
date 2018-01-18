@@ -16,6 +16,7 @@ import { UserProvider, LocationTrackerProvider, NotificationsProvider} from '../
 })
 export class MainPage {
 
+  activeMenu = 'MainPage';
   refresher;
   canTrackSubject: Subscription;
   isTrackingSubject: Subscription;

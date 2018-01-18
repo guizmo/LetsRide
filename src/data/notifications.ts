@@ -22,7 +22,7 @@ export let NOTIFICATIONS = {
           },
           "displayName": "Guillaume Android",
           "event": {
-            "id": "-L2yGZKxwMnYql6eanjX",
+            "id": "-L374H4plHsEeCrGeWgf",
             "timestamp": 1516094506
           },
           "type": "newEvent",
@@ -42,7 +42,7 @@ export let NOTIFICATIONS = {
       },
       "displayName": "Guillaume Android",
       "event": {
-        "id": "-L2yGZKxwMnYql6eanjX",
+        "id": "-L374H4plHsEeCrGeWgf",
         "timestamp": 1516094506
       },
       "type": "newEvent",
@@ -58,7 +58,7 @@ export let NOTIFICATIONS = {
     "notificationID": "7a68c698-4eaa-4dd5-9505-0fdcef82ae00",
     "actionButtons": []
   },
-  "eventupdate": {
+  "eventUpdate": {
     "rawPayload": {
       "aps": {
         "alert": {
@@ -69,9 +69,9 @@ export let NOTIFICATIONS = {
         "sound": "default"
       },
       "custom": {
-        "ti": "01bda817-8355-4ff7-86e0-6e340a4bb75e",
+        "ti": "5416d6a8-9f7a-491a-8bf5-1114b194e5eb",
         "i": "9e3b0c6a-f015-44ec-8cb0-bf1a99f8fd9d",
-        "tn": "New event",
+        "tn": "Event update",
         "a": {
           "to": {
             "user_ids": [
@@ -81,10 +81,10 @@ export let NOTIFICATIONS = {
           },
           "displayName": "Guillaume Android",
           "event": {
-            "id": "-L2yGZKxwMnYql6eanjX",
+            "id": "-L2ZxstY1udPafsdBoHr",
             "timestamp": 1516094566
           },
-          "type": "newEvent",
+          "type": "eventUpdate",
           "from": {
             "user_id": "p9JZkWo2sKOuOeJ2RDb3Uwyk5xC3",
             "oneSignalId": "c15a3cdc-4461-4da3-a892-a909466d9f1e"
@@ -101,10 +101,10 @@ export let NOTIFICATIONS = {
       },
       "displayName": "Guillaume Android",
       "event": {
-        "id": "-L2yGZKxwMnYql6eanjX",
+        "id": "-L2ZxstY1udPafsdBoHr",
         "timestamp": 1516094566
       },
-      "type": "newEvent",
+      "type": "eventUpdate",
       "from": {
         "user_id": "p9JZkWo2sKOuOeJ2RDb3Uwyk5xC3",
         "oneSignalId": "c15a3cdc-4461-4da3-a892-a909466d9f1e"
@@ -126,7 +126,7 @@ export let NOTIFICATIONS = {
       },
       "displayName": "Guillaume Android",
       "event": {
-        "id": "-L2yH3IAugXASYyruDJf",
+        "id": "-L2ZxstY1udPafsdBoHr",
         "timestamp": 1516094652
       },
       "type": "joinedEvent",
@@ -152,7 +152,7 @@ export let NOTIFICATIONS = {
           },
           "displayName": "Guillaume Android",
           "event": {
-            "id": "-L2yH3IAugXASYyruDJf",
+            "id": "-L2ZxstY1udPafsdBoHr",
             "timestamp": 1516094652
           },
           "type": "joinedEvent",

@@ -23,6 +23,7 @@ export class EventsPage {
   @ViewChildren('eventsSliding') eventsSliding: QueryList<ItemSliding>;
 
   activeMenu = 'EventsPage';
+  popover = null;
   public places: any = [];
   private activeItemSliding:boolean = false;
   private userData;
@@ -67,23 +68,16 @@ export class EventsPage {
     this.afAuth.authState.subscribe((user) => {
       if(user){
         this.currentUser = user.toJSON();
-
         this.getBuddiesEvents();
-        //this.getEvents(user.uid);
         this.getBuddies();
-
         this.listPlaces(user.uid);
-
         this.userProvider.getUserData().subscribe((settings) => {
           if(settings){
             this.userData = settings;
           }
         });
-
       }
     });
-
-
   }
 
   ionViewWillUnload(){
@@ -96,13 +90,16 @@ export class EventsPage {
   }
 
   presentPopover(event) {
-    let popover = this.popoverCtrl.create('EventPage', {
+    this.popover = this.popoverCtrl.create('EventPage', {
       values: event
     }, {
       cssClass: 'events-popover-content'
     });
-    popover.present();
-    this.navParams.data = null;
+    this.popover.present();
+    this.popover.onDidDismiss(() => {
+      this.navParams.data = null;
+      this.popover = null;
+    });
   }
 
   presentEventModal(clickEvent: Event, event:any = null){
@@ -220,10 +217,12 @@ export class EventsPage {
           fr: `Session "${event.name}" @ ${time}`
         };
         let eventKey;
+        let type = 'newEvent';
 
 
         if(this.itemInUpdateMode){
           eventKey = this.itemInUpdateMode;
+          type = 'eventUpdate';
           if(data.create_place){
             let place = {userId:this.currentUser.uid, name: event.where};
             this.addPlace(place, eventKey);
@@ -234,14 +233,14 @@ export class EventsPage {
             en: `${name} has updated an event`,
             fr: `${name} a modifié un événement`
           }
-          this.sendEventToBuddies(message, eventKey);
+          this.sendEventToBuddies(message, eventKey, type);
         }else{
           message.headings = {
             en: `${name} has created an event`,
             fr: `${name} a crée un événement`
           }
           this.addEvent(event).then((event) => {
-            this.sendEventToBuddies(message, event.key);
+            this.sendEventToBuddies(message, event.key, type);
             if(data.create_place){
               let place = {userId:this.currentUser.uid, name: event.where};
               this.addPlace(place, event.key);
@@ -322,7 +321,7 @@ export class EventsPage {
     })
   }
 
-  sendEventToBuddies(message, key){
+  sendEventToBuddies(message, key, type){
     if(this.oneSignalBuddiesId.length && this.userData.oneSignalId){
       let buddiesId = [];
       this.buddies.map(buddy => buddiesId.push(buddy.aFuid))
@@ -330,7 +329,7 @@ export class EventsPage {
       let name = this.userData.settings.displayName;
       let timestamp = moment().unix();
       let data = {
-        type: 'newEvent',
+        type: type,
         from: {
           oneSignalId: this.userData.oneSignalId,
           user_id: this.userData.aFuid
@@ -380,12 +379,12 @@ export class EventsPage {
       }
     }, 2000)
 
-    if(this.navParams.data && this.navParams.data.type == 'newEvent'){
-      let event = this.eventsListing.filter(event => event.key == this.navParams.data.eventId);
-      if(event.length){
+    if(this.navParams.get('notificationID') && this.eventsListing.length){
+      let eventId = this.navParams.get('additionalData').event.id;
+      let event = this.eventsListing.filter(event => event.key == eventId);
+      if(!this.popover && event[0]){
         this.presentPopover(event[0]);
       }
-
     }
   }
 

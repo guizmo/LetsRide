@@ -20,7 +20,7 @@ export class BuddiesTabsPage {
   searchRoot = 'SearchPage';
   buddiesRoot = 'BuddiesPage';
   activeMenu = 'BuddiesTabsPage';
-  //tabsParams = new BehaviorSubject<any>(null);
+  tabsParams = null;
 
 
   constructor(
@@ -31,6 +31,7 @@ export class BuddiesTabsPage {
     public navParams: NavParams
   ) {
     this.fetchUserData();
+    this.tabsParams = this.navParams;
   }
 
   fetchUserData(){
@@ -39,8 +40,6 @@ export class BuddiesTabsPage {
         this.userProvider.getUserData().subscribe((settings) => {
           if(settings){
             this.userLoaded = true;
-            //this.tabsParams.next({userData: settings,currentUser: user.toJSON()});
-            //this.tabsParams.complete();
           }
         });
       }
