@@ -14,6 +14,7 @@ import * as moment  from 'moment';
 })
 export class EventsModalPage {
 
+  activeMenu = 'EventsPage';
   private placeSelectorState:string = null;
   private eventForm: FormGroup;
   private disciplines: ReadonlyArray<Discipline>;

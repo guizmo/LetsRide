@@ -13,6 +13,7 @@ export class SearchFilterModalPage {
   private searchForm: FormGroup;
   disciplines:ReadonlyArray<any>;
   countries:ReadonlyArray<any>;
+  activeMenu = 'BuddiesTabsPage';
 
 
   constructor(

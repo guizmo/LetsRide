@@ -13,6 +13,7 @@ export class SearchModalPage {
   private disciplines:ReadonlyArray<any>;
   private countries:ReadonlyArray<any>;
   private searchForm: FormGroup;
+  activeMenu = 'SearchModalPage';
 
   constructor(
     public navCtrl: NavController,

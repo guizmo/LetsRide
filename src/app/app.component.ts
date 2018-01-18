@@ -1,5 +1,5 @@
 import { Component, ViewChild, NgZone } from '@angular/core';
-import { Nav, Platform, MenuController, Events} from 'ionic-angular';
+import { Nav, Platform, MenuController, Events, App} from 'ionic-angular';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -28,6 +28,7 @@ export class LetsRide {
     { title: 'Friends', component: 'BuddiesTabsPage', icon: 'people', is_active: false },
     { title: 'Events', component: 'EventsPage', icon: 'calendar', is_active: false },
     { title: 'Notifications', component: 'NotificationsPage', icon: 'mail', is_active: false },
+    { title: 'MockNotifsPage', component: 'MockNotifsPage', icon: 'mail', is_active: false },
   ]
 
   currentUser: any = null;
@@ -47,6 +48,7 @@ export class LetsRide {
     private notifications: NotificationsProvider,
     private appVersion: AppVersion,
     private hotUpdate: HotUpdateProvider,
+    private app: App,
     public events: Events,
   ) {
     this.translate.init();
@@ -59,13 +61,22 @@ export class LetsRide {
         this.currentUser = {...user.providerData[0], ...{'aFuid': user.uid} };
         this.getBadges(user.uid);
       }
-
-
     });
     this.initializeApp();
+
   }
 
   initializeApp() {
+    this.app.viewWillEnter.subscribe((view) => {
+      console.log(view);
+      console.log(view.instance.constructor.name);
+      let page = view.component.name;
+      if (page == 'BuddiesPage' || page == 'SearchPage') {
+        page = 'BuddiesTabsPage'
+      }
+      this.is_active = page;
+    });
+
     this.platform.ready().then(() => {
       this.menuCtrl.enable(false, 'mainMenu');
 
@@ -73,7 +84,7 @@ export class LetsRide {
         if(this.hotUpdate.loader){
           this.hotUpdate.loader.dismiss();
         }
-        this.hotUpdate.init();
+        //this.hotUpdate.init();
         this.statusBar.styleDefault();
         this.splashScreen.hide();
         this.notifications.init(this.nav);
@@ -116,12 +127,6 @@ export class LetsRide {
   openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
-    /*if(page == 'NotifsPage'){
-      let data = {displayName: "Guillaume Bartolini", eventId: "-Kt5-pe0rAEMKbwuaM6b", type: "newEvent", from: {user_id: "VMNmYlatT7aZzWfGBwM9aJzf6WN2", oneSignalId: "337092a2-4fa9-46df-9116-94fa3d701148"}};
-      this.nav.setRoot('EventsPage', data);
-    }else{
-      this.nav.setRoot(page);
-    }*/
     this.nav.setRoot(page);
     this.is_active = page;
   }

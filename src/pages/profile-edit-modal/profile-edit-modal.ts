@@ -21,6 +21,7 @@ export class ProfileEditModalPage {
   private disciplines: ReadonlyArray<Discipline>;
   private countries: ReadonlyArray<Country>;
 
+  activeMenu = 'ProfilePage';
   editProfileForm: FormGroup;
   localProfile: any;
 

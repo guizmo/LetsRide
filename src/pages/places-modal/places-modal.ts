@@ -17,6 +17,7 @@ import { Discipline, Country, Place } from '../../models';
 })
 export class PlacesModalPage {
 
+  activeMenu = 'PlacesPage';
   private disciplines: ReadonlyArray<Discipline>;
   private countries: ReadonlyArray<Country>;
   private placeForm: FormGroup;

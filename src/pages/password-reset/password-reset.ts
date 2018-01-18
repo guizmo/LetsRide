@@ -9,12 +9,7 @@ import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 import { TranslateService } from '@ngx-translate/core';
 
 
-/**
- * Generated class for the PasswordResetPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+
 @IonicPage({
     defaultHistory: ['LoginPage']
 })
@@ -25,6 +20,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class PasswordResetPage {
   public resetPasswordForm:FormGroup;
 
+  activeMenu = 'AccountPage';
   constructor(
     public navCtrl: NavController,
     public translateService: TranslateService,

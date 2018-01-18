@@ -16,6 +16,7 @@ import { UserProvider, NotificationsProvider, BuddiesProvider, PlacesProvider} f
 })
 export class NotificationsPage {
 
+  activeMenu = 'NotificationsPage';
   public eventsNotifications: any = [] ;
   public requestsNotifications: any = [] ;
   private showMapIsEnabled: string = null;
@@ -232,8 +233,10 @@ export class NotificationsPage {
     let contents = {};
 
     if(type == 'friendRequestAccepted'){
-      contents['en'] = `You are now connected to ${name}`;
-      contents['fr'] = `Vous êtes maintenant connecté à ${name}`;
+      contents = {
+        en: `You are now connected to ${name}`,
+        fr: `Vous êtes maintenant connecté à ${name}`
+      }
     }else if(type == 'joinedEvent'){
       let eventName = recipientData.name;
       let timestamp = moment().unix();
@@ -242,8 +245,10 @@ export class NotificationsPage {
         id: recipientData.key,
         timestamp: timestamp
       }
-      contents['en'] = `${name} is going to your event "${eventName}"`;
-      contents['fr'] = `${name} participe à votre événement "${eventName}"`;
+      contents = {
+        en: `${name} is going to your event "${eventName}"`,
+        fr: `${name} participe à votre événement "${eventName}"`
+      }
     }
 
     this.notifications.sendMessage([oneSignalId], data, contents, null );

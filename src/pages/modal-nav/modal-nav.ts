@@ -10,6 +10,7 @@ export class ModalNavPage {
 	modalPage: any;
   data: any;
   modalParams: any = { };
+  activeMenu = 'ModalNavPage';
 
   constructor(
     public navParams: NavParams,

@@ -7,12 +7,7 @@ import { EmailValidator } from '../../validators/email';
 
 import { LoadingProvider, AlertProvider } from '../../providers';
 
-/**
- * Generated class for the AccountEditModalPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+
 @IonicPage()
 @Component({
   selector: 'page-account-edit-modal',
@@ -22,6 +17,7 @@ export class AccountEditModalPage {
 
   editAccountForm: FormGroup;
   field: null;
+  public activeMenu = 'AccountPage';
 
   constructor(
     public navCtrl: NavController,

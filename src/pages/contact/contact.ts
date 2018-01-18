@@ -13,6 +13,7 @@ import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook';
   templateUrl: 'contact.html',
 })
 export class ContactPage {
+  activeMenu = 'BuddiesTabsPage';
 
   constructor(private fb: Facebook, public navCtrl: NavController, public navParams: NavParams) {
   }

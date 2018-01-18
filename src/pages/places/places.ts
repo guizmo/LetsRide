@@ -17,6 +17,7 @@ export class PlacesPage {
   images: Array<any>=[];
   showSpinner:boolean = true;
   showNoResult:boolean = false;
+  activeMenu = 'PlacesPage';
 
   constructor(
     public navCtrl: NavController,

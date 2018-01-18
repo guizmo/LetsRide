@@ -1,0 +1,24 @@
+<!--
+  Generated template for the MockNotifsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>mockNotifs</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <button ion-button block color="firebase" (click)="sendNotif('closeBy')">closeBy</button>
+  <button ion-button block color="facebook" (click)="sendNotif('eventupdate')">eventupdate</button>
+  <button ion-button block color="secondary" (click)="sendNotif('friendRequest')">friendRequest</button>
+  <button ion-button block color="danger" (click)="sendNotif('friendRequestAccepted')">friendRequestAccepted</button>
+  <button ion-button block color="dark" (click)="sendNotif('joinedEvent')">joinedEvent</button>
+  <button ion-button block color="brand" (click)="sendNotif('newEvent')">newEvent</button>
+
+</ion-content>

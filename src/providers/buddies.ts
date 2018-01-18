@@ -24,7 +24,7 @@ export class BuddiesProvider {
   }
 
   setBuddiesList(uid:string){
-    console.log('setBuddiesList', uid);
+    //console.log('setBuddiesList', uid);
     this.buddiesIdRef = this.afdb.list(`/users/${uid}/buddies`)
     this.buddiesId = this.buddiesIdRef.snapshotChanges().map(changes => {
       return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
@@ -32,7 +32,7 @@ export class BuddiesProvider {
   }
 
   getBuddies(uid:string){
-    console.log('getBuddies in provider', uid);
+    //console.log('getBuddies in provider', uid);
     if(!this.buddiesId){
       //console.log('if !this.buddiesId getBuddies');
       this.setBuddiesList(uid);

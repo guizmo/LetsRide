@@ -25,6 +25,7 @@ export class BuddiesPage {
   buddiesSubcription;
   showSpinner:boolean = true;
   showNoResult:boolean = false;
+  activeMenu = 'BuddiesTabsPage';
 
 
   constructor(
@@ -36,8 +37,8 @@ export class BuddiesPage {
     private userProvider: UserProvider,
     private fb: FacebookProvider
   ) {
-    //this.fetchUserData();
-    console.log(this);
+    //this.navCtrl.parent.select(0);
+    this.fetchUserData();
   }
 
   fetchUserData(){
@@ -57,17 +58,18 @@ export class BuddiesPage {
   ionViewDidLeave(){ }
 
   ionViewWillUnload(){
-    this.buddiesSubcription.unsubscribe();
+    if(this.buddiesSubcription){
+      this.buddiesSubcription.unsubscribe();
+    }
   }
 
   ionViewDidLoad() {
     //Fired only when a view is stored in memory. This event is NOT fired on entering a view that is already cached. It’s a nice place for init related tasks.
-    console.log('ionViewDidLoad');
-    this.getCurrentUser();
+    //console.log('ionViewDidLoad');
   }
 
   ionViewDidEnter() {
-    console.log('ionViewDidEnter');
+    //console.log('ionViewDidEnter getCurrentUser');
   }
 
   goto(page){
@@ -81,41 +83,6 @@ export class BuddiesPage {
     this.buddies[index].avatar = this.avatarDefault;
   }
 
-  getCurrentUser() {
-    if(this.navParams.data.value){
-      console.log('this.navParams.data.value');
-      let values = this.navParams.data.value;
-      for (let key in values) {
-        this[key] = values[key];
-      }
-      this.getBuddies(this.currentUser.uid);
-      return;
-    }else{
-      console.log('this.navParams.data.value else else else');
-      this.navParams.data.subscribe((values) => {
-        if(values){
-          for (let key in values) {
-            this[key] = values[key];
-          }
-          this.getBuddies(this.currentUser.uid);
-          return;
-        }
-      });
-    }
-
-    /*this.navParams.data.subscribe(
-      values => {
-        if(values){
-          let key = Object.keys(values)[0];
-          for (let key in values) {
-            this[key] = values[key];
-          }
-        }
-      },
-      error => console.log('error'),
-      () => { }
-    );*/
-  }
 
   getBuddies(uid:string){
     this.buddiesProvider.getBuddies(uid);
@@ -151,15 +118,11 @@ export class BuddiesPage {
     let { aFuid, displayName } = this.buddies[index];
 
     //remove reference to request in currentUser
-    let removeFromCurrentUser = this.afdb.object(`/users/${this.userData.aFuid}/buddies/${aFuid}`).remove();
-    //remove reference to request from the ASKER
-    let removeFromAsker = this.afdb.object(`/users/${aFuid}/buddies/${this.userData.aFuid}`).remove();
-
-    removeFromCurrentUser
+    this.afdb.object(`/users/${this.userData.aFuid}/buddies/${aFuid}`).remove()
       .then(_ => console.log('success removeFromCurrentUser'))
       .catch(err => console.log(err, 'removeFromCurrentUser error!'));
-
-    removeFromAsker
+    //remove reference to request from the ASKER
+    this.afdb.object(`/users/${aFuid}/buddies/${this.userData.aFuid}`).remove()
       .then(_ => console.log('success removeFromAsker'))
       .catch(err => console.log(err, 'removeFromAsker error!'));
   }

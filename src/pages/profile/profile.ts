@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, MenuController } from 'ionic-angular';
 
 import { Observable } from "rxjs/Rx";
@@ -20,8 +20,9 @@ import * as moment  from 'moment';
   selector: 'page-profile',
   templateUrl: 'profile.html',
 })
-export class ProfilePage implements OnInit, OnDestroy {
+export class ProfilePage {
 
+  activeMenu = 'ProfilePage';
   private userData:any;
   private profileImg:string = null;
   private profileImgLoaded:boolean = false;
@@ -66,12 +67,6 @@ export class ProfilePage implements OnInit, OnDestroy {
       console.log('not coming from SIGNUP page')
     }
 
-  }
-
-  ngOnInit() {
-  }
-
-  ngOnDestroy(){
   }
 
   changeProfileImg(){

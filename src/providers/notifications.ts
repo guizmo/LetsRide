@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
-import { App } from 'ionic-angular';
+import { App, AlertController } from 'ionic-angular';
 
 import {OneSignal} from '@ionic-native/onesignal';
 
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
-
+import { NOTIFICATIONS } from '../data/notifications';
 
 @Injectable()
 export class NotificationsProvider {
   one_id: string = null;
+  private appId = '1b28e204-835f-4462-9c10-5b8eb31bfcc9';
+  private googleProjectId = '897213692051';
 
   private navCtrl;
   private navParams;
@@ -30,19 +32,19 @@ export class NotificationsProvider {
     private oneSignal: OneSignal,
     private afdb: AngularFireDatabase,
     private app: App,
+    private alertCtrl: AlertController
   ) {
     //console.log('OneSignal', this);
     //this.navCtrl = this.app.getRootNav();
     this.fetchAllRef = this.afdb.list(`/notifications`);
     this.fetchAll = this.fetchAllRef.snapshotChanges();
+    console.log(NOTIFICATIONS);
   }
 
   init(nav) {
     this.navCtrl = nav;
-    let appid = '1b28e204-835f-4462-9c10-5b8eb31bfcc9';
-    //let googleProjectId = '';
-    //this.oneSignal.startInit(appId, googleProjectId);
-    this.oneSignal.startInit(appid);
+    this.oneSignal.startInit(this.appId, this.googleProjectId);
+    //this.oneSignal.startInit(appid);
     this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.Notification);
     this.oneSignal.setSubscription(true);
     this.oneSignal.handleNotificationReceived().subscribe((data) => {
@@ -50,7 +52,6 @@ export class NotificationsProvider {
     });
     this.oneSignal.handleNotificationOpened().subscribe((data) => {
       // handle opened here how you wish.
-
       if(data.notification.payload.additionalData){
         this.handleNotificationOpened(data.notification.payload);
       }
@@ -129,13 +130,53 @@ export class NotificationsProvider {
 
   handleNotificationOpened(payload){
     if(!this.navCtrl){
-      this.navCtrl = this.app.getRootNav();
+      this.navCtrl = this.app.getRootNavs()[0];
       this.navParams = this.navCtrl.getActive().getNavParams();
     }
-    let data = payload.additionalData;
+    //console.log('nav', this.navCtrl);
+    //console.log('Active page', this.navCtrl.getActive().name);
+    //console.log('getActive', this.navCtrl.getActive());
 
-    if(data.type && data.type == 'newEvent'){
-      this.navCtrl.setRoot('EventsPage', data);
+    let page = 'NotificationsPage';
+    let params:any = {};
+
+    if(payload.additionalData.type){
+      switch(payload.additionalData.type) {
+        case 'friendRequest':
+          page = 'NotificationsPage'
+          params = {
+            tabIndex: 1,
+          };
+          break;
+        case 'friendRequestAccepted':
+          page = 'BuddiesTabsPage'
+          break;
+        case 'closeBy':
+          page = 'MainPage'
+          break;
+        case 'joinedEvent':
+          page = 'EventsPage'
+          break;
+        case 'newEvent':
+          page = 'NotificationsPage'
+          break;
+        default:
+          page = 'NotificationsPage'
+      }
+
+      params = {
+        data: payload.additionalData,
+        type: payload.additionalData.type,
+        notificationID: payload.notificationID,
+        message: {
+          title: payload.title,
+          body: payload.body
+        },
+        page: page
+      }
+      this.presentAlert(params);
+      //console.log(params);
+      //this.navCtrl.setRoot(page, params);
     }
   }
 
@@ -152,4 +193,26 @@ export class NotificationsProvider {
   setNotifState(key, state){
     this.fetch_by_idRef.update(key, { read: state });
   }
+
+
+  mockNotifs(type:string){
+    this.handleNotificationOpened(NOTIFICATIONS[type]);
+  }
+
+  presentAlert(data) {
+    let alert = this.alertCtrl.create({
+      title: data.message.title,
+      subTitle: data.message.body,
+      buttons: [{
+        text: 'OK',
+        handler: () => {
+          console.log('Cancel clicked');
+          console.log(this.app);
+          this.navCtrl.setRoot(data.page, data);
+        }
+      }]
+    });
+    alert.present();
+  }
+
 }

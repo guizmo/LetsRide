@@ -6,12 +6,7 @@ import { UserProvider, LoadingProvider, AlertProvider } from '../../providers';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 
-/**
- * Generated class for the AccountPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+
 @IonicPage()
 @Component({
   selector: 'page-account',
@@ -23,7 +18,8 @@ export class AccountPage {
   private emailVerified: boolean = false;
   private alert;
   private providerId: string = null;
-
+  public activeMenu = 'AccountPage';
+  
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,

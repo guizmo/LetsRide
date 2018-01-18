@@ -16,14 +16,10 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: 'signup.html'
 })
 export class SignupPage {
-  // The account fields for the login form.
-  // If you're using the username field with or without email, make
-  // sure to add it to the type
-
-  // Our translated text strings
 
   private signupErrorString: string;
   public signupForm: FormGroup;
+  activeMenu = 'AccountPage';
 
 
 

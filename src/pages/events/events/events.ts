@@ -22,6 +22,7 @@ export class EventsPage {
   @ViewChildren('eventsItem') eventsItem: QueryList<Item>;
   @ViewChildren('eventsSliding') eventsSliding: QueryList<ItemSliding>;
 
+  activeMenu = 'EventsPage';
   public places: any = [];
   private activeItemSliding:boolean = false;
   private userData;
@@ -214,7 +215,10 @@ export class EventsPage {
         let message:any = {} ;
         let time = moment(event.time).format('lll');
         //Add or update
-        message.contents = `Riding "${event.name}" @ ${time}`;
+        message.contents = {
+          en: `Riding "${event.name}" @ ${time}`,
+          fr: `Session "${event.name}" @ ${time}`
+        };
         let eventKey;
 
 
@@ -226,10 +230,16 @@ export class EventsPage {
           }else{
             this.updateEvent(eventKey, event);
           }
-          message.headings = `${name} has updated an event`;
+          message.headings = {
+            en: `${name} has updated an event`,
+            fr: `${name} a modifié un événement`
+          }
           this.sendEventToBuddies(message, eventKey);
         }else{
-          message.headings = `${name} has created an event`;
+          message.headings = {
+            en: `${name} has created an event`,
+            fr: `${name} a crée un événement`
+          }
           this.addEvent(event).then((event) => {
             this.sendEventToBuddies(message, event.key);
             if(data.create_place){
@@ -334,13 +344,16 @@ export class EventsPage {
         },
         displayName: name
       };
-
+      console.log(data);
       let contents = {
-        'en': message.contents
+        'en': message.contents.en,
+        'fr': message.contents.fr
       }
       let headings = {
-        'en': message.headings
+        'en': message.headings.en,
+        'fr': message.headings.fr
       }
+      console.log(message);
       this.notifications.sendMessage(this.oneSignalBuddiesId, data, contents, headings);
     }
   }

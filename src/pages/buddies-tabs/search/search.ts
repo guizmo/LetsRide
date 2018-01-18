@@ -25,6 +25,7 @@ import { AngularFireDatabase } from 'angularfire2/database';
 })
 export class SearchPage {
 
+  activeMenu = 'BuddiesTabsPage';
   currentUser;
   userData;
   filterSearch:boolean = false;
@@ -50,10 +51,9 @@ export class SearchPage {
   ) {
     console.log(this);
     //this.filters = [{"value":["Cross Country (XC)", "Downhill", "Enduro", "Road", "All-mountain"],"alias":"disciplines"},{"value":"New Caledonia","alias":"country"},{"value":"Male","alias":"gender"},{"value":"Nouméa","alias":"city"},{"value":3,"alias":"level"}];
-    //this.fetchUserData();
+    this.fetchUserData();
   }
   ionViewDidLoad() {
-    this.getCurrentUser();
   }
 
   fetchUserData(){
@@ -158,32 +158,6 @@ export class SearchPage {
     }
 
     this.applySearchFilter();
-  }
-
-
-  getCurrentUser() {
-    if(this.navParams.data.value){
-      let values = this.navParams.data.value;
-      for (let key in values) {
-        this[key] = values[key];
-      }
-      this.getPeople();
-      return;
-    }
-
-    /*this.navParams.data.subscribe(
-      values => {
-        if(values){
-          let key = Object.keys(values)[0];
-          for (let key in values) {
-            this[key] = values[key];
-          }
-          this.getPeople();
-        }
-      },
-      error => console.log('error'),
-      () => { }
-    );*/
   }
 
 

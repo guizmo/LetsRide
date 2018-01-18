@@ -10,6 +10,7 @@ import { AngularFireDatabase, AngularFireObject } from 'angularfire2/database';
 })
 export class EventPage {
   event: any = null;
+  activeMenu = 'EventsPage';
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,

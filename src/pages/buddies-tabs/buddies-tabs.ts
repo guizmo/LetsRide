@@ -1,26 +1,26 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, Tabs } from 'ionic-angular';
+import { IonicPage, NavController, Tabs, NavParams } from 'ionic-angular';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 import { UserProvider, BuddiesProvider} from '../../providers';
 
+@IonicPage()
 @Component({
   selector: 'page-buddies-tabs',
   templateUrl: 'buddies-tabs.html'
 })
-@IonicPage()
+
 export class BuddiesTabsPage {
   @ViewChild('buddiesTabs') tabRef: Tabs;
 
   userLoaded = false;
-  tabsParams = new BehaviorSubject<any>(null);
-
 
   searchRoot = 'SearchPage';
   buddiesRoot = 'BuddiesPage';
-  //messagesRoot = 'MessagesPage';
+  activeMenu = 'BuddiesTabsPage';
+  //tabsParams = new BehaviorSubject<any>(null);
 
 
   constructor(
@@ -28,6 +28,7 @@ export class BuddiesTabsPage {
     private afAuth: AngularFireAuth,
     private buddiesProvider: BuddiesProvider,
     private userProvider: UserProvider,
+    public navParams: NavParams
   ) {
     this.fetchUserData();
   }
@@ -38,8 +39,8 @@ export class BuddiesTabsPage {
         this.userProvider.getUserData().subscribe((settings) => {
           if(settings){
             this.userLoaded = true;
-            this.tabsParams.next({userData: settings,currentUser: user.toJSON()});
-            this.tabsParams.complete();
+            //this.tabsParams.next({userData: settings,currentUser: user.toJSON()});
+            //this.tabsParams.complete();
           }
         });
       }
@@ -47,26 +48,27 @@ export class BuddiesTabsPage {
   }
 
   ionViewDidLoad() {
-    //console.log('tabs ionViewDidLoad');
+    console.log('tabs ionViewDidLoad');
   }
 
   ionViewDidEnter() {
-    //console.log('tabs ionViewDidEnter');
+    console.log('tabs ionViewDidEnter');
 
     //to redirect
     /*let _self = this;
     setTimeout(function(){
-      _self.tabRef.select(2);
-    }, 500)
+      _self.tabRef.select(1);
+    }, 0);
     */
+
   }
 
   ionViewDidLeave(){
-    //console.log('tabs ionViewDidLeave');
+    console.log('tabs ionViewDidLeave');
     //this.buddiesProvider.buddies.complete();
   }
   ionViewWillUnload(){
-    //console.log('tabs ionViewWillUnload');
+    console.log('tabs ionViewWillUnload');
     //this.buddiesProvider.buddies.complete();
   }
 
