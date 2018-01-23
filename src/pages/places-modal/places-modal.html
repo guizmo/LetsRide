@@ -3,13 +3,13 @@
   <ion-buttons *ngIf="state == 'update'" start>
     <button ion-button icon-left (click)="dismiss()">
       <ion-icon name="arrow-back"></ion-icon>
-      Cancel
+      {{ 'CANCEL_BUTTON' | translate }}
     </button>
   </ion-buttons>
   <!-- <ion-title>Track's infos</ion-title> -->
   <ion-buttons end>
     <button ion-button (click)="placeFormSubmit()" [disabled]="!placeForm.valid" >
-      Save
+      {{ 'SAVE_BUTTON' | translate }}
     </button>
   </ion-buttons>
 </ion-navbar>
@@ -25,13 +25,13 @@
           <ion-col text-center align-self-center class="col-left">
             <div class="camera button-div" tapable (click)="setImage()">
               <ion-icon name="ios-camera-outline" ></ion-icon>
-              <h5>Cover photo</h5>
+              <h5>{{ 'PLACES_EDIT_PAGE.COVER' | translate }}</h5>
             </div>
           </ion-col>
           <ion-col text-center align-self-center class="col-rigth">
             <div class="location button-div" tapable (click)="setGeolocation()">
               <ion-icon name="ios-map-outline"></ion-icon>
-              <h5>Location</h5>
+              <h5>{{ 'PLACES_EDIT_PAGE.LOCATION' | translate }}</h5>
             </div>
           </ion-col>
         </ion-row>
@@ -42,35 +42,35 @@
 
         <ion-list no-margin>
             <ion-item>
-              <ion-label>Name</ion-label>
+              <ion-label>{{ 'PROFILE_EDIT_PAGE.NAME' | translate }}</ion-label>
               <ion-input type="text" placeholder="Name" formControlName="name" name="name" ></ion-input>
             </ion-item>
             <!-- CITY -->
             <ion-item >
-              <ion-label>City</ion-label>
+              <ion-label>{{ 'PROFILE_EDIT_PAGE.CITY' | translate }}</ion-label>
               <ion-input type="text" formControlName="city" name="city"></ion-input>
             </ion-item>
             <!-- COUNTRIE -->
             <ion-item>
-              <ion-label>Country</ion-label>
+              <ion-label>{{ 'PROFILE_EDIT_PAGE.COUNTRY' | translate }}</ion-label>
               <ion-select
                 formControlName="country"
                 name="country"
-                okText="Okay"
-                cancelText="Dismiss"
+                okText="{{'DONE_BUTTON' | translate}}"
+                cancelText="{{'CANCEL_BUTTON' | translate}}"
                 >
-                <ion-option *ngFor="let country of countries" [value]="code">{{country.name}}</ion-option>
+                <ion-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-option>
               </ion-select>
             </ion-item>
             <!-- DISCIPLINE -->
             <ion-item>
-              <ion-label>Sports</ion-label>
+              <ion-label>{{ 'PROFILE_EDIT_PAGE.SPORTS' | translate }}</ion-label>
               <ion-select
                 formControlName="disciplines"
                 name="disciplines"
                 multiple="true"
-                okText="Okay"
-                cancelText="Dismiss"
+                okText="{{'DONE_BUTTON' | translate}}"
+                cancelText="{{'CANCEL_BUTTON' | translate}}"
                 >
                 <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
               </ion-select>

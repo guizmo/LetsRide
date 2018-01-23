@@ -1,10 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, Tabs, NavParams } from 'ionic-angular';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { AngularFireAuth } from 'angularfire2/auth';
 
-import { UserProvider, BuddiesProvider} from '../../providers';
+import { UserProvider} from '../../providers';
 
 @IonicPage()
 @Component({
@@ -26,7 +25,6 @@ export class BuddiesTabsPage {
   constructor(
     public navCtrl: NavController,
     private afAuth: AngularFireAuth,
-    private buddiesProvider: BuddiesProvider,
     private userProvider: UserProvider,
     public navParams: NavParams
   ) {
@@ -46,12 +44,8 @@ export class BuddiesTabsPage {
     });
   }
 
-  ionViewDidLoad() {
-    console.log('tabs ionViewDidLoad');
-  }
 
   ionViewDidEnter() {
-    console.log('tabs ionViewDidEnter');
 
     //to redirect
     /*let _self = this;
@@ -62,13 +56,5 @@ export class BuddiesTabsPage {
 
   }
 
-  ionViewDidLeave(){
-    console.log('tabs ionViewDidLeave');
-    //this.buddiesProvider.buddies.complete();
-  }
-  ionViewWillUnload(){
-    console.log('tabs ionViewWillUnload');
-    //this.buddiesProvider.buddies.complete();
-  }
 
 }

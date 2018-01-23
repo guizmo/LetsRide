@@ -39,7 +39,6 @@ export class NotificationsProvider {
     //this.navCtrl = this.app.getRootNav();
     this.fetchAllRef = this.afdb.list(`/notifications`);
     this.fetchAll = this.fetchAllRef.snapshotChanges();
-    console.log(NOTIFICATIONS);
   }
 
   init(nav) {

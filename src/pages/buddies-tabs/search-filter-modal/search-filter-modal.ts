@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 
-import { DisciplinesProvider, CountriesProvider } from '../../../providers';
 
 @IonicPage()
 @Component({
@@ -21,15 +21,16 @@ export class SearchFilterModalPage {
     private formBuilder: FormBuilder,
     public viewCtrl: ViewController,
     public navParams: NavParams,
-    public disciplinesPvr: DisciplinesProvider,
-    public countriesPvr: CountriesProvider,
+    public translateService: TranslateService,
   ) {
-    console.log(this);
-    this.disciplinesPvr.findAll().subscribe(data => this.disciplines = data);
-    this.countriesPvr.findAll().subscribe(data => this.countries = data);
+    this.translateService.get(['COUNTRIES', 'DISCIPLINES']).subscribe((values) => {
+      this.countries = values.COUNTRIES;
+      this.disciplines = values.DISCIPLINES;
+    })
+
 
     let controls = this.getControls();
-    this.searchForm = formBuilder.group(controls);
+    this.searchForm = this.formBuilder.group(controls);
   }
 
   searchFormSubmit(){

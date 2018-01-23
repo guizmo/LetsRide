@@ -14,22 +14,6 @@
 
   "MAP_TITLE": "Map",
 
-  "TUTORIAL_SKIP_BUTTON" : "Skip",
-  "TUTORIAL_CONTINUE_BUTTON" : "Continue",
-
-  "TUTORIAL_SLIDE1_TITLE": "Welcome to the Ionic Super Starter",
-  "TUTORIAL_SLIDE1_DESCRIPTION": "The <b>Ionic Super Starter</b> is a fully-featured Ionic starter with many pre-built pages and best practices.",
-
-  "TUTORIAL_SLIDE2_TITLE": "How to use the Super Starter",
-  "TUTORIAL_SLIDE2_DESCRIPTION": "Assemble the various page types you want and remove the ones you don't. We've provided many common mobile app page layouts, like login and signup pages, tabs, and this tutorial page.",
-
-  "TUTORIAL_SLIDE3_TITLE": "Getting Started",
-  "TUTORIAL_SLIDE3_DESCRIPTION": "Need help? Check out the Super Starter README for a full tutorial",
-
-  "TUTORIAL_SLIDE4_TITLE": "Ready to Play?",
-
-  "WELCOME_INTRO" : "The starting point for your next great Ionic app",
-
   "SETTINGS_TITLE": "Settings",
   "SETTINGS_OPTION1": "Option 1",
   "SETTINGS_OPTION2": "Option 2",
@@ -48,17 +32,17 @@
   "SIGNUP_TITLE": "Sign up",
   "SIGNUP_ERROR": "Unable to create account. Please check your account information and try again.",
 
-  "LIST_MASTER_TITLE": "Items",
-
-  "ITEM_CREATE_TITLE": "New Item",
   "ITEM_CREATE_CHOOSE_IMAGE": "Add Image",
 
   "ITEM_NAME_PLACEHOLDER" : "Name",
   "ITEM_ABOUT_PLACEHOLDER" : "About",
 
   "DONE_BUTTON" : "Done",
+  "SAVE_BUTTON" : "Cancel",
   "CANCEL_BUTTON" : "Cancel",
   "DELETE_BUTTON" : "Delete",
+  "EDIT_BUTTON" : "Edit",
+  "CREATE_BUTTON" : "Create new",
 
   "CARDS_TITLE": "Social",
 
@@ -74,6 +58,192 @@
   "SIGNOUT_TITLE": "Sign out",
   "SIGNOUT_MSG": "Do you really want to sign out ?",
   "YES": "Yes",
-  "NO": "No"
+  "NO": "No",
+  "FACEBOOK_LOGIN": "Continue with Facebook",
+  "GOOGLE_LOGIN": "Continue with Google+",
+  "EMAIL_LOGIN": "Signup with Email",
+  "VALID_EMAIL": "Please enter a valid email",
+  "HAVE_MAIL_ACCOUNT": "Have an account ? Login",
+
+  "DATETIME":{
+    "monthNames": "January, February, March, April, May, June, July, August, September, October, November, December",
+    "monthShortNames": "Jan, Feb, Mar, Apr, May , June, July, Aug, Sept, Oct, Nov, Dec",
+    "dayNames": "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday",
+    "dayShortNames": "Mon, Tue, Wed, Thu, Fri, Sat, Sun"
+  },
+
+  "errorMessages":{
+    "fieldRequired":{
+      "title": "Field required !",
+      "subTitle": "Sorry, but you forgot to fill up some fields"
+    },
+    "accountExistsWithDifferentCredential": { "title": "Account Exists!", "subTitle": "An account with the same credential already exists." },
+    "invalidCredential": { "title": "Invalid Credential!", "subTitle": "An error occured logging in with this credential." },
+    "operationNotAllowed": { "title": "Login Failed!", "subTitle": "Logging in with this provider is not allowed! Please contact support." },
+    "userDisabled": { "title": "Account Disabled!", "subTitle": "Sorry! But this account has been suspended! Please contact support." },
+    "userNotFound": { "title": "Account Not Found!", "subTitle": "Sorry, but an account with this credential could not be found." },
+    "wrongPassword": { "title": "Incorrect Password!", "subTitle": "Sorry, but the password you have entered is incorrect." },
+    "invalidEmail": { "title": "Invalid Email!", "subTitle": "Sorry, but you have entered an invalid email address." },
+    "emailAlreadyInUse": { "title": "Email Not Available!", "subTitle": "Sorry, but this email is already in use." },
+    "weakPassword": { "title": "Weak Password!", "subTitle": "Sorry, but you have entered a weak password.", "length": "It must be at least 6 characters long !" },
+    "requiresRecentLogin": { "title": "Credential Expired!", "subTitle": "Sorry, but this credential has expired! Please login again." },
+    "userMismatch": { "title": "User Mismatch!", "subTitle": "Sorry, but this credential is for another user!" },
+    "providerAlreadyLinked": { "title": "Already Linked!", "subTitle": "Sorry, but your account is already linked to this credential." },
+    "credentialAlreadyInUse": { "title": "Credential Not Available!", "subTitle": "Sorry, but this credential is already used by another user." },
+
+    "changeName": { "title": "Change Name Failed!", "subTitle": "Sorry, but we've encountered an error changing your name." },
+    "invalidCharsName": { "title": "Invalid profile name!", "subTitle": "Sorry, but the profile name you have entered is not valid!" },
+    "nameTooShort": { "title": "Name too short!", "subTitle": "Sorry, but you have entered name too short." },
+    "changeEmail": { "title": "Change Email Failed!", "subTitle": "Sorry, but we've encountered an error changing your email address." },
+    "invalidProfileEmail": { "title": "Invalid Email!", "subTitle": "Sorry, but you have entered an invalid email address." },
+    "changePhoto": { "title": "Change Photo Failed!", "subTitle": "Sorry, but we've encountered an error changing your photo." },
+    "passwordTooShort": { "title": "Password too short!", "subTitle": "Sorry, but the password you have entered is too short. It must be at least 6 characters long!" },
+    "invalidCharsPassword": { "title": "Invalid Password!", "subTitle": "Sorry, but the password you have entered is not valid!" },
+    "passwordsDoNotMatch": { "title": "Change Password Failed!", "subTitle": "Sorry, but the passwords you entered do not match." },
+
+    "imageUpload": { "title": "Image Upload Failed!", "subTitle": "Sorry but we've encountered an error uploading selected image." },
+    "databaseGenerique": { "title": "Connection error !", "subTitle": "An error occured! Please try again later." },
+    "noPlacesYet": { "title": "No localisation!", "subTitle": "There is no localisation for this place yet." }
+  },
+
+
+  "confirmMessages" : {
+    "emailUpdate": {
+      "title": "Email Update Confirmation!",
+      "subTitle": "An email confirmation will be sent to: ",
+      "next": "Proceed",
+      "back": "Cancel"
+    },
+    "logOut": {
+      "title": "Sign out!",
+      "subTitle": "Do you really want to sign out&nbsp;?",
+      "next": "Yes",
+      "back": "No"
+    }
+  },
+
+
+  "successMessages" : {
+    "passwordResetSent": { "title": "Password Reset Sent!", "subTitle": "A password reset email has been sent to: " },
+    "profileUpdated": { "title": "Profile Updated!", "subTitle": "Your profile has been successfully updated!" },
+    "emailVerified": { "title": "Email Confirmed!", "subTitle": "Congratulations! Your email has been confirmed!" },
+    "emailVerificationSent": { "title": "Email Confirmation Sent!", "subTitle": "An email confirmation has been sent to: " },
+    "accountDeleted": { "title": "Account Deleted!", "subTitle": "Your account has been successfully deleted." },
+    "passwordChanged": { "title": "Password Changed!", "subTitle": "Your password has been successfully changed." },
+    "signIn": { "title": "Signed in!", "subTitle": "Signed in with " }
+  },
+
+
+  "COUNTRIES":[{"name":"Afghanistan","code":"AF"},{"name":"Albania","code":"AL"},{"name":"Algeria","code":"DZ"},{"name":"American Samoa","code":"AS"},{"name":"Andorra","code":"AD"},{"name":"Angola","code":"AO"},{"name":"Anguilla","code":"AI"},{"name":"Antarctica","code":"AQ"},{"name":"Antigua and Barbuda","code":"AG"},{"name":"Argentina","code":"AR"},{"name":"Armenia","code":"AM"},{"name":"Aruba","code":"AW"},{"name":"Australia","code":"AU"},{"name":"Austria","code":"AT"},{"name":"Azerbaijan","code":"AZ"},{"name":"Bahamas","code":"BS"},{"name":"Bahrain","code":"BH"},{"name":"Bangladesh","code":"BD"},{"name":"Barbados","code":"BB"},{"name":"Belarus","code":"BY"},{"name":"Belgium","code":"BE"},{"name":"Belize","code":"BZ"},{"name":"Benin","code":"BJ"},{"name":"Bermuda","code":"BM"},{"name":"Bhutan","code":"BT"},{"name":"Bolivia","code":"BO"},{"name":"Bosnia and Herzegovina","code":"BA"},{"name":"Botswana","code":"BW"},{"name":"Bouvet Island","code":"BV"},{"name":"Brazil","code":"BR"},{"name":"British Indian Ocean Territory","code":"IO"},{"name":"Brunei Darussalam","code":"BN"},{"name":"Bulgaria","code":"BG"},{"name":"Burkina Faso","code":"BF"},{"name":"Burundi","code":"BI"},{"name":"Cambodia","code":"KH"},{"name":"Cameroon","code":"CM"},{"name":"Canada","code":"CA"},{"name":"Cape Verde","code":"CV"},{"name":"Cayman Islands","code":"KY"},{"name":"Central African Republic","code":"CF"},{"name":"Chad","code":"TD"},{"name":"Chile","code":"CL"},{"name":"China","code":"CN"},{"name":"Christmas Island","code":"CX"},{"name":"Cocos (Keeling) Islands","code":"CC"},{"name":"Colombia","code":"CO"},{"name":"Comoros","code":"KM"},{"name":"Congo","code":"CG"},{"name":"Congo, the Democratic Republic of the","code":"CD"},{"name":"Cook Islands","code":"CK"},{"name":"Costa Rica","code":"CR"},{"name":"Cote D'Ivoire","code":"CI"},{"name":"Croatia","code":"HR"},{"name":"Cuba","code":"CU"},{"name":"Cyprus","code":"CY"},{"name":"Czech Republic","code":"CZ"},{"name":"Denmark","code":"DK"},{"name":"Djibouti","code":"DJ"},{"name":"Dominica","code":"DM"},{"name":"Dominican Republic","code":"DO"},{"name":"Ecuador","code":"EC"},{"name":"Egypt","code":"EG"},{"name":"El Salvador","code":"SV"},{"name":"Equatorial Guinea","code":"GQ"},{"name":"Eritrea","code":"ER"},{"name":"Estonia","code":"EE"},{"name":"Ethiopia","code":"ET"},{"name":"Falkland Islands (Malvinas)","code":"FK"},{"name":"Faroe Islands","code":"FO"},{"name":"Fiji","code":"FJ"},{"name":"Finland","code":"FI"},{"name":"France","code":"FR"},{"name":"French Guiana","code":"GF"},{"name":"French Polynesia","code":"PF"},{"name":"French Southern Territories","code":"TF"},{"name":"Gabon","code":"GA"},{"name":"Gambia","code":"GM"},{"name":"Georgia","code":"GE"},{"name":"Germany","code":"DE"},{"name":"Ghana","code":"GH"},{"name":"Gibraltar","code":"GI"},{"name":"Greece","code":"GR"},{"name":"Greenland","code":"GL"},{"name":"Grenada","code":"GD"},{"name":"Guadeloupe","code":"GP"},{"name":"Guam","code":"GU"},{"name":"Guatemala","code":"GT"},{"name":"Guinea","code":"GN"},{"name":"Guinea-Bissau","code":"GW"},{"name":"Guyana","code":"GY"},{"name":"Haiti","code":"HT"},{"name":"Heard Island and Mcdonald Islands","code":"HM"},{"name":"Holy See (Vatican City State)","code":"VA"},{"name":"Honduras","code":"HN"},{"name":"Hong Kong","code":"HK"},{"name":"Hungary","code":"HU"},{"name":"Iceland","code":"IS"},{"name":"India","code":"IN"},{"name":"Indonesia","code":"ID"},{"name":"Iran, Islamic Republic of","code":"IR"},{"name":"Iraq","code":"IQ"},{"name":"Ireland","code":"IE"},{"name":"Israel","code":"IL"},{"name":"Italy","code":"IT"},{"name":"Jamaica","code":"JM"},{"name":"Japan","code":"JP"},{"name":"Jordan","code":"JO"},{"name":"Kazakhstan","code":"KZ"},{"name":"Kenya","code":"KE"},{"name":"Kiribati","code":"KI"},{"name":"Korea, Democratic People's Republic of","code":"KP"},{"name":"Korea, Republic of","code":"KR"},{"name":"Kuwait","code":"KW"},{"name":"Kyrgyzstan","code":"KG"},{"name":"Lao People's Democratic Republic","code":"LA"},{"name":"Latvia","code":"LV"},{"name":"Lebanon","code":"LB"},{"name":"Lesotho","code":"LS"},{"name":"Liberia","code":"LR"},{"name":"Libyan Arab Jamahiriya","code":"LY"},{"name":"Liechtenstein","code":"LI"},{"name":"Lithuania","code":"LT"},{"name":"Luxembourg","code":"LU"},{"name":"Macao","code":"MO"},{"name":"Macedonia, the Former Yugoslav Republic of","code":"MK"},{"name":"Madagascar","code":"MG"},{"name":"Malawi","code":"MW"},{"name":"Malaysia","code":"MY"},{"name":"Maldives","code":"MV"},{"name":"Mali","code":"ML"},{"name":"Malta","code":"MT"},{"name":"Marshall Islands","code":"MH"},{"name":"Martinique","code":"MQ"},{"name":"Mauritania","code":"MR"},{"name":"Mauritius","code":"MU"},{"name":"Mayotte","code":"YT"},{"name":"Mexico","code":"MX"},{"name":"Micronesia, Federated States of","code":"FM"},{"name":"Moldova, Republic of","code":"MD"},{"name":"Monaco","code":"MC"},{"name":"Mongolia","code":"MN"},{"name":"Montserrat","code":"MS"},{"name":"Morocco","code":"MA"},{"name":"Mozambique","code":"MZ"},{"name":"Myanmar","code":"MM"},{"name":"Namibia","code":"NA"},{"name":"Nauru","code":"NR"},{"name":"Nepal","code":"NP"},{"name":"Netherlands","code":"NL"},{"name":"New Caledonia","code":"NC"},{"name":"New Zealand","code":"NZ"},{"name":"Nicaragua","code":"NI"},{"name":"Niger","code":"NE"},{"name":"Nigeria","code":"NG"},{"name":"Niue","code":"NU"},{"name":"Norfolk Island","code":"NF"},{"name":"Northern Mariana Islands","code":"MP"},{"name":"Norway","code":"NO"},{"name":"Oman","code":"OM"},{"name":"Pakistan","code":"PK"},{"name":"Palau","code":"PW"},{"name":"Palestinian Territory, Occupied","code":"PS"},{"name":"Panama","code":"PA"},{"name":"Papua New Guinea","code":"PG"},{"name":"Paraguay","code":"PY"},{"name":"Peru","code":"PE"},{"name":"Philippines","code":"PH"},{"name":"Pitcairn","code":"PN"},{"name":"Poland","code":"PL"},{"name":"Portugal","code":"PT"},{"name":"Puerto Rico","code":"PR"},{"name":"Qatar","code":"QA"},{"name":"Reunion","code":"RE"},{"name":"Romania","code":"RO"},{"name":"Russian Federation","code":"RU"},{"name":"Rwanda","code":"RW"},{"name":"Saint Helena","code":"SH"},{"name":"Saint Kitts and Nevis","code":"KN"},{"name":"Saint Lucia","code":"LC"},{"name":"Saint Pierre and Miquelon","code":"PM"},{"name":"Saint Vincent and the Grenadines","code":"VC"},{"name":"Samoa","code":"WS"},{"name":"San Marino","code":"SM"},{"name":"Sao Tome and Principe","code":"ST"},{"name":"Saudi Arabia","code":"SA"},{"name":"Senegal","code":"SN"},{"name":"Seychelles","code":"SC"},{"name":"Sierra Leone","code":"SL"},{"name":"Singapore","code":"SG"},{"name":"Slovakia","code":"SK"},{"name":"Slovenia","code":"SI"},{"name":"Solomon Islands","code":"SB"},{"name":"Somalia","code":"SO"},{"name":"South Africa","code":"ZA"},{"name":"South Georgia and the South Sandwich Islands","code":"GS"},{"name":"Spain","code":"ES"},{"name":"Sri Lanka","code":"LK"},{"name":"Sudan","code":"SD"},{"name":"Suriname","code":"SR"},{"name":"Svalbard and Jan Mayen","code":"SJ"},{"name":"Swaziland","code":"SZ"},{"name":"Sweden","code":"SE"},{"name":"Switzerland","code":"CH"},{"name":"Syrian Arab Republic","code":"SY"},{"name":"Taiwan","code":"TW"},{"name":"Tajikistan","code":"TJ"},{"name":"Tanzania, United Republic of","code":"TZ"},{"name":"Thailand","code":"TH"},{"name":"Timor-Leste","code":"TL"},{"name":"Togo","code":"TG"},{"name":"Tokelau","code":"TK"},{"name":"Tonga","code":"TO"},{"name":"Trinidad and Tobago","code":"TT"},{"name":"Tunisia","code":"TN"},{"name":"Turkey","code":"TR"},{"name":"Turkmenistan","code":"TM"},{"name":"Turks and Caicos Islands","code":"TC"},{"name":"Tuvalu","code":"TV"},{"name":"Uganda","code":"UG"},{"name":"Ukraine","code":"UA"},{"name":"United Arab Emirates","code":"AE"},{"name":"United Kingdom","code":"GB"},{"name":"United States of America","code":"US"},{"name":"United States Minor Outlying Islands","code":"UM"},{"name":"Uruguay","code":"UY"},{"name":"Uzbekistan","code":"UZ"},{"name":"Vanuatu","code":"VU"},{"name":"Venezuela","code":"VE"},{"name":"Viet Nam","code":"VN"},{"name":"Virgin Islands, British","code":"VG"},{"name":"Virgin Islands, U.S.","code":"VI"},{"name":"Wallis and Futuna","code":"WF"},{"name":"Western Sahara","code":"EH"},{"name":"Yemen","code":"YE"},{"name":"Zambia","code":"ZM"},{"name":"Zimbabwe","code":"ZW"},{"name":"Åland Islands","code":"AX"},{"name":"Bonaire, Sint Eustatius and Saba","code":"BQ"},{"name":"Curaçao","code":"CW"},{"name":"Guernsey","code":"GG"},{"name":"Isle of Man","code":"IM"},{"name":"Jersey","code":"JE"},{"name":"Montenegro","code":"ME"},{"name":"Saint Barthélemy","code":"BL"},{"name":"Saint Martin (French part)","code":"MF"},{"name":"Serbia","code":"RS"},{"name":"Sint Maarten (Dutch part)","code":"SX"},{"name":"South Sudan","code":"SS"},{"name":"Kosovo","code":"XK"}],
+
+
+  "DISCIPLINES" : [{"alias":"xc","id":1,"name":"Cross Country (XC)","icon":"XC"},{"alias":"downhill","id":2,"name":"Downhill","icon":"string"},{"alias":"enduro","id":3,"name":"Enduro","icon":"string"},{"alias":"road","id":4,"name":"Road","icon":"string"},{"alias":"track","id":5,"name":"Track","icon":"string"},{"alias":"cyclocross","id":6,"name":"Cyclocross","icon":"string"},{"alias":"bmx","id":7,"name":"BMX","icon":"string"},{"alias":"all_mountain","id":8,"name":"All-mountain","icon":"string"},{"alias":"dirt","id":9,"name":"Dirt","icon":"string"},{"alias":"trial","id":10,"name":"Trial","icon":"string"},{"alias":"freeride","id":11,"name":"Freeride","icon":"string"}],
+
+
+  "MENU": {
+    "MainPage": "Home",
+    "ProfilePage": "My profile",
+    "PlacesPage": "Places",
+    "BuddiesTabsPage": "Friends",
+    "EventsPage": "Events",
+    "NotificationsPage": "Notifications",
+    "AccountPage": "My account"
+  },
+
+  "HOME_PAGE":{
+    "LIST_TITLE": "Geolocation search settings",
+    "KM_TITLE": "Maximum distance",
+    "FRIENDS_FILTER" : "Friends only",
+    "MODE" : "Share my location",
+    "TITLE" : "Riding is better with friends&nbsp;! <br>Hit the search <ion-icon color=\"brand\" name=\"search\"></ion-icon> button to see who's nearby !",
+    "NO_RESULT": "There isn't anybody in this search perimeter",
+    "RESULT_TITLE": "Results"
+  },
+
+  "ACCOUNT_PAGE":{
+    "PWD_BTN": "Change password",
+    "MAIL_BTN": "Change email address",
+    "EMAIL_VERIFY": "After changing your email, you must verify it! Check you mailbox!"
+  },
+
+  "ACCOUNT_EDIT_PAGE":{
+    "CURR_PWD": "Current Password",
+    "NEW_PWD": "New Password",
+    "CONF_PWD": "Confirm Password"
+  },
+
+  "PROFILE_EDIT_PAGE":{
+    "NAME": "Name",
+    "CITY": "City",
+    "COUNTRY": "Countrie",
+    "AGE": "Age",
+    "SPORTS": "Sports",
+    "LEVEL": "Level"
+  },
+
+  "PLACES_EDIT_PAGE":{
+    "LOCATION": "Location",
+    "COVER": "Cover photo"
+  },
+
+  "BUDDIES_PAGE":{
+    "TAB_1": "Friends",
+    "TAB_2": "Search",
+    "TITLE": "Friends",
+    "BODY": "The more the better! Tell your friends about Let's Ride",
+    "INVITES_BTN": "Tell your friends about Let's Ride",
+    "CARD_HEAD": "Find friends then ride!",
+    "CARD_CONTENT": "Let's Ride is here to help you ride with friends in no time! So use the search tab and find people to ride with!"
+  },
+
+  "SEARCH_PAGE":{
+    "PLACEHOLDER": "Find riders",
+    "FILTER_TITLE": "Filters"
+  },
+
+  "EVENTS_PAGE":{
+    "CARD_HEAD": "You have no current event !",
+    "CARD_CONTENT": "When adding events, your friends will automatically be notified about it. They will see it in their notifications !",
+    "ALERT_TITLE": "Deleting !",
+    "ALERT_MSG": "You are going to permanently delete this event !"
+  },
+
+  "EVENTS_EDIT_PAGE":{
+    "WHEN": "Date",
+    "PLACE": "Place",
+    "WHAT": "Sport"
+  },
+
+  "NOTIFICATIONS_PAGE":{
+    "SEG_1": {
+      "TITLE": "EVENTS",
+      "HEADING": "COMING UP",
+      "GOING": "Going",
+      "IGNORE": "Ignore",
+      "NO_RESULT": "There is no events notifications"
+    },
+    "SEG_2": {
+      "TITLE": "FRIENDS",
+      "HEADING": "PENDING",
+      "ACCEPT": "Accept",
+      "NO_RESULT": "There is no friend request pending",
+      "HEADING_2": "Accepted"
+    }
+  },
+
+  "MAP_PAGE": {
+    "SEARCH_PLACEHOLDER": "search for location",
+    "EVENT_HEAD": "Event details",
+    "EVENT_HEAD": "They are going to ..."
+  },
+
+  "CAPTURE_PROVIDER": {
+    "ACTION_SHEET":{
+      "TITLE": "Select Image Source",
+      "BUTTON_GALLERY": "Select from library",
+      "BUTTON_CAM": "Use Camera"
+    }
+  }
+
 
 }

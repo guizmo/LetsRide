@@ -6,7 +6,7 @@
       </button>
     </ion-buttons>
 
-    <ion-title>Account</ion-title>
+    <ion-title>{{ 'MENU.AccountPage' | translate }}</ion-title>
 
   </ion-navbar>
 </ion-header>
@@ -23,15 +23,15 @@
         <h4 padding text-center *ngIf="currentUser">{{currentUser.email}}</h4>
         <div padding *ngIf="providerId == 'password'">
           <button ion-button icon-left block color="primary" (click)="presentAccountModal('password')">
-            <ion-icon name="key"></ion-icon>  Change Password
+            <ion-icon name="key"></ion-icon>  {{ 'ACCOUNT_PAGE.PWD_BTN' | translate }}
           </button>
 
           <button ion-button icon-left block color="secondary" (click)="presentAccountModal('email')">
-            <ion-icon name="mail-open"></ion-icon>  Change Email Address
+            <ion-icon name="mail-open"></ion-icon>  {{ 'ACCOUNT_PAGE.MAIL_BTN' | translate }}
           </button>
         </div>
         <ion-item *ngIf="!emailVerified" text-center color="danger" text-wrap no-padding >
-          <p padding-left padding-right>After changing your email, you must verify it! Check you mailbox!</p>
+          <p padding-left padding-right>{{ 'ACCOUNT_PAGE.EMAIL_VERIFY' | translate }}</p>
         </ion-item>
 
 

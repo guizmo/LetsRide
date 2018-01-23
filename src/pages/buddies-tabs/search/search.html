@@ -6,9 +6,10 @@
     <ion-searchbar
       (ionInput)="applySearchFilter($event)"
       [showCancelButton]=true
+      cancelButtonText="{{ 'CANCEL_BUTTON' | translate }}"
       (ionCancel)="applySearchFilter()"
       [debounce]="300"
-      placeholder="Find riders"
+      placeholder="{{ 'SEARCH_PAGE.PLACEHOLDER' | translate }}"
       #searchInput>
     </ion-searchbar>
     <ion-buttons end >
@@ -68,7 +69,7 @@
           <ion-img [src]="person.avatar"></ion-img>
         </ion-avatar>
         <h2>{{person.settings.displayName}}</h2>
-        <h3 *ngIf="person.settings.country">{{person.settings.country}}</h3>
+        <h3 *ngIf="person.settings.country">{{person.settings.countryName}}</h3>
         <ng-container item-end *ngIf="!person.iconName">
           <button
             *ngIf="!person.buddies && !person.requestSent || person.buddies && !person.buddies[currentUser.uid]"

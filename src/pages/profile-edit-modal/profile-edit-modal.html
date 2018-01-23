@@ -3,15 +3,15 @@
     <ion-buttons start>
       <button ion-button icon-left (click)="dismiss()">
         <ion-icon name="arrow-back"></ion-icon>
-        Cancel
+        {{ 'CANCEL_BUTTON' | translate }}
       </button>
     </ion-buttons>
 
-    <ion-title>Profile</ion-title>
+    <ion-title>{{ 'MENU.ProfilePage' | translate }}</ion-title>
 
     <ion-buttons end >
       <button ion-button (click)="editProfileFormSubmit()" [disabled]="!editProfileForm.valid" >
-        Save
+        {{ 'SAVE_BUTTON' | translate }}
       </button>
     </ion-buttons>
 
@@ -26,32 +26,39 @@
   <ion-list>
     <!-- DISPLAYNAME -->
     <ion-item>
-      <ion-label>Name</ion-label>
+      <ion-label>{{ 'PROFILE_EDIT_PAGE.NAME' | translate }}</ion-label>
       <ion-input type="text" formControlName="displayName" name="displayName"></ion-input>
     </ion-item>
 
     <!-- CITY -->
     <ion-item >
-      <ion-label>City</ion-label>
+      <ion-label>{{ 'PROFILE_EDIT_PAGE.CITY' | translate }}</ion-label>
       <ion-input type="text" formControlName="city" name="city"></ion-input>
     </ion-item>
 
     <!-- COUNTRIE -->
     <ion-item>
-      <ion-label>Countrie</ion-label>
+      <ion-label>{{ 'PROFILE_EDIT_PAGE.COUNTRY' | translate }}</ion-label>
       <ion-select
         formControlName="country"
         name="country"
-        okText="Okay"
-        cancelText="Dismiss"
+        okText="{{'DONE_BUTTON' | translate}}"
+        cancelText="{{'CANCEL_BUTTON' | translate}}"
         >
-        <ion-option *ngFor="let country of countries" [value]="code">{{country.name}}</ion-option>
+        <ion-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-option>
       </ion-select>
     </ion-item>
     <!-- AGE -->
     <ion-item>
-      <ion-label>Age</ion-label>
-      <ion-datetime displayFormat="DD/MM/YYYY" pickerFormat="DD MM YYYY" formControlName="age" name="age"></ion-datetime>
+      <ion-label>{{ 'PROFILE_EDIT_PAGE.AGE' | translate }}</ion-label>
+      <ion-datetime
+        displayFormat="DD/MM/YYYY"
+        pickerFormat="DD MM YYYY"
+        formControlName="age"
+        name="age"
+        cancelText="{{'CANCEL_BUTTON' | translate}}"
+        doneText="{{'DONE_BUTTON' | translate}}">
+      </ion-datetime>
     </ion-item>
   </ion-list>
   <ion-list radio-group formControlName="gender" name="gender">
@@ -77,13 +84,13 @@
 
 
     <ion-item>
-      <ion-label>Sports</ion-label>
+      <ion-label>{{ 'PROFILE_EDIT_PAGE.SPORTS' | translate }}</ion-label>
       <ion-select
         formControlName="disciplines"
         name="disciplines"
         multiple="true"
-        okText="Okay"
-        cancelText="Dismiss"
+        okText="{{'DONE_BUTTON' | translate}}"
+        cancelText="{{'CANCEL_BUTTON' | translate}}"
         (ionChange)="onSelectChange($event)"
         >
         <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
@@ -92,7 +99,7 @@
 
     <!-- LEVEL -->
     <ion-item>
-      <ion-label>Level</ion-label>
+      <ion-label>{{ 'PROFILE_EDIT_PAGE.LEVEL' | translate }}</ion-label>
       <ion-range min="1" max="5" step="1" snaps="true" formControlName="level" name="level">
         <ion-icon range-left small ios="stats-outline" md="md-stats"></ion-icon>
         <ion-icon range-right name="stats"></ion-icon>

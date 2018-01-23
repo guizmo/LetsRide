@@ -5,13 +5,13 @@
       <ion-buttons start>
         <button ion-button icon-left (click)="dismiss()">
           <ion-icon name="arrow-back"></ion-icon>
-          Cancel
+          {{ 'CANCEL_BUTTON' | translate }}
         </button>
       </ion-buttons>
 
       <ion-buttons end>
         <button ion-button icon-right (click)="onSave()" [disabled]="!eventForm.valid" >
-          Save
+          {{ 'SAVE_BUTTON' | translate }}
           <ion-icon name="ios-calendar-outline"></ion-icon>
         </button>
       </ion-buttons>
@@ -21,24 +21,34 @@
       <ion-list>
         <!-- NAME -->
         <ion-item>
-          <ion-label>Name</ion-label>
+          <ion-label>{{ 'NAME' | translate }}</ion-label>
           <ion-input type="text" formControlName="name" name="name"></ion-input>
         </ion-item>
 
         <!-- TIME -->
         <ion-item>
-          <ion-label>When</ion-label>
-          <ion-datetime displayFormat="DD/MMM/YY HH:mm" min="{{currentYear}}" max="{{maxYear}}" pickerFormat="D MMM YYYY H mm" formControlName="time" name="time"></ion-datetime>
+          <ion-label>{{ 'EVENTS_EDIT_PAGE.WHEN' | translate }}</ion-label>
+          <ion-datetime
+            displayFormat="DD/MMM/YY HH:mm"
+            min="{{currentYear}}"
+            max="{{maxYear}}"
+            pickerFormat="D MMM YYYY H mm"
+            formControlName="time"
+            name="time"
+            monthShortNames="{{ 'DATETIME.monthShortNames' | translate }}"
+            cancelText="{{'CANCEL_BUTTON' | translate}}"
+            doneText="{{'DONE_BUTTON' | translate}}">
+          </ion-datetime>
         </ion-item>
 
         <!-- WHERE -->
         <ion-item>
-          <ion-label>Place</ion-label>
+          <ion-label>{{ 'EVENTS_EDIT_PAGE.PLACE' | translate }}</ion-label>
           <button *ngIf="!placeSelectorState" color="brand" ion-button item-end (click)="placeSelector('create')" >
-            Create new
+            {{ 'CREATE_BUTTON' | translate }}
           </button>
           <button *ngIf="placeSelectorState == 'create'" color="danger" ion-button item-end (click)="placeSelector(null)" >
-            Cancel
+            {{ 'CANCEL_BUTTON' | translate }}
           </button>
 
           <ion-input *ngIf="placeSelectorState" type="text" formControlName="where" name="where"></ion-input>
@@ -46,8 +56,8 @@
             *ngIf="!placeSelectorState"
             formControlName="place_id"
             name="place_id"
-            okText="OK"
-            cancelText="Dismiss"
+            okText="{{'DONE_BUTTON' | translate}}"
+            cancelText="{{'CANCEL_BUTTON' | translate}}"
             >
             <ion-option *ngFor="let place of places" [value]="place.key">{{place.name}}</ion-option>
           </ion-select>
@@ -55,14 +65,14 @@
 
         <!-- DISCIPLINE -->
         <ion-item>
-          <ion-label>What</ion-label>
+          <ion-label>{{ 'EVENTS_EDIT_PAGE.WHAT' | translate }}</ion-label>
           <ion-select
             formControlName="disciplines"
             name="disciplines"
-            okText="Okay"
-            cancelText="Dismiss"
+            okText="{{'DONE_BUTTON' | translate}}"
+            cancelText="{{'CANCEL_BUTTON' | translate}}"
             >
-            <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
+            <ion-option *ngFor="let discipline of disciplines" [value]="discipline.alias">{{discipline.name}}</ion-option>
           </ion-select>
         </ion-item>
 

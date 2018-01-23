@@ -136,6 +136,12 @@ export class NotificationsPage {
       event.participates = null;
       let eventTime = moment(event.time);
 
+      if(event.disciplines){
+        let discipline = this.buddiesProvider.getRidingStyle(event.disciplines);
+        event.disciplines = discipline.name;
+      }
+
+
       if (eventTime.diff(now) >= 0){
         if(event.participants && typeof(event.participants[this.currentUser.uid]) != 'undefined'){
           event.participates = event.participants[this.currentUser.uid];

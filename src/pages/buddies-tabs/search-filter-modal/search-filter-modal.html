@@ -3,15 +3,15 @@
   <ion-buttons start>
     <button ion-button icon-left (click)="dismiss()">
       <ion-icon name="arrow-back"></ion-icon>
-      Cancel
+      {{ 'CANCEL_BUTTON' | translate }}
     </button>
   </ion-buttons>
 
-    <ion-title>Filters</ion-title>
+    <ion-title>{{ 'SEARCH_PAGE.FILTER_TITLE' | translate }}</ion-title>
 
   <ion-buttons end >
     <button ion-button (click)="searchFormSubmit()"  >
-      Save
+      {{ 'SAVE_BUTTON' | translate }}
     </button>
   </ion-buttons>
 </ion-navbar>
@@ -25,17 +25,17 @@
 
       <!-- CITY -->
       <ion-item >
-        <ion-label>City</ion-label>
+        <ion-label>{{ 'PROFILE_EDIT_PAGE.CITY' | translate }}</ion-label>
         <ion-input type="text" formControlName="city" name="city"></ion-input>
       </ion-item>
 
       <!-- COUNTRIE -->
       <ion-item>
-        <ion-label>Countrie</ion-label>
+        <ion-label>{{ 'PROFILE_EDIT_PAGE.COUNTRY' | translate }}</ion-label>
         <ion-select
           formControlName="country"
           name="country">
-          <ion-option *ngFor="let country of countries" [value]="code">{{country.name}}</ion-option>
+          <ion-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-option>
         </ion-select>
       </ion-item>
     </ion-list>
@@ -63,7 +63,7 @@
 
 
       <ion-item>
-        <ion-label>Sports</ion-label>
+        <ion-label>{{ 'PROFILE_EDIT_PAGE.SPORTS' | translate }}</ion-label>
         <ion-select
           formControlName="disciplines"
           name="disciplines"
@@ -77,7 +77,7 @@
 
       <!-- LEVEL -->
       <ion-item>
-        <ion-label>Level</ion-label>
+        <ion-label>{{ 'PROFILE_EDIT_PAGE.LEVEL' | translate }}</ion-label>
         <ion-range min="1" max="5" step="1" snaps="true" formControlName="level" name="level">
           <ion-icon range-left small ios="stats-outline" md="md-stats"></ion-icon>
           <ion-icon range-right name="stats"></ion-icon>

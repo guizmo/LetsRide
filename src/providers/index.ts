@@ -1,7 +1,5 @@
 export { UserProvider } from './user-provider';
 export { Translate } from './translate';
-export { DisciplinesProvider } from './disciplines';
-export { CountriesProvider } from './countries';
 export { LoadingProvider } from './loading';
 export { AlertProvider } from './alert';
 export { PlacesProvider } from './places';

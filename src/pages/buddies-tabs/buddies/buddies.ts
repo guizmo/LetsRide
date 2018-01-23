@@ -4,10 +4,10 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import 'rxjs/add/observable/forkJoin';
 import {Observable} from 'rxjs/Observable';
 
-import { UserProvider, BuddiesProvider, FacebookProvider } from '../../../providers';
+import { UserProvider, BuddiesProvider, FacebookProvider, PlacesProvider } from '../../../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
+import { AngularFireDatabase } from 'angularfire2/database';
 
 
 @IonicPage()
@@ -33,6 +33,7 @@ export class BuddiesPage {
     public navParams: NavParams,
     public afdb: AngularFireDatabase,
     private buddiesProvider: BuddiesProvider,
+    public placesProvider: PlacesProvider,
     private afAuth: AngularFireAuth,
     private userProvider: UserProvider,
     private fb: FacebookProvider
@@ -100,6 +101,7 @@ export class BuddiesPage {
       }
 
       buddies.map((_buddy) => {
+        _buddy.settings.countryName = (_buddy.settings && _buddy.settings.country) ? this.placesProvider.getCountry(_buddy.settings.country) : '';
         _buddy.isNewBud = 'b_false';
         if(notif_user_id && _buddy.aFuid == notif_user_id){
           _buddy.isNewBud = 'a_true';
@@ -126,7 +128,7 @@ export class BuddiesPage {
   }
 
   removeFriend(index){
-    let { aFuid, displayName } = this.buddies[index];
+    let { aFuid } = this.buddies[index];
 
     //remove reference to request in currentUser
     this.afdb.object(`/users/${this.userData.aFuid}/buddies/${aFuid}`).remove()

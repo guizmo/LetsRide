@@ -8,8 +8,8 @@ import { TranslateModule } from '@ngx-translate/core';
     LoginPage,
   ],
   imports: [
-    TranslateModule.forChild(),
     IonicPageModule.forChild(LoginPage),
+    TranslateModule.forChild(),
   ],
   exports: [
     LoginPage

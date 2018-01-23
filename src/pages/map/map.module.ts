@@ -3,6 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { MapPage } from './map';
 import { MomentModule } from 'angular2-moment';
 import { AgmCoreModule } from '@agm/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @NgModule({
@@ -12,6 +13,7 @@ import { AgmCoreModule } from '@agm/core';
   imports: [
     IonicPageModule.forChild(MapPage),
     AgmCoreModule,
+    TranslateModule.forChild(),
     MomentModule
   ],
   exports: [

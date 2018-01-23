@@ -1,9 +1,8 @@
-import { Component, ViewChild, NgZone } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform, MenuController, Events, App} from 'ionic-angular';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { Dialogs } from '@ionic-native/dialogs';
 import { AppVersion } from '@ionic-native/app-version';
 
 import { Translate, NotificationsProvider, LocationTrackerProvider, HotUpdateProvider } from '../providers';
@@ -35,10 +34,10 @@ export class LetsRide {
   appliVersion = null;
   appliName = null;
   fetchByIdSubscription;
+  translated:any = {};
 
   constructor(
     private translate: Translate,
-    private dialogs: Dialogs,
     public platform: Platform,
     public statusBar: StatusBar,
     public splashScreen: SplashScreen,
@@ -53,7 +52,12 @@ export class LetsRide {
   ) {
     this.translate.init();
     this.handleEvents();
-    afAuth.authState.subscribe((user) => {
+    this.translate.getString(['MENU', 'LOGIN_TITLE']).subscribe( values => {
+      this.translated.login = values.LOGIN_TITLE;
+      this.translated.accountPage = values.MENU.AccountPage;
+      this.pages.map(page => page.title = values.MENU[page.component])
+    });
+    this.afAuth.authState.subscribe((user) => {
       if (!user) {
         this.nav.setRoot('LoginPage');
       } else {
@@ -74,7 +78,7 @@ export class LetsRide {
         if(this.hotUpdate.loader){
           this.hotUpdate.loader.dismiss();
         }
-        this.hotUpdate.init();
+        //this.hotUpdate.init();
         this.statusBar.styleDefault();
         this.splashScreen.hide();
         this.notifications.init(this.nav);
@@ -103,6 +107,7 @@ export class LetsRide {
 
   handleEvents() {
     this.events.subscribe('user:logout', () => {
+      this.locationTracker.stopTracking();
       this.fetchByIdSubscription.unsubscribe();
     });
 

@@ -2,15 +2,11 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 
-import { DisciplinesProvider, CountriesProvider } from '../../providers';
+import { TranslateService } from '@ngx-translate/core';
+
 import { Discipline, Country } from '../../models';
 
-/**
- * Generated class for the ProfileEditModalPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+
 @IonicPage()
 @Component({
   selector: 'page-profile-edit-modal',
@@ -30,9 +26,13 @@ export class ProfileEditModalPage {
     public navParams: NavParams,
     public viewCtrl: ViewController,
     private formBuilder: FormBuilder,
-    public disciplinesProvider: DisciplinesProvider,
-    public countriesProvider: CountriesProvider
+    public translateService: TranslateService,
   ) {
+    this.translateService.get(['COUNTRIES', 'DISCIPLINES']).subscribe((values) => {
+      this.countries = values.COUNTRIES;
+      this.disciplines = values.DISCIPLINES;
+    })
+
 
     const emptyValues = {
       disciplines: '',
@@ -63,14 +63,10 @@ export class ProfileEditModalPage {
       displayName: [displayName, Validators.compose([Validators.required])]
     }
     console.log(controls);
-    this.editProfileForm = formBuilder.group(controls);
+    this.editProfileForm = this.formBuilder.group(controls);
 
   }
 
-  ngOnInit() {
-    this.disciplinesProvider.findAll().subscribe( data => this.disciplines = data );
-    this.countriesProvider.findAll().subscribe( data => this.countries = data );
-  }
 
   dismiss() {
     this.viewCtrl.dismiss('cancel');

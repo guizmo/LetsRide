@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, ModalController, NavParams, ItemSliding, Item } from 'ionic-angular';
-
-import { NativePageTransitions } from '@ionic-native/native-page-transitions';
+import { IonicPage, NavController, ModalController, ItemSliding, Item } from 'ionic-angular';
 
 import { Subscription } from 'rxjs/Subscription';
 
@@ -39,7 +37,6 @@ export class MainPage {
     public modalCtrl: ModalController,
     private userProvider: UserProvider,
     public afAuth: AngularFireAuth,
-    private nativePageTransitions: NativePageTransitions,
     public locationTracker: LocationTrackerProvider,
     private notifications: NotificationsProvider,
   ) {

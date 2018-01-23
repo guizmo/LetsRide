@@ -45,7 +45,7 @@
         color="primary"
         no-margin
       >
-        <ion-icon item-start large name="md-log-in"></ion-icon> Login
+        <ion-icon item-start large name="md-log-in"></ion-icon> {{translated.login}}
       </ion-item>
       <ion-item
         *ngIf="currentUser && currentUser.providerId == 'password'"
@@ -57,7 +57,7 @@
         color="primary"
         no-margin
       >
-        <ion-icon item-start large name="md-log-in"></ion-icon> AccountPage
+        <ion-icon item-start large name="md-log-in"></ion-icon> {{translated.accountPage}}
       </ion-item>
       <gb-logout-button *ngIf="currentUser && currentUser.providerId != 'password'" nav-clear ></gb-logout-button>
   </ion-footer>

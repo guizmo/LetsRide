@@ -39,8 +39,6 @@ import { LetsRide } from './app.component';
 import {
   UserProvider,
   Translate,
-  DisciplinesProvider,
-  CountriesProvider,
   LoadingProvider,
   AlertProvider,
   PlacesProvider,
@@ -125,7 +123,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
   ],
   providers: [
     UserProvider,
-    DisciplinesProvider,
     Translate,
     StatusBar,
     SplashScreen,
@@ -134,7 +131,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     GooglePlus,
     Dialogs,
     SpinnerDialog,
-    CountriesProvider,
     LoadingProvider,
     AlertProvider,
     PlacesProvider,

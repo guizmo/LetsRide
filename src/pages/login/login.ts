@@ -56,7 +56,7 @@ export class LoginPage {
       email: ['', Validators.compose([Validators.required, EmailValidator.isValid])]
     });
 
-    this.loginErrorString = this.translate.getString('LOGIN_ERROR');
+    this.translate.getString('LOGIN_ERROR').subscribe( value => this.loginErrorString = value );
   }
 
   slideTo(index) {
@@ -126,11 +126,12 @@ export class LoginPage {
         const controlErrors: ValidationErrors = this.signInForm.get(key).errors;
         if (controlErrors != null) {
           Object.keys(controlErrors).forEach(keyError => {
-            errType = '';
             errType = 'field/'+keyError;
           });
         }
+        console.log(errType);
       });
+
       this.alertProvider.showErrorMessage(errType);
       return
     }

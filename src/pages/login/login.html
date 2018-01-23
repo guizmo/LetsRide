@@ -16,15 +16,15 @@
           <ion-slide class="slide-1">
               <div class="block-bottom" block-grow padding-top padding-left padding-right>
                 <button ion-button icon-left block color="facebook" (click)="signInWithProvider('Facebook')">
-                  <ion-icon name="logo-facebook"></ion-icon>  Continue with Facebook
+                  <ion-icon name="logo-facebook"></ion-icon>  {{ 'FACEBOOK_LOGIN' | translate }}
                 </button>
 
                 <button ion-button icon-left block color="google" (click)="signInWithProvider('Google+')">
-                  <ion-icon name="logo-google"></ion-icon>  Continue with Google+
+                  <ion-icon name="logo-google"></ion-icon>  {{ 'GOOGLE_LOGIN' | translate }}
                 </button>
 
                 <button icon-left  ion-button block clear color="light" [navPush]="'SignupPage'">
-                  <ion-icon ios="ios-mail-open" color="light" md="md-mail-open" ></ion-icon> Signup with Email
+                  <ion-icon ios="ios-mail-open" color="light" md="md-mail-open" ></ion-icon> {{ 'EMAIL_LOGIN' | translate }}
                 </button>
 
               </div>
@@ -64,7 +64,7 @@
                   [class.invalid]="!resetPasswordForm.controls.email.valid && resetPasswordForm.controls.email.dirty"></ion-input>
               </ion-item>
               <ion-item class="error-message" *ngIf="!resetPasswordForm.controls.email.valid  && resetPasswordForm.controls.email.dirty">
-                <p>Please enter a valid email.</p>
+                <p>{{ 'VALID_EMAIL' | translate }}</p>
               </ion-item>
 
               <button margin-top ion-button block type="submit">
@@ -88,13 +88,13 @@
   <ion-toolbar no-border>
 
     <button *ngIf="currentIndex === 0" no-margin ion-button icon-right clear block color="light" (click)="slideTo(1)">
-      Have an account ? Login
+      {{ 'HAVE_MAIL_ACCOUNT' | translate }}
       <ion-icon name="log-in" ></ion-icon>
     </button>
 
 
     <button *ngIf="currentIndex !== 0" no-margin ion-button icon-left clear  color="light" (click)="slideTo(currentIndex-1)">
-      <ion-icon name="arrow-back" ></ion-icon> Cancel
+      <ion-icon name="arrow-back" ></ion-icon> {{ 'CANCEL_BUTTON' | translate }}
     </button>
 
   </ion-toolbar>

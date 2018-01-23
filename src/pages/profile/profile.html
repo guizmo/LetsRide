@@ -46,7 +46,7 @@
             <button block clear ion-button icon-left class="form-placeholder" *ngIf="!userData.settings.city && !userData.settings.country"  (click)="presentProfileModal()">Add your location</button>
             {{userData.settings.city}}
             <ng-container *ngIf="userData.settings.city && userData.settings.country"> | </ng-container>
-            {{userData.settings.country}}
+            {{userData.settings.countryName}}
           </ion-item><!--userData -->
 
           <ion-item >

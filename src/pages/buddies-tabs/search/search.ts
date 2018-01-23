@@ -1,16 +1,14 @@
-import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Content, ModalController } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subject } from 'rxjs/Subject'
 
 import {
   UserProvider,
   NotificationsProvider,
   PeopleProvider,
-  DisciplinesProvider,
-  CountriesProvider,
-  StringManipulationProvider
+  StringManipulationProvider,
+  PlacesProvider
 } from '../../../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -44,12 +42,12 @@ export class SearchPage {
     public afdb: AngularFireDatabase,
     public afAuth: AngularFireAuth,
     public userProvider: UserProvider,
+    public placesProvider: PlacesProvider,
     public modalCtrl: ModalController,
     private notifications: NotificationsProvider,
     private peoplePvr: PeopleProvider,
     private strManip: StringManipulationProvider
   ) {
-    console.log(this);
     //this.filters = [{"value":["Cross Country (XC)", "Downhill", "Enduro", "Road", "All-mountain"],"alias":"disciplines"},{"value":"New Caledonia","alias":"country"},{"value":"Male","alias":"gender"},{"value":"Nouméa","alias":"city"},{"value":3,"alias":"level"}];
     this.fetchUserData();
   }
@@ -60,14 +58,11 @@ export class SearchPage {
     this.afAuth.authState.subscribe((user) => {
       if(user){
         this.getPeople();
-        console.log('this.userProvider.userData', this.userProvider.userData);
         this.userProvider.getUserData().subscribe((settings) => {
-          console.log('settings', settings);
           if(settings){
             //this.userLoaded = true;
             this.userData = settings;
             this.currentUser =  user.toJSON();
-            console.log(this);
           }
         });
       }
@@ -77,13 +72,13 @@ export class SearchPage {
 
 
   getPeople(){
-    console.log('getPeople');
     this.peoplePvr.getPeople()
       .subscribe(people => {
         if(people.length){
 
           people.map((person) => {
             person.avatarLoaded = false;
+            person.settings.countryName = (person.settings && person.settings.country) ? this.placesProvider.getCountry(person.settings.country) : '';
             if(person.buddies && person.buddies[this.currentUser.uid]){
               if(person.buddies[this.currentUser.uid].pending){
                 person.iconName = 'checkmark';
@@ -103,6 +98,7 @@ export class SearchPage {
               person.avatar = './assets/img/man.svg';
               person.avatarLoaded = true;
             }
+
           })
         }else{
 
@@ -193,7 +189,6 @@ export class SearchPage {
 
 
   applySearchFilter($event = null){
-    let filterArr = [];
     let q;
     //this.isSearching = true;
     if($event){

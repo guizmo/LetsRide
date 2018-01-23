@@ -1,20 +1,15 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, MenuController } from 'ionic-angular';
 
-import { Observable } from "rxjs/Rx";
+import { TranslateService } from '@ngx-translate/core';
 
 import { UserProvider, AlertProvider } from '../../providers';
-import { Profile } from '../../models/profile';
-import { DisciplinesProvider, NotificationsProvider, FileProvider } from '../../providers';
+import { NotificationsProvider, FileProvider, PlacesProvider } from '../../providers';
 
 import * as firebase from 'firebase/app';
 import * as moment  from 'moment';
-/**
- * Generated class for the ProfilePage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+
+
 @IonicPage()
 @Component({
   selector: 'page-profile',
@@ -37,20 +32,21 @@ export class ProfilePage {
     public userProvider: UserProvider,
     public modalCtrl: ModalController,
     public alertProvider: AlertProvider,
-    public disciplinesProvider: DisciplinesProvider,
+    public placesProvider: PlacesProvider,
     private notifications: NotificationsProvider,
     public menuCtrl: MenuController,
+    public translateService: TranslateService,
     private fileProvider: FileProvider
   ) {
     this.userAuth();
-    this.disciplinesProvider.findAll().subscribe(
-      data => this.disciplines = data
-    );
+    this.translateService.get(['DISCIPLINES']).subscribe((values) => {
+      this.disciplines = values.DISCIPLINES;
+    })
 
-    let _emailVerified = this.navParams.data.emailVerified;
-    if(_emailVerified !== undefined){
 
-      let {emailVerified, displayName, aFuid } = this.navParams.data;
+    if(this.navParams.data.emailVerified !== undefined){
+
+      let emailVerified = this.navParams.data.emailVerified;
       if(!emailVerified){
         this.userProvider.checkEmailIsVerified()
           .then((res) => {
@@ -64,7 +60,7 @@ export class ProfilePage {
       }
     }else{
       //not coming from SIGNUP page
-      console.log('not coming from SIGNUP page')
+      //console.log('not coming from SIGNUP page')
     }
 
   }
@@ -103,13 +99,13 @@ export class ProfilePage {
         let aFuid = this.currentUser.uid;
 
         let userData = {...this.currentUser.providerData[0], ...{'aFuid': aFuid, settings: profile } };
-        console.log('send user tags');
         let tags = profile;
         tags.user_id = aFuid;
         this.sendUserTags(tags);
         this.userProvider.updateUserData(userData).subscribe((data) => {
           //TODO
           //Handle errors
+          //console.log('updateUserData', data);
         });
       }
     });
@@ -117,7 +113,6 @@ export class ProfilePage {
   }
 
   imageHasLoaded(){
-    console.log('onload');
     this.profileImgLoaded = true;
   }
 
@@ -125,6 +120,7 @@ export class ProfilePage {
     this.userProvider.afAuth.authState.subscribe((_user: firebase.User) => {
       if (_user) {
         this.userProvider.getUserData().subscribe((data) => {
+          data.settings.countryName = (data.settings && data.settings.country) ? this.placesProvider.getCountry(data.settings.country) : '';
           this.userData = data;
           this.displayName = (data.settings && data.settings.displayName) ? data.settings.displayName : _user.displayName;
           if(data.profileImg && data.profileImg.url){
@@ -144,8 +140,8 @@ export class ProfilePage {
 
 
   sendUserTags(values: any) {
-    let { age, city, gender } = values;
-    let tags = { age, city, gender, user_name:values.displayName, user_level:values.level };
+    let { age, city, gender, displayName, level, country } = values;
+    let tags = { age, city, country, gender, user_name:displayName, user_level:level };
     for (let discipline of this.disciplines) {
       let _disciplines = (values.disciplines == '') ? [] : values.disciplines ;
       tags[discipline.alias] = _disciplines.filter( disciplineVal => disciplineVal == discipline.name )[0] || '';

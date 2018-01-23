@@ -1,14 +1,15 @@
-import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, ViewChildren, QueryList } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, AlertController, PopoverController, ItemSliding, Item } from 'ionic-angular';
 
-import { Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
-import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { MomentModule } from 'angular2-moment';
+
 import * as moment  from 'moment';
 
-import { UserProvider, NotificationsProvider, DisciplinesProvider, BuddiesProvider, PlacesProvider, AlertProvider} from '../../../providers';
+import { UserProvider, BuddiesProvider, PlacesProvider, NotificationsProvider} from '../../../providers';
 
 //https://forum.ionicframework.com/t/click-to-slide-open-ion-item-sliding-instead-of-swiping/54642/5
 //http://blog.ihsanberahim.com/2017/05/trigger-ionitemsliding-using-click-event.html
@@ -24,6 +25,7 @@ export class EventsPage {
 
   activeMenu = 'EventsPage';
   popover = null;
+  translatedStrings:any = {};
   public places: any = [];
   private activeItemSliding:boolean = false;
   private userData;
@@ -46,7 +48,6 @@ export class EventsPage {
   private showMapIsEnabled: string = null;
 
   constructor(
-    public disciplinesProvider: DisciplinesProvider,
     public navCtrl: NavController,
     public navParams: NavParams,
     private afdb: AngularFireDatabase,
@@ -57,14 +58,18 @@ export class EventsPage {
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
     private placesProvider: PlacesProvider,
-    private alertProvider: AlertProvider,
+    public translateService: TranslateService,
     private popoverCtrl: PopoverController
   ) {
-    moment.locale('en-gb');
+    moment.locale(this.translateService.currentLang);
 
-    this.disciplinesProvider.findAll().subscribe(
-      data => this.disciplines = data
-    );
+    this.translateService.get(['DISCIPLINES', 'EVENTS_PAGE', 'CANCEL_BUTTON', 'DELETE_BUTTON']).subscribe((values) => {
+      this.disciplines = values.DISCIPLINES;
+      this.translatedStrings = values.EVENTS_PAGE;
+      this.translatedStrings.CANCEL_BUTTON = values.CANCEL_BUTTON;
+      this.translatedStrings.DELETE_BUTTON = values.DELETE_BUTTON;
+    });
+
     this.afAuth.authState.subscribe((user) => {
       if(user){
         this.currentUser = user.toJSON();
@@ -83,10 +88,6 @@ export class EventsPage {
   ionViewWillUnload(){
     this.buddiesEventsSubscription.unsubscribe();
     this.buddiesSubcription.unsubscribe();
-  }
-
-  ionViewDidLoad() {
-    console.log(this);
   }
 
   presentPopover(event) {
@@ -115,7 +116,6 @@ export class EventsPage {
 
   presentMapModal(event, place){
     if(!event.displayName) event.displayName = this.userData.displayName;
-    let values = { event, place };
     this.mapModal = this.modalCtrl.create('ModalNavPage', { state: 'display_place_event',values: place, page: 'MapPage', event });
     this.mapModal.present();
     this.mapModal.onDidDismiss(data => {
@@ -129,7 +129,7 @@ export class EventsPage {
     this.buddiesProvider.getBuddies(this.currentUser.uid);
     this.buddiesEventsSubscription = this.buddiesProvider.buddiesEvents.subscribe((events) => {
       let _events = [];
-      let buddyEvents = Object.keys(events).filter((bud_key) => events[bud_key] ).map((bud_key) => {
+      Object.keys(events).filter((bud_key) => events[bud_key] ).map((bud_key) => {
         let bud_events = events[bud_key];
         let bud = this.buddies.filter((_bud) => _bud.aFuid === bud_key );
         bud = bud[0] || null;
@@ -147,8 +147,11 @@ export class EventsPage {
             let event = bud_events[key];
             let eventTime = moment(event.time);
             let style = 'default.png';
+
             if(event.disciplines){
-              style = this.getRidingStyle(event.disciplines)+'.jpg';
+              let discipline = this.buddiesProvider.getRidingStyle(event.disciplines);
+              event.disciplines = discipline.name;
+              style = discipline.image;
             }
             event.backgroundImage = `./assets/img/styles/${style}`;
             event.key = key;
@@ -186,7 +189,9 @@ export class EventsPage {
           }
           let style = 'default.png';
           if(event.disciplines){
-            style = this.getRidingStyle(event.disciplines)+'.jpg';
+            let discipline = this.buddiesProvider.getRidingStyle(event.disciplines);
+            event.disciplines = discipline.name;
+            style = discipline.image;
           }
           event.backgroundImage = `./assets/img/styles/${style}`;
           return event;
@@ -270,14 +275,14 @@ export class EventsPage {
     clickEvent.stopPropagation();
 
     let confirm = this.alertCtrl.create({
-      title: 'Deleting !',
-      message: 'You are going to permanently delete this event !',
+      title: this.translatedStrings.ALERT_TITLE,
+      message: this.translatedStrings.ALERT_MSG,
       buttons: [
         {
-          text: 'Cancel'
+          text: this.translatedStrings.CANCEL_BUTTON
         },
         {
-          text: 'Delete',
+          text: this.translatedStrings.DELETE_BUTTON,
           handler: () => {
             this.eventsRef.remove(key);
           }
@@ -343,7 +348,7 @@ export class EventsPage {
         },
         displayName: name
       };
-      console.log(data);
+
       let contents = {
         'en': message.contents.en,
         'fr': message.contents.fr
@@ -352,14 +357,14 @@ export class EventsPage {
         'en': message.headings.en,
         'fr': message.headings.fr
       }
-      console.log(message);
       this.notifications.sendMessage(this.oneSignalBuddiesId, data, contents, headings);
     }
   }
 
   getRidingStyle(value: string){
-    let discipline = this.disciplines.filter( disciplineVal => disciplineVal.name == value )[0];
-    return discipline.alias;
+    let discipline = this.disciplines.filter( disciplineVal => disciplineVal.name == value );
+    let alias = (discipline.length) ?  discipline[0].alias+'.jpg' : 'default.png';
+    return alias;
   }
 
   mergeEvents(eventsListing){

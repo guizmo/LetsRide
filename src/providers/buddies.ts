@@ -3,12 +3,14 @@ import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
+import { TranslateService } from '@ngx-translate/core';
 
 import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 
 @Injectable()
 export class BuddiesProvider {
 
+  public disciplines:ReadonlyArray<any>;
   public buddiesIdRef:AngularFireList<any[]>;
   public buddiesId:Observable<any[]>;
   public buddies = new BehaviorSubject<any>([]) ;
@@ -19,8 +21,12 @@ export class BuddiesProvider {
   public eventsParticipations:Observable<any>;
 
   constructor(
+    public translateService: TranslateService,
     public afdb: AngularFireDatabase,
   ) {
+    this.translateService.get(['DISCIPLINES']).subscribe((values) => {
+      this.disciplines = values.DISCIPLINES;
+    });
   }
 
   setBuddiesList(uid:string){
@@ -167,6 +173,20 @@ export class BuddiesProvider {
 
   getParticipant(uid: string){
     return this.afdb.object(`/users/${uid}`).valueChanges();
+  }
+
+  getRidingStyle(alias: string){
+    let discipline = {
+      image: 'default.png'
+    };
+    if(alias != ''){
+      let filtered = this.disciplines.filter( disciplineVal => disciplineVal.alias == alias );
+      if(filtered.length){
+        discipline = filtered[0];
+        discipline.image = filtered[0].alias+'.jpg';
+      }
+    }
+    return discipline;
   }
 
 }

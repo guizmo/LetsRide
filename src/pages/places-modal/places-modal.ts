@@ -1,10 +1,11 @@
 import { ModalNavPage } from '../modal-nav/modal-nav';
 
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 
-import { DisciplinesProvider, CountriesProvider, CaptureProvider } from '../../providers';
+import { CaptureProvider } from '../../providers';
 import { Discipline, Country, Place } from '../../models';
 
 
@@ -31,12 +32,15 @@ export class PlacesModalPage {
   constructor(
     public navCtrl: NavController,
     private formBuilder: FormBuilder,
-    public disciplinesProvider: DisciplinesProvider,
-    public countriesProvider: CountriesProvider,
     public modalNavPage: ModalNavPage,
     public navParams: NavParams,
+    public translateService: TranslateService,
     private capture: CaptureProvider
   ) {
+    this.translateService.get(['COUNTRIES', 'DISCIPLINES']).subscribe((values) => {
+      this.countries = values.COUNTRIES;
+      this.disciplines = values.DISCIPLINES;
+    })
 
     this.modalNavParams = this.modalNavPage.navParams;
     this.state = this.modalNavParams.get('state');
@@ -51,7 +55,7 @@ export class PlacesModalPage {
       this.place = {name:'',disciplines:'',country:'',city:'',image:'',lat:null,lng:null};
     }
 
-    this.placeForm = formBuilder.group(this.place);
+    this.placeForm = this.formBuilder.group(this.place);
   }
 
   ionViewWillEnter(){
@@ -67,14 +71,6 @@ export class PlacesModalPage {
     }
   }
 
-  ionViewDidLoad() {
-    this.disciplinesProvider.findAll().subscribe(
-      data => this.disciplines = data
-    );
-    this.countriesProvider.findAll().subscribe(
-      data => this.countries = data
-    );
-  }
 
   dismiss(){
     this.modalNavPage.dismissModal({state: 'cancel'});

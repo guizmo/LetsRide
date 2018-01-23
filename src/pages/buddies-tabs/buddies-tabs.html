@@ -1,5 +1,5 @@
   <ion-tabs #buddiesTabs [attr.show-tabbar]="userLoaded">
-    <ion-tab [root]="buddiesRoot"  tabTitle="Friends" [rootParams]="tabsParams" tabIcon="people"></ion-tab>
-    <ion-tab [root]="searchRoot"  tabTitle="Search" [rootParams]="tabsParams" tabIcon="search"></ion-tab>
+    <ion-tab [root]="buddiesRoot"  tabTitle="{{ 'BUDDIES_PAGE.TAB_1' | translate }}" [rootParams]="tabsParams" tabIcon="people"></ion-tab>
+    <ion-tab [root]="searchRoot"  tabTitle="{{ 'BUDDIES_PAGE.TAB_2' | translate }}" [rootParams]="tabsParams" tabIcon="search"></ion-tab>
     <!-- <ion-tab [root]="messagesRoot" [rootParams]="tabsParams" tabTitle="Notifications" tabIcon="mail"></ion-tab> -->
   </ion-tabs>

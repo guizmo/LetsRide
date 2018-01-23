@@ -3,13 +3,13 @@
     <ion-buttons start>
       <button ion-button icon-left (click)="dismiss()">
         <ion-icon name="arrow-back"></ion-icon>
-        Cancel
+        {{ 'CANCEL_BUTTON' | translate }}
       </button>
     </ion-buttons>
 
     <ion-buttons end >
       <button ion-button (click)="editAccountFormSubmit()">
-        Save
+        {{ 'SAVE_BUTTON' | translate }}
       </button>
     </ion-buttons>
 
@@ -26,21 +26,21 @@
 
         <ion-item no-padding>
           <ion-label floating>
-            Current Password
+            {{ 'ACCOUNT_EDIT_PAGE.CURR_PWD' | translate }}
           </ion-label>
           <ion-input type="password" required formControlName="currentPassword" name="currentPassword" ></ion-input>
         </ion-item>
 
         <ion-item no-padding>
           <ion-label floating>
-            New Password
+            {{ 'ACCOUNT_EDIT_PAGE.NEW_PWD' | translate }}
           </ion-label>
           <ion-input type="password" required formControlName="newPassword" name="newPassword"></ion-input>
         </ion-item>
 
         <ion-item no-padding>
           <ion-label floating>
-            Confirm Password
+            {{ 'ACCOUNT_EDIT_PAGE.CONF_PWD' | translate }}
           </ion-label>
           <ion-input type="password" required formControlName="confirmPassword" name="confirmPassword"></ion-input>
         </ion-item>
@@ -50,7 +50,7 @@
       <ng-container *ngIf="field == 'email'">
         <ion-item no-padding>
           <ion-label floating>
-            Email
+            {{ 'EMAIL' | translate }}
           </ion-label>
           <ion-input type="text" required formControlName="email" name="email"></ion-input>
         </ion-item>

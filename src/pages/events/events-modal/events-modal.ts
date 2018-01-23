@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, AlertController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 
 import { Discipline } from '../../../models';
-import { DisciplinesProvider, PlacesProvider, AlertProvider } from '../../../providers';
+import { PlacesProvider, AlertProvider } from '../../../providers';
 
 import * as moment  from 'moment';
 
@@ -26,12 +27,15 @@ export class EventsModalPage {
   constructor(
     private formBuilder: FormBuilder,
     public navCtrl: NavController,
-    private disciplinesProvider: DisciplinesProvider,
     public navParams: NavParams,
     public viewCtrl: ViewController,
     private alertProvider: AlertProvider,
+    public translateService: TranslateService,
     private placesProvider: PlacesProvider
   ) {
+    this.translateService.get(['DISCIPLINES']).subscribe((values) => {
+      this.disciplines = values.DISCIPLINES;
+    })
     let controls = {
       name: '',
       time: this.currentDate,
@@ -42,18 +46,13 @@ export class EventsModalPage {
     this.eventForm = formBuilder.group(controls);
     this.places = navParams.data.places;
     this.placeSelector(null);
-    console.log(this);
+
     if(navParams.data.values){
       this.eventForm.patchValue(navParams.data.values);
     }
 
   }
 
-  ionViewDidLoad() {
-    this.disciplinesProvider.findAll().subscribe(
-      data => this.disciplines = data
-    );
-  }
 
   onSave(){
     if (!this.eventForm.valid) {

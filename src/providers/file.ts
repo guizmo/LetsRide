@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 
 import { FirebaseApp } from 'angularfire2';
-import * as firebase from 'firebase';
+//import * as firebase from 'firebase';
 
 
 @Injectable()
@@ -16,8 +16,7 @@ export class FileProvider {
     private camera: Camera
   ) {
     this.firebase = firebaseApp.firebase_;
-    console.log(this);
-    console.log(firebase);
+    //console.log(this);
   }
 
   openGallery(timestamp, userName) {
@@ -62,13 +61,13 @@ export class FileProvider {
     return new Promise<any>( (resolve, reject) => {
 
       this.storageRef = this.firebase.storage().ref();
-      console.log(this.storageRef);
+      //console.log(this.storageRef);
 
       let uploadTask = this.storageRef.child(`/users/${fileName}`).putString(data, 'data_url');
 
       uploadTask.on('state_changed', function(snapshot) {
         let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('progress = ', progress);
+        //console.log('progress = ', progress);
         switch (snapshot.state) {
           case 'paused':
             break;

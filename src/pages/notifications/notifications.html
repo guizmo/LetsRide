@@ -4,17 +4,17 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Notifications</ion-title>
+    <ion-title>{{ 'MENU.NotificationsPage' | translate }}</ion-title>
   </ion-navbar>
 
   <ion-toolbar no-border-top>
     <ion-segment [(ngModel)]="messages" color="light" (ionChange)="segmentChanged($event)">
       <ion-segment-button value="events">
-        EVENTS
+        {{ 'NOTIFICATIONS_PAGE.SEG_1.TITLE' | translate }}
         <ion-badge class="left-badge" *ngIf="badges.events" color="danger" item-end>{{badges.events}}</ion-badge>
       </ion-segment-button>
       <ion-segment-button value="requests">
-        FRIENDS
+        {{ 'NOTIFICATIONS_PAGE.SEG_2.TITLE' | translate }}
         <ion-badge class="right-badge" *ngIf="badges.requests" color="danger" item-end>{{badges.requests}}</ion-badge>
       </ion-segment-button>
     </ion-segment>
@@ -29,7 +29,7 @@
     <div *ngSwitchCase="'requests'">
       <ion-list >
         <ion-list-header>
-          Pending
+          {{ 'NOTIFICATIONS_PAGE.SEG_2.HEADING' | translate }}
         </ion-list-header>
         <ng-container *ngFor="let people of buddiesRequest; let i = index">
           <ion-item >
@@ -40,20 +40,20 @@
             <button
               ion-button clear item-end icon-right
               (click)="acceptFriendRequest(i)" >
-              Accept
+              {{ 'NOTIFICATIONS_PAGE.SEG_2.ACCEPT' | translate }}
               <ion-icon color="dark" name="add-circle"></ion-icon>
             </button>
           </ion-item>
         </ng-container>
         <h3 [style.color]="'#555'" text-center *ngIf="!buddiesRequest || !buddiesRequest.length" class="no-result">
-          There is no friend request pending
+          {{ 'NOTIFICATIONS_PAGE.SEG_2.NO_RESULT' | translate }}
         </h3>
       </ion-list>
 
 
       <ion-list *ngIf="requestAccepted.length">
         <ion-list-header>
-          Accepted
+          {{ 'NOTIFICATIONS_PAGE.SEG_2.HEADING_2' | translate }}
         </ion-list-header>
         <ng-container *ngFor="let people of requestAccepted">
           <ion-item *ngIf="!people.pending" >
@@ -71,7 +71,7 @@
     <div *ngSwitchCase="'events'">
       <ion-list>
         <ion-list-header>
-          Coming Up
+          {{ 'NOTIFICATIONS_PAGE.SEG_1.HEADING' | translate }}
         </ion-list-header>
         <ng-container *ngFor="let event of buddiesEvents | orderBy : ['time']; let i = index">
           <ion-card (click)="showMap(i)" [class.active-map]="showMapIsEnabled == i">
@@ -100,25 +100,22 @@
               <ion-col text-right>
                 <button ion-button icon-left outline small color="brand" (click)="joinEvent(event, true, index, $event)">
                   <ion-icon name="checkmark-circle-outline" color="brand"></ion-icon>
-                  <div>Going</div>
+                  <div>{{ 'NOTIFICATIONS_PAGE.SEG_1.GOING' | translate }}</div>
                 </button>
               </ion-col>
               <ion-col align-self-center>
                 <button ion-button icon-left outline small color="brand" (click)="joinEvent(event, false, index, $event)">
                   <ion-icon name="close" color="brand"></ion-icon>
-                  <div>Ignore</div>
+                  <div>{{ 'NOTIFICATIONS_PAGE.SEG_1.IGNORE' | translate }}</div>
                 </button>
               </ion-col>
             </ion-row>
           </ion-card>
         </ng-container>
+        <h3 [style.color]="'#555'" text-center *ngIf="!buddiesEvents || !buddiesEvents.length" class="no-result">
+          {{ 'NOTIFICATIONS_PAGE.SEG_1.NO_RESULT' | translate }}
+        </h3>
       </ion-list>
-      <h3 [style.color]="'#555'" text-center *ngIf="!buddiesEvents || !buddiesEvents.length" class="no-result">
-        There is no events notifications
-      </h3>
-
-
-
     </div><!-- events -->
   </div><!-- END SWITCH -->
 

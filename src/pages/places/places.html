@@ -3,7 +3,7 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Places</ion-title>
+    <ion-title>{{ 'MENU.PlacesPage' | translate }}</ion-title>
     <ion-buttons end>
       <button ion-button icon-left color="light" icon-only (click)="presentModal('create')">
         <ion-icon name="ios-add" ></ion-icon>
@@ -61,7 +61,7 @@
         <ion-item>
           <ion-icon name="pin" color="brand" item-start large></ion-icon>
           <h2 text-wrap>{{place.name}}</h2>
-          <p>{{place.city}} <span *ngIf="place.city && place.country">-</span> {{place.country}}</p>
+          <p>{{place.city}} <span *ngIf="place.city && place.country">-</span> {{place.countryName}}</p>
         </ion-item>
 
       </ion-card>

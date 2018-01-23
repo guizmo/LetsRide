@@ -21,10 +21,10 @@
       </div>
       <ion-list no-margin>
         <ion-list-header>
-          Geolocation search settings
+          {{ 'HOME_PAGE.LIST_TITLE' | translate }}
         </ion-list-header>
         <ion-item>
-          <ion-label>Maximum distance</ion-label>
+          <ion-label>{{ 'HOME_PAGE.KM_TITLE' | translate }}</ion-label>
           <ion-select [(ngModel)]="search.radius" (ionChange)="findPeopleAround()" interface="action-sheet">
             <ion-option value="5">5 km</ion-option>
             <ion-option value="10">10 km</ion-option>
@@ -35,7 +35,7 @@
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-label>Friends only</ion-label>
+          <ion-label>{{ 'HOME_PAGE.FRIENDS_FILTER' | translate }}</ion-label>
           <ion-checkbox color="brand" [(ngModel)]="search.friends" checked="search.friends" (ionChange)="findPeopleAround()"></ion-checkbox>
         </ion-item>
       </ion-list>
@@ -45,10 +45,10 @@
     <div class="block-bottom" block-grow vertical-center>
       <div class="block-text" *ngIf="!peopleAround.length && !searching" padding>
         <div class="text-wrapper" *ngIf="!noResults" f-width>
-          <h5>Riding is better with friends&nbsp;! <br>Hit the search <ion-icon color="brand" name="search"></ion-icon> button to see who's nearby !</h5>
+          <h5 [innerHTML]="'HOME_PAGE.TITLE' | translate"></h5>
         </div>
         <div class="text-wrapper" *ngIf="noResults" f-width>
-          <h5>There isn't anybody in this search perimeter</h5><br><br>
+          <h5>{{ 'HOME_PAGE.NO_RESULT' | translate }}</h5><br><br>
         </div>
       </div>
       <ion-content class="ion-content-refresher">
@@ -58,7 +58,7 @@
 
         <ion-list no-margin *ngIf="peopleAround.length" >
           <ion-list-header>
-            Results
+            {{ 'HOME_PAGE.RESULT_TITLE' | translate }}
           </ion-list-header>
 
           <ion-item-sliding  #slidingItem *ngFor="let people of peopleAround; let i = index"  >
@@ -101,7 +101,7 @@
 
 <ion-footer>
   <ion-toolbar>
-    <ion-title>Start discovery mode</ion-title>
+    <ion-title>{{ 'HOME_PAGE.MODE' | translate }}</ion-title>
     <ion-buttons end>
       <ion-toggle [(ngModel)]="state.enabled" (ionChange)="onToggleEnabled()" color="secondary" style="display:block;"></ion-toggle>
     </ion-buttons>

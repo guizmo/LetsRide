@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Config } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable()
 export class Translate {
@@ -10,11 +10,12 @@ export class Translate {
 
   init(){
     // Set the default language for translation strings, and the current language.
+    this.translate.addLangs(['en', 'fr']);
     this.translate.setDefaultLang('en');
-    let browserLang = this.translate.getBrowserLang();
-    console.log('browserLang', browserLang);
-    this.translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');
 
+    let browserLang = this.translate.getBrowserLang();
+    this.translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');
+    //this.translate.use('fr');
 
     this.translate.get(['BACK_BUTTON_TEXT']).subscribe(values => {
       this.config.set('ios', 'backButtonText', values.BACK_BUTTON_TEXT);
@@ -22,12 +23,6 @@ export class Translate {
   }
 
   getString(string){
-    let translatedString = null;
-    this.translate.get(string).subscribe(
-      value => {
-        translatedString = value;
-      }
-    )
-    return translatedString;
+    return this.translate.get(string);
   }
 }

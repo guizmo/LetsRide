@@ -51,11 +51,11 @@ export class SignupPage {
         const controlErrors: ValidationErrors = this.signupForm.get(key).errors;
         if (controlErrors != null) {
           Object.keys(controlErrors).forEach(keyError => {
-            errType = '';
             errType = 'field/'+keyError;
           });
         }
       });
+      console.log(errType);
       this.alertProvider.showErrorMessage(errType);
       return
     } else {

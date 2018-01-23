@@ -19,7 +19,7 @@ export class AccountPage {
   private alert;
   private providerId: string = null;
   public activeMenu = 'AccountPage';
-  
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -77,17 +77,17 @@ export class AccountPage {
 
 
   confirmEmailUpdate(email){
-    const confirmMessages = this.alertProvider.comfirmMessages;
+    const confirmEmailUpdate = this.alertProvider.confirmMessages.emailUpdate;
     this.alert = this.alertCtrl.create({
-      title: confirmMessages.emailUpdate.title,
-      message: confirmMessages.emailUpdate.subTitle + email,
+      title: confirmEmailUpdate.title,
+      message: confirmEmailUpdate.subTitle + email,
       buttons: [
         {
-          text: confirmMessages.emailUpdate.back,
+          text: confirmEmailUpdate.back,
           handler: data => {}
         },
         {
-          text: confirmMessages.emailUpdate.next,
+          text: confirmEmailUpdate.next,
           handler: data => {
             this.emailVerified = false;
             this.menuCtrl.enable(this.emailVerified, 'mainMenu');

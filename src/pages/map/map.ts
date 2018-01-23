@@ -1,18 +1,16 @@
 import { Component, ViewChild, NgZone, ElementRef } from '@angular/core';
-import { Validators, FormBuilder, FormGroup } from "@angular/forms";
 import { IonicPage, NavController, LoadingController, NavParams, ViewController } from 'ionic-angular';
-import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 
 import { MapsAPILoader } from '@agm/core';
-import {GoogleMap, ZoomControlOptions, MapTypeStyle, ControlPosition} from '@agm/core/services/google-maps-types';
-import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
+import { ZoomControlOptions, ControlPosition } from '@agm/core/services/google-maps-types';
+import { AngularFireDatabase } from 'angularfire2/database';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ModalNavPage } from '../modal-nav/modal-nav';
 import { MapStyle } from '../../constants/mapStyle';
 
 import { BuddiesProvider} from '../../providers';
 
-declare var window: any;
 declare var google:any;
 
 
@@ -39,6 +37,7 @@ export class MapPage {
   public gmap: any ;
   public place: any;
   public event: any;
+  public translatedStrings:any = {};
   pageClass: string = '';
   noLocation:boolean = false;
   searchVisible:boolean = true;
@@ -47,26 +46,23 @@ export class MapPage {
   saveButton: string = 'Save';
   buddy:any = null;
   markerDraggable:boolean = true;
-  private searchControlForm: FormGroup;
   public state: string;
   public marker: marker = {};
-  private userId:string = null;
   private autocompleteItems:Array<any>=[];
   private geocoder;
   private autocompleteService;
   private mapAPI_loaded:boolean = false;
   private loading: any;
   private zoomControlOptions:ZoomControlOptions;
-  private mapStyle = MapStyle;
+  private mapStyle;
 
   @ViewChild("search", { read: ElementRef }) searchElementRef;
 
   constructor(
     public loadingCtrl: LoadingController,
     public navCtrl: NavController,
+    public translateService: TranslateService,
     public navParams: NavParams,
-    private spinnerDialog: SpinnerDialog,
-    private formBuilder: FormBuilder,
     private mapsAPILoader: MapsAPILoader,
     private buddiesProvider: BuddiesProvider,
     private ngZone: NgZone,
@@ -74,11 +70,12 @@ export class MapPage {
     public afdb: AngularFireDatabase,
     public viewCtrl: ViewController,
   ) {
-    console.log('MAP',this);
-    //this.spinnerDialog.show('Loading map ...', '', false, {overlayOpacity:0.8});
-    // this.searchControlForm = formBuilder.group({
-    //   search: '',
-    // });
+    this.mapStyle = MapStyle;
+    this.translateService.get(['SAVE_BUTTON', 'CANCEL_BUTTON', 'DONE_BUTTON', 'BACK_BUTTON_TEXT']).subscribe((values) => {
+      this.translatedStrings = values;
+      this.backButton = values.CANCEL_BUTTON;
+      this.saveButton = values.SAVE_BUTTON;
+    });
 
     this.zoomControlOptions = { position: ControlPosition.RIGHT_CENTER};
     if(this.modalNavPage.navParams.get('state')){
@@ -87,7 +84,7 @@ export class MapPage {
   }
 
   ionViewWillEnter(){
-    this.viewCtrl.setBackButtonText('Cancel')
+    this.viewCtrl.setBackButtonText(this.translatedStrings.CANCEL_BUTTON)
   }
   ionViewWillLeave(){
     this.modalNavPage.data = this.marker;
@@ -113,8 +110,8 @@ export class MapPage {
       this.marker.lng = lng;
       this.marker.name = name;
 
-      this.backButton = (this.state.includes('display_place')) ? 'Back' : 'Cancel';
-      this.saveButton = (this.state == 'update') ? 'Done' : 'Save';
+      this.backButton = (this.state.includes('display_place')) ? this.translatedStrings.BACK_BUTTON_TEXT : this.translatedStrings.CANCEL_BUTTON;
+      this.saveButton = (this.state == 'update') ? this.translatedStrings.DONE_BUTTON : this.translatedStrings.SAVE_BUTTON;
     }
     if( this.state == 'display_place_event' ){
       this.fullscreen = false;

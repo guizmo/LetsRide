@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Platform, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Facebook } from '@ionic-native/facebook';
 import { GooglePlus } from '@ionic-native/google-plus';
@@ -36,7 +36,8 @@ export class UserProvider {
     private storage: Storage,
     public alertProvider: AlertProvider,
     public loadingProvider: LoadingProvider,
-    private notifications: NotificationsProvider
+    private notifications: NotificationsProvider,
+    public events: Events
   ) {
     afAuth.authState.subscribe((_user: firebase.User) => {
       if (_user) {
@@ -193,8 +194,8 @@ export class UserProvider {
    */
   //OK
   logout() {
-    this.afAuth.auth.signOut()
-
+    this.events.publish('user:logout');
+    return this.afAuth.auth.signOut();
   }
   //OK
   setLocalUser(user){
@@ -251,14 +252,14 @@ export class UserProvider {
         firebase.auth().currentUser.updatePassword(password)
           .then(() => {
             //success
-            this.afAuth.auth.signOut()
-              .then(() => {
-                this.signInUser(this.currentUser.email, password)
-                  .then((success) => {
-                    this.loadingProvider.hide();
-                    this.alertProvider.showPasswordChangedMessage();
-                  })
-              })
+            //this.afAuth.auth.signOut()
+            this.logout().then(() => {
+              this.signInUser(this.currentUser.email, password)
+                .then((success) => {
+                  this.loadingProvider.hide();
+                  this.alertProvider.showPasswordChangedMessage();
+                })
+            })
           })
           .catch((error) => {
             //show error

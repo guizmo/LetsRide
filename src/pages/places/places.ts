@@ -1,8 +1,10 @@
 import { Component, ViewChildren } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, AlertController, FabContainer } from 'ionic-angular';
 
-import { UserProvider, AlertProvider, PlacesProvider, CaptureProvider} from '../../providers';
+import { UserProvider, PlacesProvider, CaptureProvider} from '../../providers';
 
+import { TranslateService } from '@ngx-translate/core';
+import { Country } from '../../models';
 
 @IonicPage()
 @Component({
@@ -12,6 +14,7 @@ import { UserProvider, AlertProvider, PlacesProvider, CaptureProvider} from '../
 export class PlacesPage {
   @ViewChildren('fab') fabs;
 
+  private countries: ReadonlyArray<Country>;
   places;
   user;
   images: Array<any>=[];
@@ -26,24 +29,30 @@ export class PlacesPage {
     public userProvider: UserProvider,
     public placesProvider: PlacesProvider,
     private capture: CaptureProvider,
+    public translateService: TranslateService,
     private alertCtrl: AlertController
   ) {
-  }
+    this.translateService.get(['COUNTRIES']).subscribe((values) => {
+      this.countries = values.COUNTRIES;
+    });
 
-  ionViewDidLoad() {
     this.userProvider.afAuth.authState.subscribe((user) => {
       if(user){
         this.user = user.toJSON();
         this.placesProvider.getAllByUser(this.user.uid).subscribe((data) => {
           this.places = data;
+          this.places.map(place => place.countryName = this.placesProvider.getCountry(place.country))
           this.showNoResult = (data.length < 1) ? true : false ;
           this.showSpinner = false;
-          console.log(this);
         });
       }
     });
+  }
+
+  ionViewDidLoad() {
 
   }
+
 
   pathForImage(img){
     return this.capture.pathForImage('letsride/'+this.user.uid+'/'+img);
@@ -66,17 +75,16 @@ export class PlacesPage {
 
     modal.onDidDismiss(data => {
       if(data != null && data.state != 'cancel'){
-
-          switch(data.state) {
-            case "create": {
-              this.add({...data.value, ...{userId: this.user.uid}})
-              break;
-            }
-            case "update": {
-              this.update(data.key, data.value)
-              break;
-            }
+        switch(data.state) {
+          case "create": {
+            this.add({...data.value, ...{userId: this.user.uid}})
+            break;
           }
+          case "update": {
+            this.update(data.key, data.value)
+            break;
+          }
+        }
       }
     });
 

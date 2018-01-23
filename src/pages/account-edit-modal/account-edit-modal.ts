@@ -33,7 +33,7 @@ export class AccountEditModalPage {
     let currentPassword = new FormControl('', Validators.required );
     let newPassword = new FormControl('', Validators.compose([Validators.required, Validators.minLength(6)]));
     let confirmPassword = new FormControl('', CustomValidators.equalTo(newPassword));
-    let email = new FormControl('guillaume.bartolini+12@gmail.com', Validators.compose([EmailValidator.isValid, Validators.required]) );
+    let email = new FormControl('', Validators.compose([EmailValidator.isValid, Validators.required]) );
     let group = {};
     if(field == 'password'){
       group = { currentPassword, newPassword, confirmPassword }
@@ -66,9 +66,9 @@ export class AccountEditModalPage {
         if (controlErrors != null) {
           console.log(controlErrors);
           Object.keys(controlErrors).forEach(keyError => {
-            errType = '';
             errType = 'field/'+keyError;
           });
+          console.log(errType);
         }
       });
       this.alertProvider.showErrorMessage(errType);

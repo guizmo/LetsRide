@@ -1,26 +1,22 @@
 import { Injectable } from '@angular/core';
-import { ActionSheetController, ToastController, Platform, LoadingController, Loading, normalizeURL } from 'ionic-angular';
+import { ActionSheetController, ToastController, Platform, LoadingController, normalizeURL } from 'ionic-angular';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { File } from '@ionic-native/file';
 import { FilePath } from '@ionic-native/file-path';
 import { Camera } from '@ionic-native/camera';
+import { TranslateService } from '@ngx-translate/core';
 
 declare var cordova: any;
 
-/*
-  Generated class for the CaptureProvider provider.
 
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular DI.
-*/
 @Injectable()
 export class CaptureProvider {
 
   public imageName = new BehaviorSubject<any>(null);
   public userKey: string = null;
-  //private loading: Loading;
+  public translatedStrings:any = {};
 
 
   constructor(
@@ -30,9 +26,13 @@ export class CaptureProvider {
     public actionSheetCtrl: ActionSheetController,
     public toastCtrl: ToastController,
     public platform: Platform,
+    public translateService: TranslateService,
     public loadingCtrl: LoadingController
   ) {
-    //console.log('capture provider',this);
+    this.translateService.get(['CANCEL_BUTTON', 'CAPTURE_PROVIDER']).subscribe((values) => {
+      this.translatedStrings = values;
+    });
+    console.log('capture provider',this);
     this.createLetsrideDir();
   }
 
@@ -40,22 +40,22 @@ export class CaptureProvider {
   public presentActionSheet() {
     //let actionSheet = this.actionSheetCtrl.create({
     return this.actionSheetCtrl.create({
-      title: 'Select Image Source',
+      title: this.translatedStrings.CAPTURE_PROVIDER.ACTION_SHEET.TITLE,
       buttons: [
         {
-          text: 'Select from library',
+          text: this.translatedStrings.CAPTURE_PROVIDER.ACTION_SHEET.BUTTON_GALLERY,
           handler: () => {
             this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY);
           }
         },
         {
-          text: 'Use Camera',
+          text: this.translatedStrings.CAPTURE_PROVIDER.ACTION_SHEET.BUTTON_CAM,
           handler: () => {
             this.takePicture(this.camera.PictureSourceType.CAMERA);
           }
         },
         {
-          text: 'Cancel',
+          text: this.translatedStrings.CANCEL_BUTTON,
           role: 'cancel',
           handler: () => {
             this.imageName.next('CANCEL');

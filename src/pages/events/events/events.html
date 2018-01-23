@@ -3,7 +3,7 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Events</ion-title>
+    <ion-title>{{ 'MENU.EventsPage' | translate }}</ion-title>
     <ion-buttons icon-only end>
       <button ion-button icon-only (click)="presentEventModal($event)">
         <ion-icon name="add"></ion-icon>
@@ -21,10 +21,10 @@
   <div class="no-result-card" *ngIf="showNoResult">
     <ion-card>
       <ion-card-header>
-        You have no current event !
+        {{ 'EVENTS_PAGE.CARD_HEAD' | translate }}
       </ion-card-header>
       <ion-card-content color="dark">
-        When adding events, your friends will automatically be notified about it. They will see it in their "Friends events list" !
+        {{ 'EVENTS_PAGE.CARD_CONTENT' | translate }}
       </ion-card-content>
     </ion-card>
   </div>
@@ -64,11 +64,11 @@
             <ion-col text-right>
               <button ion-button color="danger" icon-left clear small (click)="deleteEvent($event, event.key)">
                 <ion-icon color="dark" ios="ios-trash-outline" md="md-trash"></ion-icon>
-                <div>Delete</div>
+                <div>{{ 'DELETE_BUTTON' | translate }}</div>
               </button>
               <button  ion-button color="brand" icon-left clear small (click)="presentEventModal($event, event)">
                 <ion-icon color="dark" ios="ios-create-outline" md="md-create"></ion-icon>
-                <div>Edit</div>
+                <div>{{ 'EDIT_BUTTON' | translate }}</div>
               </button>
             </ion-col>
           </ion-row>

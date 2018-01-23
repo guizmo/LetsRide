@@ -30,10 +30,10 @@
         (ionCancel)="onCancelSearch($event)"
         (ionClear)="onCancelSearch($event)"
         [debounce]="500"
-        placeholder="search for location"
+        placeholder="{{ 'MAP_PAGE.SEARCH_PLACEHOLDER' | translate }}"
         name="search"
         animated=true
-        cancelButtonText="cancel"
+        cancelButtonText="{{ 'CANCEL_BUTTON' | translate }}"
         #search>
       </ion-searchbar>
       <ion-list no-margin>
@@ -111,7 +111,7 @@
     <div class="inner-wrapper" border-top>
       <ion-list>
         <ion-list-header>
-          Event details
+          {{ 'MAP_PAGE.EVENT_HEAD' | translate }}
         </ion-list-header>
 
         <ion-item>
@@ -148,7 +148,7 @@
 
       <ion-list no-margin *ngIf="buddiesProvider.eventsParticipantsList.length">
         <ion-list-header>
-          They are going to ...
+          {{ 'MAP_PAGE.EVENT_SUB_HEAD' | translate }}
         </ion-list-header>
         <ion-item *ngFor="let buddy of buddiesProvider.eventsParticipantsList; let i = index;">
           <ion-avatar item-start>
