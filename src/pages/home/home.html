@@ -51,7 +51,7 @@
           <h5>{{ 'HOME_PAGE.NO_RESULT' | translate }}</h5><br><br>
         </div>
       </div>
-      <ion-content class="ion-content-refresher">
+      <div class="ion-content-refresher">
         <ion-refresher (ionRefresh)="doRefresh($event)">
           <ion-refresher-content></ion-refresher-content>
         </ion-refresher>
@@ -62,9 +62,9 @@
           </ion-list-header>
 
           <ion-item-sliding  #slidingItem *ngFor="let people of peopleAround; let i = index"  >
-            <ion-item #item>
+            <ion-item #item (click)="showPerson(people)">
               <ion-avatar item-start>
-                <img [hidden]="!people.avatarLoaded" (load)="avatarLoaded(i)" src="{{people.avatar}}">
+                <img [hidden]="!people.avatarLoaded" (load)="avatarLoaded(i)" src="{{people.profileImgPath}}">
                 <ion-spinner *ngIf="!people.avatarLoaded"></ion-spinner>
                </ion-avatar>
               <h2>{{people.displayName}}</h2>
@@ -72,7 +72,7 @@
               <!-- <button *ngIf="people.oneSignalId" item-end ion-button color="brand" icon-only (click)="sendMessageCloseBy(i)">
                 <ion-icon name="send" ></ion-icon>
               </button> -->
-              <button item-end ion-button clear icon-only (click)="openOption(slidingItem, item, options)">
+              <button item-end ion-button clear icon-only (click)="openOption(slidingItem, item, options, $event)">
                 <ion-icon color="brand" name="more" ></ion-icon>
               </button>
             </ion-item>
@@ -91,10 +91,8 @@
 
           </ion-item-sliding>
         </ion-list>
-      </ion-content>
+      </div>
     </div>
-
-
 
   </div>
 </ion-content>

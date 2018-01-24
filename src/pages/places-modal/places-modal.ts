@@ -38,8 +38,16 @@ export class PlacesModalPage {
     private capture: CaptureProvider
   ) {
     this.translateService.get(['COUNTRIES', 'DISCIPLINES']).subscribe((values) => {
-      this.countries = values.COUNTRIES;
-      this.disciplines = values.DISCIPLINES;
+      this.countries = values.COUNTRIES.sort(function(a, b) {
+        if(a.name < b.name) return -1;
+        if(a.name > b.name) return 1;
+        return 0;
+      });
+      this.disciplines = values.DISCIPLINES.sort(function(a, b) {
+        if(a.name < b.name) return -1;
+        if(a.name > b.name) return 1;
+        return 0;
+      });
     })
 
     this.modalNavParams = this.modalNavPage.navParams;

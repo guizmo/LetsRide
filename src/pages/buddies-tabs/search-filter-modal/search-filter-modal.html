@@ -33,9 +33,12 @@
       <ion-item>
         <ion-label>{{ 'PROFILE_EDIT_PAGE.COUNTRY' | translate }}</ion-label>
         <ion-select
-          formControlName="country"
-          name="country">
-          <ion-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-option>
+          formControlName="countryName"
+          name="countryName"
+          okText="{{'DONE_BUTTON' | translate}}"
+          cancelText="{{'CANCEL_BUTTON' | translate}}"
+          >
+          <ion-option *ngFor="let country of countries" [value]="country.name">{{country.name}}</ion-option>
         </ion-select>
       </ion-item>
     </ion-list>
@@ -68,10 +71,10 @@
           formControlName="disciplines"
           name="disciplines"
           multiple="true"
-          okText="Okay"
-          cancelText="Dismiss"
+          okText="{{'DONE_BUTTON' | translate}}"
+          cancelText="{{'CANCEL_BUTTON' | translate}}"
           >
-          <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
+          <ion-option *ngFor="let discipline of disciplines" [value]="discipline.name">{{discipline.name}}</ion-option>
         </ion-select>
       </ion-item>
 

@@ -6,7 +6,7 @@
       </button>
     </ion-buttons>
 
-    <ion-buttons *ngIf="currentUser && userData" end>
+    <ion-buttons *ngIf="currentUser && profileViewData && !isAnyProfile" end>
       <button ion-button (click)="presentProfileModal()" >
         <ion-icon name="md-create"></ion-icon>
       </button>
@@ -16,26 +16,26 @@
 </ion-header>
 
 <ion-content fullscreen>
-  <div id="content" class="block-content" block-flex *ngIf="currentUser && userData">
+  <div id="content" class="block-content" block-flex *ngIf="currentUser && profileViewData">
     <div id="profile-info" class="block-top" v-height="35">
 
       <div class="profile">
         <ion-spinner *ngIf="!profileImgLoaded"></ion-spinner>
-        <img id="profile-image" [hidden]="!profileImgLoaded" (load)="imageHasLoaded()" [src]="profileImg" tappable (click)="changeProfileImg()"  />
+        <img id="profile-image" [hidden]="!profileImgLoaded" (load)="imageHasLoaded()" [src]="profileViewData.profileImgPath" tappable (click)="changeProfileImg()"  />
       </div>
 
       <!-- Show icon of logged in provider -->
       <h3 id="profile-name">
-        <span>{{displayName}}</span>
-        <ng-container [ngSwitch]="userData.providerId">
+        <span>{{profileViewData.displayName}}</span>
+        <ng-container [ngSwitch]="profileViewData.providerId">
           <ion-icon *ngSwitchCase="'password'" name="md-flame" class="firebase"></ion-icon>
           <ion-icon *ngSwitchCase="'facebook.com'" name="logo-facebook" class="facebook"></ion-icon>
           <ion-icon *ngSwitchCase="'google.com'" name="logo-google" class="google"></ion-icon>
         </ng-container>
       </h3>
     </div>
-    <ion-item text-center color="danger" *ngIf="!emailVerified" no-lines>
-      <p padding-left padding-right>You must verify your email to use Let's Ride!<br>Check you mailbox!</p>
+    <ion-item text-center color="danger" *ngIf="!profileViewData.emailVerified" no-lines>
+      <p padding-left padding-right [innerHTML]="'PROFILE_PAGE.EMAIL_VERIFY' | translate">You must verify your email to use Let's Ride!<br>Check you mailbox!</p>
     </ion-item>
 
     <div class="userData block-bottom" block-grow>
@@ -43,33 +43,33 @@
         <ion-list >
           <ion-item>
             <ion-icon name="pin" item-start></ion-icon>
-            <button block clear ion-button icon-left class="form-placeholder" *ngIf="!userData.settings.city && !userData.settings.country"  (click)="presentProfileModal()">Add your location</button>
-            {{userData.settings.city}}
-            <ng-container *ngIf="userData.settings.city && userData.settings.country"> | </ng-container>
-            {{userData.settings.countryName}}
-          </ion-item><!--userData -->
+            <button block clear ion-button icon-left class="form-placeholder" *ngIf="!profileViewData.settings.city && !profileViewData.settings.country"  (click)="presentProfileModal()">{{'PROFILE_PAGE.LOCATION_BTN' | translate}}</button>
+            {{profileViewData.settings.city}}
+            <ng-container *ngIf="profileViewData.settings.city && profileViewData.settings.country"> | </ng-container>
+            {{profileViewData.settings.countryName}}
+          </ion-item><!-- profileViewData -->
 
           <ion-item >
-              <ion-icon *ngIf="!userData.settings.age && !userData.settings.gender || !userData.settings.gender" name="person" item-start></ion-icon>
-              <button *ngIf="!userData.settings.age && !userData.settings.gender" block clear ion-button icon-left class="form-placeholder"  (click)="presentProfileModal()">Add your infos</button>
-            <ng-container *ngIf="userData.settings.gender" [ngSwitch]="userData.settings.gender" item-start>
+              <ion-icon *ngIf="!profileViewData.settings.age && !profileViewData.settings.gender || !profileViewData.settings.gender" name="person" item-start></ion-icon>
+              <button *ngIf="!profileViewData.settings.age && !profileViewData.settings.gender" block clear ion-button icon-left class="form-placeholder"  (click)="presentProfileModal()">{{'PROFILE_PAGE.INFOS_BTN' | translate}}</button>
+            <ng-container *ngIf="profileViewData.settings.gender" [ngSwitch]="profileViewData.settings.gender" item-start>
               <ion-icon *ngSwitchCase="'Male'" name="man" item-start></ion-icon>
               <ion-icon *ngSwitchCase="'Female'" name="woman" item-start></ion-icon>
             </ng-container>
-            {{userData.settings.age | amDateFormat: 'DD/MM/YY'}}
+            {{profileViewData.settings.age | amDateFormat: 'DD/MM/YY'}}
           </ion-item>
         </ion-list>
 
         <ion-list >
-          <ion-item *ngIf="!userData.settings.disciplines" no-lines>
+          <ion-item *ngIf="!profileViewData.disciplines" no-lines>
             <ion-icon name="bicycle" item-start></ion-icon>
-            <button block clear ion-button icon-left class="form-placeholder"  (click)="presentProfileModal()">Add your riding style</button>
+            <button block clear ion-button icon-left class="form-placeholder"  (click)="presentProfileModal()">{{'PROFILE_PAGE.STYLE_BTN' | translate}}</button>
           </ion-item>
-          <ion-item-group *ngIf="userData.settings.disciplines">
+          <ion-item-group *ngIf="profileViewData.disciplines">
             <ion-list-header>
               <ion-icon name="bicycle" item-start></ion-icon>
             </ion-list-header>
-            <ion-item *ngFor="let discipline of userData.settings.disciplines">
+            <ion-item *ngFor="let discipline of profileViewData.disciplines">
         			{{discipline}}
             </ion-item>
           </ion-item-group>
@@ -78,17 +78,17 @@
         <ion-list no-margin>
           <ion-item>
             <ion-icon name="fa-signal" item-start></ion-icon>
-            <button block clear ion-button icon-left class="form-placeholder" *ngIf="!userData.settings.level"  (click)="presentProfileModal()">Add your level</button>
-            <ng-container [ngSwitch]="userData.settings.level">
-              <span *ngSwitchCase="'1'">Novice</span>
-              <span *ngSwitchCase="'2'">Intermediate</span>
-              <span *ngSwitchCase="'3'">Strong intermediate</span>
-              <span *ngSwitchCase="'4'">Advanced</span>
-              <span *ngSwitchCase="'5'">Expert</span>
+            <button block clear ion-button icon-left class="form-placeholder" *ngIf="!profileViewData.settings.level"  (click)="presentProfileModal()">{{'PROFILE_PAGE.LEVEL_BTN' | translate}}</button>
+            <ng-container [ngSwitch]="profileViewData.settings.level">
+              <span *ngSwitchCase="'1'">{{'PROFILE_PAGE.LEVEL.1' | translate}}</span>
+              <span *ngSwitchCase="'2'">{{'PROFILE_PAGE.LEVEL.2' | translate}}</span>
+              <span *ngSwitchCase="'3'">{{'PROFILE_PAGE.LEVEL.3' | translate}}</span>
+              <span *ngSwitchCase="'4'">{{'PROFILE_PAGE.LEVEL.4' | translate}}</span>
+              <span *ngSwitchCase="'5'">{{'PROFILE_PAGE.LEVEL.5' | translate}}</span>
             </ng-container>
           </ion-item>
         </ion-list>
-      </div><!--userData -->
+      </div><!-- profileViewData -->
 
   </div> <!-- #content -->
 </ion-content>

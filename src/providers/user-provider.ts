@@ -43,7 +43,7 @@ export class UserProvider {
       if (_user) {
         this.currentUser = _user;
         this.userDataRef = this.afdb.object(`/users/${_user.uid}`);
-        this.getUserData();
+        //this.getUserData();
         this.emailVerified = this.currentUser.emailVerified;
         //console.log('afAuth.authState Observable in')
         this.checkOneSignalID();
@@ -74,6 +74,7 @@ export class UserProvider {
   }
 
   getUserData(){
+    console.log('getUserData');
     this.userData = this.userDataRef.snapshotChanges().map(changes => {
       return changes.payload.val();
     });
@@ -82,7 +83,7 @@ export class UserProvider {
 
   addUserData(data: Profile) {
     //Create new User with uid Key
-    this.getUserData();
+    //this.getUserData();
     data.oneSignalId = this.notifications.one_id;
     data.settings = {age: '', city: '', country: '', disciplines: '', displayName: '', gender: '',level: ''};
     this.userDataRef.set(data);
@@ -102,7 +103,7 @@ export class UserProvider {
 
   checkOneSignalID() {
     let one_id = this.notifications.one_id;
-    this.userData.subscribe((userData) => {
+    this.getUserData().subscribe((userData) => {
       if(one_id && one_id != userData.oneSignalId){
         this.userDataRef.update({'oneSignalId': one_id});
       }

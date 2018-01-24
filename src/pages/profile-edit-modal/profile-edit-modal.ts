@@ -29,8 +29,16 @@ export class ProfileEditModalPage {
     public translateService: TranslateService,
   ) {
     this.translateService.get(['COUNTRIES', 'DISCIPLINES']).subscribe((values) => {
-      this.countries = values.COUNTRIES;
-      this.disciplines = values.DISCIPLINES;
+      this.disciplines = values.DISCIPLINES.sort(function(a, b) {
+        if(a.name < b.name) return -1;
+        if(a.name > b.name) return 1;
+        return 0;
+      });
+      this.countries = values.COUNTRIES.sort(function(a, b) {
+        if(a.name < b.name) return -1;
+        if(a.name > b.name) return 1;
+        return 0;
+      })
     })
 
 
@@ -62,7 +70,6 @@ export class ProfileEditModalPage {
       level: level,
       displayName: [displayName, Validators.compose([Validators.required])]
     }
-    console.log(controls);
     this.editProfileForm = this.formBuilder.group(controls);
 
   }

@@ -93,7 +93,7 @@
         cancelText="{{'CANCEL_BUTTON' | translate}}"
         (ionChange)="onSelectChange($event)"
         >
-        <ion-option *ngFor="let discipline of disciplines" [value]="name">{{discipline.name}}</ion-option>
+        <ion-option *ngFor="let discipline of disciplines" [value]="discipline.alias">{{discipline.name}}</ion-option>
       </ion-select>
     </ion-item>
 

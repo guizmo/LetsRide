@@ -2,13 +2,15 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 
 import { Subject } from 'rxjs/Subject'
+import { TranslateService } from '@ngx-translate/core';
 
 import {
   UserProvider,
   NotificationsProvider,
   PeopleProvider,
   StringManipulationProvider,
-  PlacesProvider
+  PlacesProvider,
+  UtilsProvider
 } from '../../../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -24,19 +26,23 @@ import { AngularFireDatabase } from 'angularfire2/database';
 export class SearchPage {
 
   activeMenu = 'BuddiesTabsPage';
+  translatedString:any = {};
   currentUser;
   userData;
   filterSearch:boolean = false;
   nameSearch:string;
   people:any = [];
-  peopleArr:any = [];
+  peopleArr:any = null;
   startAt = new Subject() ;
   endAt = new Subject() ;
   isSearching = false;
   showNoResult = false;
   filters:any = [];
+  public disciplines: ReadonlyArray<any>;
+  public countries: ReadonlyArray<any>;
 
   constructor(
+    public translateService: TranslateService,
     public navCtrl: NavController,
     public navParams: NavParams,
     public afdb: AngularFireDatabase,
@@ -45,78 +51,64 @@ export class SearchPage {
     public placesProvider: PlacesProvider,
     public modalCtrl: ModalController,
     private notifications: NotificationsProvider,
-    private peoplePvr: PeopleProvider,
-    private strManip: StringManipulationProvider
+    private peoplePrv: PeopleProvider,
+    private strManip: StringManipulationProvider,
+    public utils: UtilsProvider,
   ) {
-    //this.filters = [{"value":["Cross Country (XC)", "Downhill", "Enduro", "Road", "All-mountain"],"alias":"disciplines"},{"value":"New Caledonia","alias":"country"},{"value":"Male","alias":"gender"},{"value":"Nouméa","alias":"city"},{"value":3,"alias":"level"}];
+    (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
+    (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
     this.fetchUserData();
+    this.translateService.get(['SEARCH_PAGE']).subscribe((values) => {
+      this.translatedString.FILTER_GENDER = values.SEARCH_PAGE.FILTER_GENDER;
+    });
+    console.log(this);
   }
-  ionViewDidLoad() {
-  }
+
 
   fetchUserData(){
     this.afAuth.authState.subscribe((user) => {
       if(user){
-        this.getPeople();
         this.userProvider.getUserData().subscribe((settings) => {
           if(settings){
             //this.userLoaded = true;
             this.userData = settings;
-            this.currentUser =  user.toJSON();
+            this.currentUser = user.toJSON();
+            this.getPeople();
           }
         });
       }
     });
   }
 
-
-
   getPeople(){
-    this.peoplePvr.getPeople()
-      .subscribe(people => {
+    this.peoplePrv.getPeople().subscribe(people => {
         if(people.length){
+          people.map((person:any) => {
+            console.log(person);
+            person = this.utils.buildProfile(person, this.disciplines, this.countries, null, this.currentUser.uid);
+            person.avatarLoaded = true;
+            person.iconName = null;
 
-          people.map((person) => {
-            person.avatarLoaded = false;
-            person.settings.countryName = (person.settings && person.settings.country) ? this.placesProvider.getCountry(person.settings.country) : '';
-            if(person.buddies && person.buddies[this.currentUser.uid]){
-              if(person.buddies[this.currentUser.uid].pending){
+              if(person.isFriendPending === true){
                 person.iconName = 'checkmark';
-              }else {
-                //if person.requestSent
+              }else if(person.isFriend) {
                 person.iconName = 'contacts';
               }
-            }else{
-              person.iconName = null;
-            }
 
-            if(person.profileImg && person.profileImg.url != ''){
-              person.avatar = person.profileImg.url;
-            }else if(person.photoURL){
-              person.avatar = person.photoURL;
-            }else{
-              person.avatar = './assets/img/man.svg';
-              person.avatarLoaded = true;
-            }
-
-          })
+          });
         }else{
-
           if(this.isSearching){
             this.showNoResult = true;
           }
         }
         this.isSearching = false;
-        people = people.filter((person) => person.aFuid != this.currentUser.uid )
-        this.peopleArr = people;
+        this.peopleArr = people.filter((person:any) => person.aFuid != this.currentUser.uid );
       })
   }
 
   avatarLoaded(index){
     this.people[index].avatarLoaded = true;
   }
-
-
 
 
   showOptions(){
@@ -156,8 +148,14 @@ export class SearchPage {
     this.applySearchFilter();
   }
 
+  showPerson(profile){
+    //profile.isFriend = true;
+    delete profile.providerId;
+    this.navCtrl.push('ProfilePage', {userProfile:profile, isAnyProfile:true});
+  }
 
-  sendFriendRequest(index){
+  sendFriendRequest(clickEvent: Event, index){
+    clickEvent.stopPropagation();
     this.people[index].iconName = 'checkmark';
     let person = this.people[index];
     let key = person.aFuid;
@@ -236,8 +234,10 @@ export class SearchPage {
     this.people = this.peopleArr.map((person) => {
         person.score = 0;
         let settings = person.settings;
+        let sports = person.disciplines;
 
         this.filters.map((_filter) => {
+          _filter.label = _filter.value;
           if(_filter.alias == 'displayName'){
             if(_filter.value) {
               let q = _filter.value;
@@ -249,7 +249,6 @@ export class SearchPage {
 
           }else if(_filter.alias == 'disciplines' ){
             if(settings[_filter.alias].length){
-              let sports = settings[_filter.alias];
               let disciplinesFilters = _filter.value;
               let res  = sports.reduce((r, a) => disciplinesFilters.includes(a) && r.concat(a) || r, []);
               if(disciplinesFilters.length === res.length){
@@ -262,6 +261,12 @@ export class SearchPage {
             if(city.indexOf(this.strManip.toLatineLowerCase(_filter.value)) > -1){
               person.score++;
             }
+          }else if(_filter.alias == 'gender' ){
+            _filter.label = this.translatedString.FILTER_GENDER[_filter.value];
+            if(settings[_filter.alias] == _filter.value){
+              person.score++;
+            }
+            console.log(this.translatedString.FILTER_GENDER[_filter.value]);
           }else{
             if(settings[_filter.alias] == _filter.value){
               person.score++;
@@ -270,6 +275,8 @@ export class SearchPage {
         });
         return person;
       }).filter((people) => people.score == scoreToMatch);
+
+      console.log(this.filters);
 
     if(this.people.length===0){
       this.showNoResult = true;

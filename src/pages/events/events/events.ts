@@ -9,7 +9,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 
 import * as moment  from 'moment';
 
-import { UserProvider, BuddiesProvider, PlacesProvider, NotificationsProvider} from '../../../providers';
+import { UserProvider, BuddiesProvider, PlacesProvider, NotificationsProvider, UtilsProvider} from '../../../providers';
 
 //https://forum.ionicframework.com/t/click-to-slide-open-ion-item-sliding-instead-of-swiping/54642/5
 //http://blog.ihsanberahim.com/2017/05/trigger-ionitemsliding-using-click-event.html
@@ -40,12 +40,13 @@ export class EventsPage {
   public buddies: any = [] ;
   public oneSignalBuddiesId: any = [];
   public eventsListing: any = [];
-  private disciplines:ReadonlyArray<any>;
   private showSpinner:boolean = true;
   private showNoResult:boolean = false;
   private buddiesEventsSubscription;
   private buddiesSubcription;
   private showMapIsEnabled: string = null;
+  public disciplines: ReadonlyArray<any>;
+  public countries: ReadonlyArray<any>;
 
   constructor(
     public navCtrl: NavController,
@@ -59,12 +60,14 @@ export class EventsPage {
     private alertCtrl: AlertController,
     private placesProvider: PlacesProvider,
     public translateService: TranslateService,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    public utils: UtilsProvider
   ) {
     moment.locale(this.translateService.currentLang);
+    (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
+    (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
 
-    this.translateService.get(['DISCIPLINES', 'EVENTS_PAGE', 'CANCEL_BUTTON', 'DELETE_BUTTON']).subscribe((values) => {
-      this.disciplines = values.DISCIPLINES;
+    this.translateService.get(['EVENTS_PAGE', 'CANCEL_BUTTON', 'DELETE_BUTTON']).subscribe((values) => {
       this.translatedStrings = values.EVENTS_PAGE;
       this.translatedStrings.CANCEL_BUTTON = values.CANCEL_BUTTON;
       this.translatedStrings.DELETE_BUTTON = values.DELETE_BUTTON;
@@ -149,7 +152,7 @@ export class EventsPage {
             let style = 'default.png';
 
             if(event.disciplines){
-              let discipline = this.buddiesProvider.getRidingStyle(event.disciplines);
+              let discipline = this.utils.getRidingStyle(event.disciplines, this.disciplines);
               event.disciplines = discipline.name;
               style = discipline.image;
             }
@@ -189,7 +192,7 @@ export class EventsPage {
           }
           let style = 'default.png';
           if(event.disciplines){
-            let discipline = this.buddiesProvider.getRidingStyle(event.disciplines);
+            let discipline = this.utils.getRidingStyle(event.disciplines, this.disciplines);
             event.disciplines = discipline.name;
             style = discipline.image;
           }
@@ -361,12 +364,6 @@ export class EventsPage {
     }
   }
 
-  getRidingStyle(value: string){
-    let discipline = this.disciplines.filter( disciplineVal => disciplineVal.name == value );
-    let alias = (discipline.length) ?  discipline[0].alias+'.jpg' : 'default.png';
-    return alias;
-  }
-
   mergeEvents(eventsListing){
     let newList = [...this.buddiesEvents, ...eventsListing].sort(function(a,b) {
       return new Date(a.time).getTime() - new Date(b.time).getTime();
@@ -411,9 +408,10 @@ export class EventsPage {
 
       for(let uid in event.participants){
         if(event.participants[uid] === true){
-          this.buddiesProvider.getParticipant(uid).subscribe(res => {
+          this.buddiesProvider.getUserByID(uid).subscribe(res => {
             if(res){
-              this.buddiesProvider.eventsParticipantsList.push(res)
+              res = this.utils.buildProfile(res, this.disciplines, this.countries);
+              this.buddiesProvider.eventsParticipantsList.push(res);
             }
           });
         }

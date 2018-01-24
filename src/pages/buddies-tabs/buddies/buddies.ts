@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import 'rxjs/add/observable/forkJoin';
 import {Observable} from 'rxjs/Observable';
 
-import { UserProvider, BuddiesProvider, FacebookProvider, PlacesProvider } from '../../../providers';
+import { UserProvider, BuddiesProvider, FacebookProvider, UtilsProvider } from '../../../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase } from 'angularfire2/database';
@@ -17,6 +17,8 @@ import { AngularFireDatabase } from 'angularfire2/database';
 })
 export class BuddiesPage {
 
+  disciplines: ReadonlyArray<any>;
+  countries: ReadonlyArray<any>;
   currentUser;
   avatarDefault = './assets/img/man.svg';
   userData;
@@ -33,14 +35,15 @@ export class BuddiesPage {
     public navParams: NavParams,
     public afdb: AngularFireDatabase,
     private buddiesProvider: BuddiesProvider,
-    public placesProvider: PlacesProvider,
     private afAuth: AngularFireAuth,
     private userProvider: UserProvider,
+    public utils: UtilsProvider,
     private fb: FacebookProvider
   ) {
     //this.navCtrl.parent.select(0);
+    (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
+    (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
     this.fetchUserData();
-    console.log(this);
   }
 
   fetchUserData(){
@@ -57,7 +60,11 @@ export class BuddiesPage {
     });
   }
 
-  ionViewDidLeave(){ }
+  showPerson(profile){
+    profile.isFriend = true;
+    delete profile.providerId;
+    this.navCtrl.push('ProfilePage', {userProfile:profile, isAnyProfile:true});
+  }
 
   ionViewWillUnload(){
     if(this.buddiesSubcription){
@@ -65,14 +72,6 @@ export class BuddiesPage {
     }
   }
 
-  ionViewDidLoad() {
-    //Fired only when a view is stored in memory. This event is NOT fired on entering a view that is already cached. It’s a nice place for init related tasks.
-    //console.log('ionViewDidLoad');
-  }
-
-  ionViewDidEnter() {
-    //console.log('ionViewDidEnter getCurrentUser');
-  }
 
   goto(page){
     this.navCtrl.push(page);
@@ -81,7 +80,7 @@ export class BuddiesPage {
     this.fb.appInvite();
   }
 
-  updateUrl(event, index) {
+  updateUrl(event: Event, index) {
     this.buddies[index].avatar = this.avatarDefault;
   }
 
@@ -101,33 +100,21 @@ export class BuddiesPage {
       }
 
       buddies.map((_buddy) => {
-        _buddy.settings.countryName = (_buddy.settings && _buddy.settings.country) ? this.placesProvider.getCountry(_buddy.settings.country) : '';
+        _buddy = this.utils.buildProfile(_buddy, this.disciplines, this.countries);
         _buddy.isNewBud = 'b_false';
         if(notif_user_id && _buddy.aFuid == notif_user_id){
           _buddy.isNewBud = 'a_true';
         }
-        if(_buddy)
-        _buddy.sortByName = _buddy.settings.displayName;
-
-        if(_buddy.profileImg && _buddy.profileImg.url != ''){
-          _buddy.avatar = _buddy.profileImg.url;
-        }else if(_buddy.photoURL){
-          _buddy.avatar = _buddy.photoURL;
-        }else{
-          _buddy.avatar = this.avatarDefault;
-        }
-
+        _buddy.sortByName = _buddy.isNewBud+'_'+_buddy.displayName
       });
-      /*buddies.sort(function(obj1, obj2) {
-      	// Ascending: first age less than the previous
-      	return obj1.age - obj2.age;
-      })*/
+
       this.buddies = buddies;
 
     })
   }
 
-  removeFriend(index){
+  removeFriend(clickEvent: Event, index){
+    clickEvent.stopPropagation();
     let { aFuid } = this.buddies[index];
 
     //remove reference to request in currentUser

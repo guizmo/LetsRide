@@ -114,10 +114,10 @@
           {{ 'MAP_PAGE.EVENT_HEAD' | translate }}
         </ion-list-header>
 
-        <ion-item>
+        <button ion-item (click)="showPerson(event.host)">
           <ion-icon name="contact" color="dark" item-start></ion-icon>
-          {{event.displayName}}
-        </ion-item>
+          {{ event.displayName }}
+        </button>
 
 
         <ion-item>
@@ -150,12 +150,12 @@
         <ion-list-header>
           {{ 'MAP_PAGE.EVENT_SUB_HEAD' | translate }}
         </ion-list-header>
-        <ion-item *ngFor="let buddy of buddiesProvider.eventsParticipantsList; let i = index;">
+        <button ion-item (click)="showPerson(buddy)" *ngFor="let buddy of buddiesProvider.eventsParticipantsList; let i = index;">
           <ion-avatar item-start>
-            <img src="{{buddy.photoURL}}" (error)="updateUrl($event, i)">
+            <img src="{{buddy.profileImgPath}}" (error)="updateUrl($event, i)">
           </ion-avatar>
           {{buddy.displayName}}
-        </ion-item>
+        </button>
       </ion-list>
     </div>
   </ion-scroll>

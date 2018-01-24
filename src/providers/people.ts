@@ -17,7 +17,7 @@ export class PeopleProvider {
   ) {
   }
 
-  getPeople(start = null, end = null, limitToFirst = null): Observable<any> {
+  getPeopleOld(start = null, end = null, limitToFirst = null): Observable<any> {
     /*let query:any = {
       orderByChild : 'settings/displayName'
     };*/
@@ -49,6 +49,10 @@ export class PeopleProvider {
         return newRef;
       }
     ).valueChanges();
+  }
+
+  getPeople() {
+    return this.afdb.list('/users').valueChanges();
   }
 
 

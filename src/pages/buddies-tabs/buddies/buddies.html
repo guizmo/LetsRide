@@ -35,10 +35,10 @@
         </ion-card>
       </div>
       <ion-list no-margin>
-        <ion-item-sliding *ngFor="let buddy of buddies | orderBy : ['isNewBud','sortByName']; let i = index">
-          <ion-item >
+        <ion-item-sliding *ngFor="let buddy of buddies | orderBy : ['sortByName']; let i = index">
+          <ion-item (click)="showPerson(buddy)">
             <ion-avatar item-start>
-              <img src="{{buddy.avatar}}" (error)="updateUrl($event, i)">
+              <img src="{{buddy.profileImgPath}}" (error)="updateUrl($event, i)">
             </ion-avatar>
             <h2 *ngIf="buddy.settings">{{buddy.settings.displayName}}</h2>
             <h3 *ngIf="buddy.settings">{{buddy.settings.countryName}}</h3>
@@ -46,7 +46,7 @@
           </ion-item>
 
           <ion-item-options side="right">
-            <button ion-button color="danger" icon-only (click)="removeFriend(i)">
+            <button ion-button color="danger" icon-only (click)="removeFriend($event, i)">
               <ion-icon name="remove-circle"></ion-icon>
             </button>
           </ion-item-options>

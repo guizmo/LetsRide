@@ -4,6 +4,7 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-searchbar
+      [class.userListLoading]="!peopleArr"
       (ionInput)="applySearchFilter($event)"
       [showCancelButton]=true
       cancelButtonText="{{ 'CANCEL_BUTTON' | translate }}"
@@ -12,7 +13,7 @@
       placeholder="{{ 'SEARCH_PAGE.PLACEHOLDER' | translate }}"
       #searchInput>
     </ion-searchbar>
-    <ion-buttons end >
+    <ion-buttons end *ngIf="peopleArr">
       <button ion-button icon-only (click)="showOptions()"  >
         <ion-icon name="options"></ion-icon>
       </button>
@@ -45,7 +46,7 @@
 
         <ng-container *ngSwitchDefault>
           <button color="secondary" ion-button small icon-right (click)="removeFilter(i)">
-            {{filter.value}}
+            {{filter.label}}
             <ion-icon name="close"></ion-icon>
           </button>
         </ng-container>
@@ -56,7 +57,7 @@
 
   <ion-label *ngIf="isSearching" text-center color="dark">
     <ion-spinner></ion-spinner><br>
-    Searching
+    {{ 'SEARCH_PAGE.SEARCHING' | translate }}
   </ion-label>
 
 
@@ -64,26 +65,24 @@
 
   <ion-list [virtualScroll]="people" approxItemHeight="60px" >
 
-      <ion-item *virtualItem="let person; let i = index" >
+      <ion-item *virtualItem="let person; let i = index"  (click)="showPerson(person)">
         <ion-avatar item-start>
-          <ion-img [src]="person.avatar"></ion-img>
+          <ion-img [src]="person.profileImgPath"></ion-img>
         </ion-avatar>
         <h2>{{person.settings.displayName}}</h2>
         <h3 *ngIf="person.settings.country">{{person.settings.countryName}}</h3>
-        <ng-container item-end *ngIf="!person.iconName">
-          <button
-            *ngIf="!person.buddies && !person.requestSent || person.buddies && !person.buddies[currentUser.uid]"
+          <button item-end
+            *ngIf="!person.isFriendPending && !person.isFriend"
             ion-button clear item-end icon-only
-            (click)="sendFriendRequest(i)" >
+            (click)="sendFriendRequest($event, i)" >
             <ion-icon color="dark" name="person-add"></ion-icon>
           </button>
-        </ng-container>
-        <ion-icon *ngIf="person.iconName" color="dark" [name]="person.iconName" item-end></ion-icon>
+        <ion-icon *ngIf="person.isFriendPending || person.isFriend" color="dark" [name]="person.iconName" item-end></ion-icon>
 
       </ion-item>
   </ion-list>
 
   <h3 [style.color]="'#555'" text-center *ngIf="!isSearching && showNoResult && !people.length" class="no-result">
-    There is no result for this query...
+    {{ 'SEARCH_PAGE.NO_RESULT' | translate }}
   </h3>
 </ion-content>

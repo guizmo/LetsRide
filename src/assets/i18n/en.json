@@ -38,7 +38,7 @@
   "ITEM_ABOUT_PLACEHOLDER" : "About",
 
   "DONE_BUTTON" : "Done",
-  "SAVE_BUTTON" : "Cancel",
+  "SAVE_BUTTON" : "Save",
   "CANCEL_BUTTON" : "Cancel",
   "DELETE_BUTTON" : "Delete",
   "EDIT_BUTTON" : "Edit",
@@ -172,6 +172,21 @@
     "CONF_PWD": "Confirm Password"
   },
 
+  "PROFILE_PAGE": {
+    "LOCATION_BTN": "Add your location",
+    "INFOS_BTN": "Add your infos",
+    "STYLE_BTN": "Add your disciplines",
+    "LEVEL_BTN": "Add your level",
+    "LEVEL": {
+      "1": "Novice",
+      "2": "Intermediate",
+      "3": "Strong intermediate",
+      "4": "Advanced",
+      "5": "Expert"
+    },
+    "EMAIL_VERIFY": "You must verify your email to use Let's Ride!<br>Check you mailbox!"
+  },
+
   "PROFILE_EDIT_PAGE":{
     "NAME": "Name",
     "CITY": "City",
@@ -198,7 +213,13 @@
 
   "SEARCH_PAGE":{
     "PLACEHOLDER": "Find riders",
-    "FILTER_TITLE": "Filters"
+    "FILTER_TITLE": "Filters",
+    "NO_RESULT": "There is no result for this query...",
+    "SEARCHING": "searching",
+    "FILTER_GENDER": {
+      "Male": "Male",
+      "Female": "Female"
+    }
   },
 
   "EVENTS_PAGE":{
@@ -234,7 +255,7 @@
   "MAP_PAGE": {
     "SEARCH_PLACEHOLDER": "search for location",
     "EVENT_HEAD": "Event details",
-    "EVENT_HEAD": "They are going to ..."
+    "EVENT_SUB_HEAD": "They are going to ..."
   },
 
   "CAPTURE_PROVIDER": {

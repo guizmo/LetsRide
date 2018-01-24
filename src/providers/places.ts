@@ -2,25 +2,21 @@ import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
-import { TranslateService } from '@ngx-translate/core';
 
-import { UserProvider} from '../providers';
+import { UtilsProvider} from './utils';
 
 @Injectable()
 export class PlacesProvider {
 
   placesRef: AngularFireList<any[]>;
   places: Observable<any[]>;
-  private countries: ReadonlyArray<any>;
+  public countries: ReadonlyArray<any>;
 
   constructor(
     public db: AngularFireDatabase,
-    public userProvider: UserProvider,
-    public translateService: TranslateService,
+    public utils: UtilsProvider,
   ) {
-    this.translateService.get(['COUNTRIES']).subscribe((values) => {
-      this.countries = values.COUNTRIES;
-    });
+    (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
     this.placesRef = this.db.list('/places', ref => ref.orderByChild('name') );
     this.places = this.placesRef.snapshotChanges()
   }
@@ -62,15 +58,6 @@ export class PlacesProvider {
   handleError(error) {
     console.error(error);
     return Observable.throw(error.json().error || 'Server error');
-  }
-  getCountry(code = ''){
-    let filteredList;
-    let countryName;
-    if(code != ''){
-      filteredList = this.countries.filter(country => code == country.code);
-      countryName = filteredList.length ? filteredList[0].name : code;
-    }
-    return countryName;
   }
 
 }

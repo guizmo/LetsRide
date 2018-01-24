@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ModalNavPage } from '../modal-nav/modal-nav';
 import { MapStyle } from '../../constants/mapStyle';
 
-import { BuddiesProvider} from '../../providers';
+import { BuddiesProvider, UtilsProvider} from '../../providers';
 
 declare var google:any;
 
@@ -55,6 +55,8 @@ export class MapPage {
   private loading: any;
   private zoomControlOptions:ZoomControlOptions;
   private mapStyle;
+  public disciplines: ReadonlyArray<any>;
+  public countries: ReadonlyArray<any>;
 
   @ViewChild("search", { read: ElementRef }) searchElementRef;
 
@@ -69,7 +71,10 @@ export class MapPage {
     public modalNavPage: ModalNavPage,
     public afdb: AngularFireDatabase,
     public viewCtrl: ViewController,
+    public utils: UtilsProvider
   ) {
+    (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
+    (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
     this.mapStyle = MapStyle;
     this.translateService.get(['SAVE_BUTTON', 'CANCEL_BUTTON', 'DONE_BUTTON', 'BACK_BUTTON_TEXT']).subscribe((values) => {
       this.translatedStrings = values;
@@ -117,6 +122,14 @@ export class MapPage {
       this.fullscreen = false;
       this.event = this.modalNavPage.navParams.get('event');
       this.place = this.modalNavPage.navParams.get('values');
+      this.buddiesProvider.getUserByID(this.event.aFuid).subscribe(res => {
+        if(res){
+          res = this.utils.buildProfile(res, this.disciplines, this.countries);
+          this.event.host = res;
+        }
+      });
+
+      console.log(this);
     }
     if( this.state.includes('display') ){
       this.searchVisible = false;
@@ -161,6 +174,7 @@ export class MapPage {
   onCancelSearch(searchbar){
     this.autocompleteItems = [];
   }
+
   searchAutocomplete(searchbar) {
     // set q to the value of the searchbar
     var q = (searchbar.srcElement != null ) ? searchbar.srcElement.value : searchbar;
@@ -328,7 +342,12 @@ export class MapPage {
   }
 
   updateUrl(event, index) {
-    this.buddiesProvider.eventsParticipantsList[index].photoURL = './assets/img/man.svg';
+    this.buddiesProvider.eventsParticipantsList[index].profileImgPath = './assets/img/man.svg';
+  }
+
+  showPerson(profile){
+    delete profile.providerId;
+    this.navCtrl.push('ProfilePage', {userProfile:profile, isAnyProfile:true});
   }
 
 }

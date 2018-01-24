@@ -7,7 +7,7 @@ import * as moment  from 'moment';
 import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 
-import { UserProvider, NotificationsProvider, BuddiesProvider, PlacesProvider} from '../../providers';
+import { UserProvider, NotificationsProvider, BuddiesProvider, PlacesProvider, UtilsProvider} from '../../providers';
 
 @IonicPage()
 @Component({
@@ -18,6 +18,7 @@ export class NotificationsPage {
 
   activeMenu = 'NotificationsPage';
   notifEventId = null;
+  public disciplines:ReadonlyArray<any>;
   public eventsNotifications: any = [] ;
   public requestsNotifications: any = [] ;
   private showMapIsEnabled: string = null;
@@ -50,8 +51,11 @@ export class NotificationsPage {
     private userProvider: UserProvider,
     private modalCtrl: ModalController,
     private buddiesProvider: BuddiesProvider,
-    private notifications: NotificationsProvider
+    private notifications: NotificationsProvider,
+    public utils: UtilsProvider
   ) {
+    console.log(this);
+    (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
     if(this.navParams.get('notificationID')){
       let eventType = this.navParams.get('type');
       if(eventType == 'friendRequest'){
@@ -137,7 +141,7 @@ export class NotificationsPage {
       let eventTime = moment(event.time);
 
       if(event.disciplines){
-        let discipline = this.buddiesProvider.getRidingStyle(event.disciplines);
+        let discipline = this.utils.getRidingStyle(event.disciplines, this.disciplines);
         event.disciplines = discipline.name;
       }
 
@@ -328,7 +332,7 @@ export class NotificationsPage {
 
       for(let uid in event.participants){
         if(event.participants[uid] === true){
-          this.buddiesProvider.getParticipant(uid).subscribe(res => {
+          this.buddiesProvider.getUserByID(uid).subscribe(res => {
             if(res){
               this.buddiesProvider.eventsParticipantsList.push(res)
             }

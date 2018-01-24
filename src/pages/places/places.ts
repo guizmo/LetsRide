@@ -1,7 +1,7 @@
 import { Component, ViewChildren } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, AlertController, FabContainer } from 'ionic-angular';
 
-import { UserProvider, PlacesProvider, CaptureProvider} from '../../providers';
+import { UserProvider, PlacesProvider, CaptureProvider, UtilsProvider} from '../../providers';
 
 import { TranslateService } from '@ngx-translate/core';
 import { Country } from '../../models';
@@ -14,7 +14,7 @@ import { Country } from '../../models';
 export class PlacesPage {
   @ViewChildren('fab') fabs;
 
-  private countries: ReadonlyArray<Country>;
+  public countries: ReadonlyArray<any>;
   places;
   user;
   images: Array<any>=[];
@@ -28,20 +28,19 @@ export class PlacesPage {
     public modalCtrl: ModalController,
     public userProvider: UserProvider,
     public placesProvider: PlacesProvider,
+    public utils: UtilsProvider,
     private capture: CaptureProvider,
     public translateService: TranslateService,
     private alertCtrl: AlertController
   ) {
-    this.translateService.get(['COUNTRIES']).subscribe((values) => {
-      this.countries = values.COUNTRIES;
-    });
+    (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
 
     this.userProvider.afAuth.authState.subscribe((user) => {
       if(user){
         this.user = user.toJSON();
         this.placesProvider.getAllByUser(this.user.uid).subscribe((data) => {
           this.places = data;
-          this.places.map(place => place.countryName = this.placesProvider.getCountry(place.country))
+          this.places.map(place => place.countryName = this.utils.getCountry(place.country, this.countries))
           this.showNoResult = (data.length < 1) ? true : false ;
           this.showSpinner = false;
         });

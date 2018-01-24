@@ -78,7 +78,7 @@ export class LetsRide {
         if(this.hotUpdate.loader){
           this.hotUpdate.loader.dismiss();
         }
-        //this.hotUpdate.init();
+        this.hotUpdate.init();
         this.statusBar.styleDefault();
         this.splashScreen.hide();
         this.notifications.init(this.nav);

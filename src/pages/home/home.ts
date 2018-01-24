@@ -4,7 +4,7 @@ import { IonicPage, NavController, ModalController, ItemSliding, Item } from 'io
 import { Subscription } from 'rxjs/Subscription';
 
 import { AngularFireAuth } from 'angularfire2/auth';
-import { UserProvider, LocationTrackerProvider, NotificationsProvider} from '../../providers';
+import { UserProvider, LocationTrackerProvider, NotificationsProvider, UtilsProvider} from '../../providers';
 
 
 @IonicPage()
@@ -31,6 +31,8 @@ export class MainPage {
     radius: 5,
     friends: false
   };
+  public disciplines: ReadonlyArray<any>;
+  public countries: ReadonlyArray<any>;
 
   constructor(
     private navCtrl: NavController,
@@ -39,7 +41,10 @@ export class MainPage {
     public afAuth: AngularFireAuth,
     public locationTracker: LocationTrackerProvider,
     private notifications: NotificationsProvider,
+    private utils: UtilsProvider,
   ) {
+    (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
+    (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
     this.state = {
       enabled: this.locationTracker.is_tracking
     }
@@ -53,6 +58,11 @@ export class MainPage {
         });
       }
     });
+  }
+
+  showPerson(profile){
+    profile.isFriend = true;
+    this.navCtrl.push('ProfilePage', {userProfile:profile, isAnyProfile:true});
   }
 
   ionViewWillEnter(){
@@ -163,7 +173,7 @@ export class MainPage {
     //to avoid reflow slugish animation
 
     people.map((person) => {
-      person.avatarLoaded = false;
+      /*person.avatarLoaded = false;
       if(person.profileImg && person.profileImg.url != ''){
         person.avatar = person.profileImg.url;
       }else if(person.photoURL){
@@ -171,7 +181,9 @@ export class MainPage {
       }else{
         person.avatar = './assets/img/man.svg';
         person.avatarLoaded = true;
-      }
+      }*/
+      person = this.utils.buildProfile(person, this.disciplines, this.countries);
+      console.log(person);
     })
     if(this.refresher) {
       this.refresher.complete();
@@ -246,7 +258,8 @@ export class MainPage {
       this.activeItemSliding = null;
     }
   }
-  openOption(itemSlide: ItemSliding, item: Item, options) {
+  openOption(itemSlide: ItemSliding, item: Item, options, clickEvent: Event) {
+    clickEvent.stopPropagation();
     if(this.activeItemSliding!==null) //use this if only one active sliding item allowed
     this.closeOption();
     this.activeItemSliding = itemSlide;

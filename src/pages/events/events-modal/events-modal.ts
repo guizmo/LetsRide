@@ -34,7 +34,11 @@ export class EventsModalPage {
     private placesProvider: PlacesProvider
   ) {
     this.translateService.get(['DISCIPLINES']).subscribe((values) => {
-      this.disciplines = values.DISCIPLINES;
+      this.disciplines = values.DISCIPLINES.sort(function(a, b) {
+        if(a.name < b.name) return -1;
+        if(a.name > b.name) return 1;
+        return 0;
+      });
     })
     let controls = {
       name: '',

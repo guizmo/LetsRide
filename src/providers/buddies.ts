@@ -3,14 +3,14 @@ import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
-import { TranslateService } from '@ngx-translate/core';
+
+import { UtilsProvider } from './utils';
 
 import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 
 @Injectable()
 export class BuddiesProvider {
 
-  public disciplines:ReadonlyArray<any>;
   public buddiesIdRef:AngularFireList<any[]>;
   public buddiesId:Observable<any[]>;
   public buddies = new BehaviorSubject<any>([]) ;
@@ -21,12 +21,9 @@ export class BuddiesProvider {
   public eventsParticipations:Observable<any>;
 
   constructor(
-    public translateService: TranslateService,
     public afdb: AngularFireDatabase,
+    public utils: UtilsProvider
   ) {
-    this.translateService.get(['DISCIPLINES']).subscribe((values) => {
-      this.disciplines = values.DISCIPLINES;
-    });
   }
 
   setBuddiesList(uid:string){
@@ -36,6 +33,7 @@ export class BuddiesProvider {
       return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
     });
   }
+
 
   getBuddies(uid:string){
     //console.log('getBuddies in provider', uid);
@@ -127,36 +125,6 @@ export class BuddiesProvider {
     });
   }
 
-  /*getBuddiesEvents(uid:string){
-
-    if(!this.buddiesId){
-      //console.log('if !this.buddiesId getBuddiesEvents');
-      this.setBuddiesList(uid);
-    }
-
-    this.buddiesId.subscribe(
-      _buddies => {
-        if(_buddies){
-          let buddiesRequest = [];
-          for(let _buddy of _buddies){
-            buddiesRequest.push( this.afdb.object(`/events/${_buddy.key}`).snapshotChanges().first() );
-          }
-          Observable.forkJoin(buddiesRequest).subscribe((res) => {
-            if(res){
-              let events = {};
-              res.map(ev => {
-                let event = {};
-                events[ev.payload.key] = ev.payload.val() ;
-              })
-              this.buddiesEvents.next(events);
-            }
-          });
-        }
-      },
-      error => console.log('error'),
-      () => console.log('finished')
-    );
-  }*/
 
 
   getParticipantsID(uid: string, eventID: string){
@@ -175,18 +143,10 @@ export class BuddiesProvider {
     return this.afdb.object(`/users/${uid}`).valueChanges();
   }
 
-  getRidingStyle(alias: string){
-    let discipline = {
-      image: 'default.png'
-    };
-    if(alias != ''){
-      let filtered = this.disciplines.filter( disciplineVal => disciplineVal.alias == alias );
-      if(filtered.length){
-        discipline = filtered[0];
-        discipline.image = filtered[0].alias+'.jpg';
-      }
-    }
-    return discipline;
+  getUserByID(uid:string){
+    return this.afdb.object(`/users/${uid}`).valueChanges();
   }
+
+
 
 }

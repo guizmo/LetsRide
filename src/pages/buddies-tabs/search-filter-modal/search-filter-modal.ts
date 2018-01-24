@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
+import { UtilsProvider } from '../../../providers';
 
 
 @IonicPage()
@@ -11,8 +11,8 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class SearchFilterModalPage {
   private searchForm: FormGroup;
-  disciplines:ReadonlyArray<any>;
-  countries:ReadonlyArray<any>;
+  public disciplines: ReadonlyArray<any>;
+  public countries: ReadonlyArray<any>;
   activeMenu = 'BuddiesTabsPage';
 
 
@@ -21,12 +21,10 @@ export class SearchFilterModalPage {
     private formBuilder: FormBuilder,
     public viewCtrl: ViewController,
     public navParams: NavParams,
-    public translateService: TranslateService,
+    public utils: UtilsProvider,
   ) {
-    this.translateService.get(['COUNTRIES', 'DISCIPLINES']).subscribe((values) => {
-      this.countries = values.COUNTRIES;
-      this.disciplines = values.DISCIPLINES;
-    })
+    (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
+    (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
 
 
     let controls = this.getControls();
@@ -56,10 +54,9 @@ export class SearchFilterModalPage {
 
   getControls(){
     let filters = this.arrayToObject(this.navParams.data.filters, 'alias');
-
     let controls = {
       disciplines: [],
-      country: '',
+      countryName: '',
       gender: '',
       city: '',
       displayName: '',

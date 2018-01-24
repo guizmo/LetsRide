@@ -53,7 +53,8 @@ import {
   PermissionsProvider,
   CloudFunctionsProvider,
   StringManipulationProvider,
-  HotUpdateProvider
+  HotUpdateProvider,
+  UtilsProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -138,12 +139,12 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     GoogleMapsAPIWrapper,
     ConnectivityService,
     Network,
+    BuddiesProvider,
     LocationTrackerProvider,
     BackgroundGeolocation,
     Geolocation,
     OneSignal,
     NotificationsProvider,
-    BuddiesProvider,
     FileProvider,
     File,
     Camera,
@@ -159,7 +160,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     CloudFunctionsProvider,
     LatinisePipe,
     StringManipulationProvider,
-    HotUpdateProvider
+    HotUpdateProvider,
+    UtilsProvider
   ]
 })
 export class AppModule {}

@@ -45,8 +45,9 @@ export class BuddiesTabsPage {
   }
 
 
-  ionViewDidEnter() {
 
+  ionViewDidEnter() {
+    //console.log('TABS ionViewDidEnter');
     //to redirect
     /*let _self = this;
     setTimeout(function(){

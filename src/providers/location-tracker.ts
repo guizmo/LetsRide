@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, Injector } from '@angular/core';
 import { Platform } from 'ionic-angular';
 
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
@@ -13,7 +13,8 @@ import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angular
 
 import { PermissionsProvider } from './permissions';
 import { CloudFunctionsProvider } from './cloud-functions';
-
+import { UtilsProvider } from './utils';
+import { BuddiesProvider } from './buddies';
 import * as moment  from 'moment';
 
 
@@ -48,6 +49,7 @@ export class LocationTrackerProvider {
     locationProvider:0 //android
   };
 
+
   constructor(
     public backgroundGeolocation: BackgroundGeolocation,
     public geolocation: Geolocation,
@@ -55,11 +57,11 @@ export class LocationTrackerProvider {
     public platform: Platform,
     public afdb: AngularFireDatabase,
     private perm: PermissionsProvider,
-    private cloudFunctions: CloudFunctionsProvider
+    private cloudFunctions: CloudFunctionsProvider,
+    public utils: UtilsProvider,
+    //public buddiesProvider: BuddiesProvider
   ) {
-    //console.log(this);
     //console.log('is_tracking', this.is_tracking);
-
     this.platform.ready().then((res) => {
       this.checkLocationPermissions();
       //console.log('ready : cantrack = ', this);
@@ -270,16 +272,8 @@ export class LocationTrackerProvider {
             Observable.forkJoin(buddiesRequest).subscribe((snapshots) => {
               if(snapshots){
                 snapshots.map( (snapshot:any) => {
-                  let profileImg = (snapshot.profileImg && snapshot.profileImg.url) ? snapshot.profileImg.url : null;
-                  let buddy = {
-                    displayName: snapshot.settings.displayName,
-                    aFuid: snapshot.aFuid,
-                    oneSignalId: snapshot.oneSignalId || null,
-                    buddies: snapshot.buddies || null,
-                    photoURL: snapshot.photoURL || profileImg || null,
-                    location: key_distance_obj[snapshot.aFuid]
-                  }
-                  buddies.push(buddy);
+                  snapshot.location = key_distance_obj[snapshot.aFuid];
+                  buddies.push(snapshot);
                 });
                 resolve(buddies);
                 this.trackerSubsciption.unsubscribe();
