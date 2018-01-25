@@ -225,13 +225,16 @@
     "CARD_HEAD": "Vous n'avez aucun événement en cours !",
     "CARD_CONTENT": "Lors de l'ajout d'événements, vos amis en seront automatiquement informés. Ils le verront dans leur notifications !",
     "ALERT_TITLE": "Effacer !",
+    "PRIVATE": "Privé",
+    "PUBLIC": "Publique",
     "ALERT_MSG": "Vous allez supprimer définitivement cet événement !"
   },
 
   "EVENTS_EDIT_PAGE":{
     "WHEN": "Date",
     "PLACE": "Spot",
-    "WHAT": "Sport"
+    "WHAT": "Sport",
+    "STATUS": "Seulement pour les amis"
   },
 
   "NOTIFICATIONS_PAGE":{

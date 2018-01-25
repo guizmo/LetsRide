@@ -29,11 +29,13 @@
     </ion-card>
   </div>
   <ng-container *ngFor="let event of eventsListing; let last = last; let i = index" >
-    <ion-card *ngIf="event.participates || !event.aFuid"
-      no-margin f-width margin-bottom no-radius no-shadow [class.last-item]="last"
+    <ion-card
+      *ngIf="event.participates || !event.aFuid"
+      no-margin f-width margin-bottom no-radius no-shadow tappable
+      [class.last-item]="last"
       [class.active-map]="showMapIsEnabled == i"
       (click)="showMap(i)">
-      <ion-row><!-- [disabled]="event.showMapIsEnabled != null && !event.showMapIsEnabled" -->
+      <ion-row>
         <ion-col class="cover-img" col-12 col-sm-4 no-padding>
           <div *ngIf="event.backgroundImage" f-height f-width class="cover-style" [style.backgroundImage]="'url(' + event.backgroundImage + ')'"></div>
         </ion-col>
@@ -56,7 +58,7 @@
 
             <p *ngIf="event.where || event.disciplines">
               <ion-icon color="brand" ios="ios-map-outline" md="md-map"></ion-icon>
-              {{event.where}}<span *ngIf="event.where && event.disciplines" > - </span>{{event.disciplines}}
+              {{event.where}}<span *ngIf="event.where && event.disciplines" > - </span>{{event.disciplinesName}}
             </p>
           </ion-card-content>
 

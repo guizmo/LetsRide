@@ -63,6 +63,7 @@ export class EventsPage {
     private popoverCtrl: PopoverController,
     public utils: UtilsProvider
   ) {
+    console.log(this);
     moment.locale(this.translateService.currentLang);
     (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
     (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
@@ -111,6 +112,7 @@ export class EventsPage {
     if(event){
       this.itemInUpdateMode = event.key;
     }
+    console.log(event);
     this.eventModal = this.modalCtrl.create('EventsModalPage', { values: event, places: this.places }, { cssClass: 'inset-modal' })
     this.eventModal.present();
 
@@ -150,10 +152,10 @@ export class EventsPage {
             let event = bud_events[key];
             let eventTime = moment(event.time);
             let style = 'default.png';
-
+            console.log(event.disciplines);
             if(event.disciplines){
               let discipline = this.utils.getRidingStyle(event.disciplines, this.disciplines);
-              event.disciplines = discipline.name;
+              event.disciplinesName = discipline.name;
               style = discipline.image;
             }
             event.backgroundImage = `./assets/img/styles/${style}`;
@@ -191,9 +193,10 @@ export class EventsPage {
             this.eventsRef.remove(event.key);
           }
           let style = 'default.png';
+          console.log(event.disciplines);
           if(event.disciplines){
             let discipline = this.utils.getRidingStyle(event.disciplines, this.disciplines);
-            event.disciplines = discipline.name;
+            event.disciplinesName = discipline.name;
             style = discipline.image;
           }
           event.backgroundImage = `./assets/img/styles/${style}`;
@@ -405,6 +408,7 @@ export class EventsPage {
     if(this.showMapIsEnabled === null){
       this.showMapIsEnabled = index;
       let event = this.eventsListing[index];
+      console.log(event);
 
       for(let uid in event.participants){
         if(event.participants[uid] === true){

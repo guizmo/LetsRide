@@ -65,7 +65,7 @@
 
   <ion-list [virtualScroll]="people" approxItemHeight="60px" >
 
-      <ion-item *virtualItem="let person; let i = index"  (click)="showPerson(person)">
+      <button ion-item *virtualItem="let person; let i = index"  (click)="showPerson(person)">
         <ion-avatar item-start>
           <ion-img [src]="person.profileImgPath"></ion-img>
         </ion-avatar>
@@ -79,7 +79,7 @@
           </button>
         <ion-icon *ngIf="person.isFriendPending || person.isFriend" color="dark" [name]="person.iconName" item-end></ion-icon>
 
-      </ion-item>
+      </button>
   </ion-list>
 
   <h3 [style.color]="'#555'" text-center *ngIf="!isSearching && showNoResult && !people.length" class="no-result">

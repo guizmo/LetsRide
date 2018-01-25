@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, AlertController } from 'ionic-angular';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Discipline } from '../../../models';
-import { PlacesProvider, AlertProvider } from '../../../providers';
+import { PlacesProvider, AlertProvider, UtilsProvider } from '../../../providers';
 
 import * as moment  from 'moment';
 
@@ -31,21 +31,19 @@ export class EventsModalPage {
     public viewCtrl: ViewController,
     private alertProvider: AlertProvider,
     public translateService: TranslateService,
+    public utils: UtilsProvider,
     private placesProvider: PlacesProvider
   ) {
-    this.translateService.get(['DISCIPLINES']).subscribe((values) => {
-      this.disciplines = values.DISCIPLINES.sort(function(a, b) {
-        if(a.name < b.name) return -1;
-        if(a.name > b.name) return 1;
-        return 0;
-      });
-    })
+    console.log(this);
+    (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
+
     let controls = {
       name: '',
       time: this.currentDate,
       disciplines: '',
       where: '',
-      place_id: ''
+      place_id: '',
+      private: false
     }
     this.eventForm = formBuilder.group(controls);
     this.places = navParams.data.places;

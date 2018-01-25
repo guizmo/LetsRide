@@ -35,6 +35,16 @@
     }
 }
 
+ion-header ion-navbar .back-button{
+  margin: 0 0.2rem;
+  ion-icon.back-button-icon.icon {
+    font-size: 1.4em;
+    line-height: .67;
+    padding-right: 0.3em;
+    margin: 0;
+    min-width: auto;
+  }
+}
 
 
 ion-icon {

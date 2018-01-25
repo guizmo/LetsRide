@@ -74,7 +74,7 @@
           {{ 'NOTIFICATIONS_PAGE.SEG_1.HEADING' | translate }}
         </ion-list-header>
         <ng-container *ngFor="let event of buddiesEvents | orderBy : ['time']; let i = index">
-          <ion-card (click)="showMap(i)" [class.active-map]="showMapIsEnabled == i">
+          <ion-card tappable (click)="showMap(i)" [class.active-map]="showMapIsEnabled == i">
             <ion-card-header>
               <h1>{{event.displayName}}</h1>
             </ion-card-header>

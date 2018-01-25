@@ -16,6 +16,7 @@ export class ProfilePage {
 
   activeMenu = 'ProfilePage';
   isAnyProfile:boolean = false;
+  showMap:boolean = false;
   profileViewData:any = null;
   private userData:any;
   private profileImg:string = null;
@@ -62,8 +63,28 @@ export class ProfilePage {
     }
     if(this.navParams.get('isAnyProfile')){
       this.isAnyProfile = this.navParams.get('isAnyProfile');
+      this.showMap = this.navParams.get('showMap');
     }
 
+  }
+
+  openMap(){
+    let data = {
+      state: 'display_trackers',
+      key: null,
+      values: null,
+      page:'MapPage',
+      userId: this.currentUser.uid,
+      buddy: this.profileViewData
+    }
+    this.modalCtrl
+      .create('ModalNavPage', data)
+      .present();
+  }
+
+  sendMessage(){
+    //TODO: MESSAGE ROUTE
+    console.log('send message');
   }
 
   changeProfileImg(){
@@ -130,6 +151,10 @@ export class ProfilePage {
               this.profileViewData = this.utils.buildProfile(userData, this.disciplines, this.countries);
             }else{
               this.profileViewData = userData;
+            }
+
+            if(!this.profileViewData.location){
+              this.showMap = false;
             }
           }
           this.emailVerified = this.profileViewData.emailVerified;

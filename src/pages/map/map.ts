@@ -73,6 +73,7 @@ export class MapPage {
     public viewCtrl: ViewController,
     public utils: UtilsProvider
   ) {
+    console.log(this);
     (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
     (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
     this.mapStyle = MapStyle;
@@ -345,9 +346,12 @@ export class MapPage {
     this.buddiesProvider.eventsParticipantsList[index].profileImgPath = './assets/img/man.svg';
   }
 
-  showPerson(profile){
-    delete profile.providerId;
-    this.navCtrl.push('ProfilePage', {userProfile:profile, isAnyProfile:true});
+  showPerson(data, host = false){
+    let profile = (host && data.host) ? data.host : (host && !data.host) ? null : data;
+    let isAnyProfile = (profile) ? true : false;
+    console.log('isAnyProfile', isAnyProfile);
+    if(profile && profile.providerId) delete profile.providerId;
+    this.navCtrl.push('ProfilePage', {userProfile:profile, isAnyProfile});
   }
 
 }

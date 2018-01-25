@@ -226,13 +226,16 @@
     "CARD_HEAD": "You have no current event !",
     "CARD_CONTENT": "When adding events, your friends will automatically be notified about it. They will see it in their notifications !",
     "ALERT_TITLE": "Deleting !",
+    "PRIVATE": "Private",
+    "PUBLIC": "Public",
     "ALERT_MSG": "You are going to permanently delete this event !"
   },
 
   "EVENTS_EDIT_PAGE":{
     "WHEN": "Date",
     "PLACE": "Place",
-    "WHAT": "Sport"
+    "WHAT": "Sport",
+    "STATUS": "Friends only"
   },
 
   "NOTIFICATIONS_PAGE":{

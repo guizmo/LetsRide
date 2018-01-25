@@ -62,7 +62,7 @@ export class MainPage {
 
   showPerson(profile){
     profile.isFriend = true;
-    this.navCtrl.push('ProfilePage', {userProfile:profile, isAnyProfile:true});
+    this.navCtrl.push('ProfilePage', {userProfile:profile, isAnyProfile:true, showMap: true});
   }
 
   ionViewWillEnter(){
@@ -173,17 +173,7 @@ export class MainPage {
     //to avoid reflow slugish animation
 
     people.map((person) => {
-      /*person.avatarLoaded = false;
-      if(person.profileImg && person.profileImg.url != ''){
-        person.avatar = person.profileImg.url;
-      }else if(person.photoURL){
-        person.avatar = person.photoURL;
-      }else{
-        person.avatar = './assets/img/man.svg';
-        person.avatarLoaded = true;
-      }*/
       person = this.utils.buildProfile(person, this.disciplines, this.countries);
-      console.log(person);
     })
     if(this.refresher) {
       this.refresher.complete();

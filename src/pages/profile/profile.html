@@ -7,8 +7,20 @@
     </ion-buttons>
 
     <ion-buttons *ngIf="currentUser && profileViewData && !isAnyProfile" end>
-      <button ion-button (click)="presentProfileModal()" >
+      <button icon-only ion-button (click)="presentProfileModal()" >
         <ion-icon name="md-create"></ion-icon>
+      </button>
+    </ion-buttons>
+
+    <ion-buttons *ngIf="showMap" end>
+      <button icon-only ion-button (click)="openMap()">
+        <ion-icon name="map"></ion-icon>
+      </button>
+    </ion-buttons>
+
+    <ion-buttons *ngIf="isAnyProfile" end>
+      <button icon-only ion-button (click)="sendMessage()">
+        <ion-icon name="mail"></ion-icon>
       </button>
     </ion-buttons>
 

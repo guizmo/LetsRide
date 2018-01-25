@@ -62,7 +62,7 @@
           </ion-list-header>
 
           <ion-item-sliding  #slidingItem *ngFor="let people of peopleAround; let i = index"  >
-            <ion-item #item (click)="showPerson(people)">
+            <button ion-item #item (click)="showPerson(people)">
               <ion-avatar item-start>
                 <img [hidden]="!people.avatarLoaded" (load)="avatarLoaded(i)" src="{{people.profileImgPath}}">
                 <ion-spinner *ngIf="!people.avatarLoaded"></ion-spinner>
@@ -75,7 +75,7 @@
               <button item-end ion-button clear icon-only (click)="openOption(slidingItem, item, options, $event)">
                 <ion-icon color="brand" name="more" ></ion-icon>
               </button>
-            </ion-item>
+            </button>
 
             <ion-item-options #options side="right" (click)="closeOption()">
               <button ion-button item-end ion-button icon-only color="secondary" (click)="openMap(i)" >

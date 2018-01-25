@@ -114,6 +114,9 @@ export class LetsRide {
     this.app.viewWillEnter.subscribe((view) => {
       if (view.instance && view.instance.activeMenu) {
         let name = view.instance.activeMenu;
+        if(view.getNav() && view.getNav().canGoBack()){
+          return false;
+        }
         this.is_active = name;
       }
     });

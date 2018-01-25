@@ -36,14 +36,14 @@
       </div>
       <ion-list no-margin>
         <ion-item-sliding *ngFor="let buddy of buddies | orderBy : ['sortByName']; let i = index">
-          <ion-item (click)="showPerson(buddy)">
+          <button ion-item (click)="showPerson(buddy)">
             <ion-avatar item-start>
               <img src="{{buddy.profileImgPath}}" (error)="updateUrl($event, i)">
             </ion-avatar>
             <h2 *ngIf="buddy.settings">{{buddy.settings.displayName}}</h2>
             <h3 *ngIf="buddy.settings">{{buddy.settings.countryName}}</h3>
             <ion-icon *ngIf="buddy.isNewBud == 'a_true'" color="dark" name="person-add" item-end></ion-icon>
-          </ion-item>
+          </button>
 
           <ion-item-options side="right">
             <button ion-button color="danger" icon-only (click)="removeFriend($event, i)">

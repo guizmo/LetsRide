@@ -114,7 +114,7 @@
           {{ 'MAP_PAGE.EVENT_HEAD' | translate }}
         </ion-list-header>
 
-        <button ion-item (click)="showPerson(event.host)">
+        <button ion-item (click)="showPerson(event, true)">
           <ion-icon name="contact" color="dark" item-start></ion-icon>
           {{ event.displayName }}
         </button>
@@ -143,6 +143,16 @@
         <ion-item>
           <ion-icon name="fa-globe" color="dark" item-start></ion-icon>
           {{place.country}}
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="body" color="dark" item-start></ion-icon>
+          <ng-container *ngIf="event.private">
+            {{ 'EVENTS_PAGE.PRIVATE' | translate }}
+          </ng-container>
+          <ng-container *ngIf="!event.private">
+            {{ 'EVENTS_PAGE.PUBLIC' | translate }}
+          </ng-container>
         </ion-item>
       </ion-list>
 
