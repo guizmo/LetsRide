@@ -10,87 +10,97 @@
       </button>
     </ion-buttons>
   </ion-navbar>
+  <ion-toolbar no-border-top>
+    <ion-segment [(ngModel)]="segments" color="light" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="events">
+        {{ 'EVENTS_TABS_PAGE.TAB_1' | translate }}
+      </ion-segment-button>
+      <ion-segment-button value="search">
+        {{ 'EVENTS_TABS_PAGE.TAB_2' | translate }}
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
+
 </ion-header>
 
 
 <ion-content >
-  <ion-refresher (ionRefresh)="refreshList($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-  <ion-spinner class="list-content" *ngIf="showSpinner"></ion-spinner>
-  <div class="no-result-card" *ngIf="showNoResult">
-    <ion-card>
-      <ion-card-header>
-        {{ 'EVENTS_PAGE.CARD_HEAD' | translate }}
-      </ion-card-header>
-      <ion-card-content color="dark">
-        {{ 'EVENTS_PAGE.CARD_CONTENT' | translate }}
-      </ion-card-content>
-    </ion-card>
-  </div>
-  <ng-container *ngFor="let event of eventsListing; let last = last; let i = index" >
-    <ion-card
-      *ngIf="event.participates || !event.aFuid"
-      no-margin f-width margin-bottom no-radius no-shadow tappable
-      [class.last-item]="last"
-      [class.active-map]="showMapIsEnabled == i"
-      (click)="showMap(i)">
-      <ion-row>
-        <ion-col class="cover-img" col-12 col-sm-4 no-padding>
-          <div *ngIf="event.backgroundImage" f-height f-width class="cover-style" [style.backgroundImage]="'url(' + event.backgroundImage + ')'"></div>
-        </ion-col>
-
-        <ion-col col-sm-8 col-12 no-padding>
+  <ng-container [ngSwitch]="segments">
+    <ng-container *ngSwitchCase="'events'">
+      <ion-refresher (ionRefresh)="refreshList($event)">
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
+      <ion-spinner class="list-content" *ngIf="showSpinner"></ion-spinner>
+      <div class="no-result-card" *ngIf="showNoResult">
+        <ion-card>
+          <ion-card-header>
+            {{ 'EVENTS_PAGE.CARD_HEAD' | translate }}
+          </ion-card-header>
           <ion-card-content color="dark">
-            <ion-card-title>
-              {{event.name}}
-            </ion-card-title>
-            <div class="date">
-              <h3 class="day" icon-left float-left>
-                <ion-icon ios="ios-calendar-outline" md="md-calendar"></ion-icon>
-                {{event.time | amDateFormat: 'DD/MM/YY'}}
-              </h3>
-              <h3 class="time" icon-left float-left>
-                <ion-icon ios="ios-time-outline" md="md-time"></ion-icon>
-                {{event.time | amDateFormat: 'HH:mm'}}
-              </h3>
-            </div>
-
-            <p *ngIf="event.where || event.disciplines">
-              <ion-icon color="brand" ios="ios-map-outline" md="md-map"></ion-icon>
-              {{event.where}}<span *ngIf="event.where && event.disciplines" > - </span>{{event.disciplinesName}}
-            </p>
+            {{ 'EVENTS_PAGE.CARD_CONTENT' | translate }}
           </ion-card-content>
+        </ion-card>
+      </div>
+      <ng-container *ngFor="let event of eventsListing; let last = last; let i = index" >
+        <ion-card
+          *ngIf="event.participates || !event.aFuid"
+          no-margin f-width margin-bottom no-radius no-shadow tappable
+          [class.last-item]="last"
+          [class.active-map]="showMapIsEnabled == i"
+          (click)="showMap(i)">
+          <ion-row>
+            <ion-col class="cover-img" col-12 col-sm-4 no-padding>
+              <div *ngIf="event.backgroundImage" f-height f-width class="cover-style" [style.backgroundImage]="'url(' + event.backgroundImage + ')'"></div>
+            </ion-col>
 
-          <ion-row *ngIf="!event.buddy">
-            <ion-col text-right>
-              <button ion-button color="danger" icon-left clear small (click)="deleteEvent($event, event.key)">
-                <ion-icon color="dark" ios="ios-trash-outline" md="md-trash"></ion-icon>
-                <div>{{ 'DELETE_BUTTON' | translate }}</div>
-              </button>
-              <button  ion-button color="brand" icon-left clear small (click)="presentEventModal($event, event)">
-                <ion-icon color="dark" ios="ios-create-outline" md="md-create"></ion-icon>
-                <div>{{ 'EDIT_BUTTON' | translate }}</div>
-              </button>
+            <ion-col col-sm-8 col-12 no-padding>
+              <ion-card-content color="dark">
+                <ion-card-title>
+                  {{event.name}}
+                </ion-card-title>
+                <div class="date">
+                  <h3 class="day" icon-left float-left>
+                    <ion-icon ios="ios-calendar-outline" md="md-calendar"></ion-icon>
+                    {{event.time | amDateFormat: 'DD/MM/YY'}}
+                  </h3>
+                  <h3 class="time" icon-left float-left>
+                    <ion-icon ios="ios-time-outline" md="md-time"></ion-icon>
+                    {{event.time | amDateFormat: 'HH:mm'}}
+                  </h3>
+                </div>
+
+                <p *ngIf="event.where || event.disciplines">
+                  <ion-icon color="brand" ios="ios-map-outline" md="md-map"></ion-icon>
+                  {{event.where}}<span *ngIf="event.where && event.disciplines" > - </span>{{event.disciplinesName}}
+                </p>
+              </ion-card-content>
+
+              <ion-row *ngIf="!event.buddy">
+                <ion-col text-right>
+                  <button ion-button color="danger" icon-left clear small (click)="deleteEvent($event, event.key)">
+                    <ion-icon color="dark" ios="ios-trash-outline" md="md-trash"></ion-icon>
+                    <div>{{ 'DELETE_BUTTON' | translate }}</div>
+                  </button>
+                  <button  ion-button color="brand" icon-left clear small (click)="presentEventModal($event, event)">
+                    <ion-icon color="dark" ios="ios-create-outline" md="md-create"></ion-icon>
+                    <div>{{ 'EDIT_BUTTON' | translate }}</div>
+                  </button>
+                </ion-col>
+              </ion-row>
+
+              <ion-row *ngIf="event.buddy">
+                <ion-col text-right class="buddyName" padding-right >
+                  <h3 icon-left>
+                    <ion-icon color="dark" name="contacts"></ion-icon>
+                    {{event.displayName}}
+                  </h3>
+                </ion-col>
+              </ion-row>
             </ion-col>
           </ion-row>
-
-          <ion-row *ngIf="event.buddy">
-            <ion-col text-right class="buddyName" padding-right >
-              <h3 icon-left>
-                <ion-icon color="dark" name="contacts"></ion-icon>
-                {{event.displayName}}
-              </h3>
-            </ion-col>
-          </ion-row>
-      </ion-col>
-    </ion-row>
-
-    </ion-card>
-
-
-
-
+        </ion-card>
+      </ng-container>
+    </ng-container>
   </ng-container>
-
 </ion-content>

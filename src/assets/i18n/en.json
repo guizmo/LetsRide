@@ -146,6 +146,7 @@
     "PlacesPage": "Places",
     "BuddiesTabsPage": "Friends",
     "EventsPage": "Events",
+    "EventsTabsPage": "Events",
     "NotificationsPage": "Notifications",
     "AccountPage": "My account"
   },
@@ -220,6 +221,11 @@
       "Male": "Male",
       "Female": "Female"
     }
+  },
+
+  "EVENTS_TABS_PAGE":{
+    "TAB_1": "Events",
+    "TAB_2": "Search"
   },
 
   "EVENTS_PAGE":{

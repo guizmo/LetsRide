@@ -73,14 +73,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { GbLogoutButtonModule } from '../components/gb-logout-button/gb-logout-button.module';
 
 
-export const firebaseConfig = {
-  apiKey: "AIzaSyBvmBNw3scf3o1dSZGQRGjFUGfhlOQw0a0",
-  authDomain: "lets-ride-a073c.firebaseapp.com",
-  databaseURL: "https://lets-ride-a073c.firebaseio.com",
-  projectId: "lets-ride-a073c",
-  storageBucket: "lets-ride-a073c.appspot.com",
-  messagingSenderId: "897213692051"
-};
+import { firebaseConfig } from './configs';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.

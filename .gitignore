@@ -34,3 +34,5 @@ Thumbs.db
 UserInterfaceState.xcuserstate
 
 settings-auth.txt
+
+src/app/configs.ts

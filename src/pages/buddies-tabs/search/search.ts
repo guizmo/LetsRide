@@ -61,7 +61,6 @@ export class SearchPage {
     this.translateService.get(['SEARCH_PAGE']).subscribe((values) => {
       this.translatedString.FILTER_GENDER = values.SEARCH_PAGE.FILTER_GENDER;
     });
-    console.log(this);
   }
 
 
@@ -84,7 +83,6 @@ export class SearchPage {
     this.peoplePrv.getPeople().subscribe(people => {
         if(people.length){
           people.map((person:any) => {
-            console.log(person);
             person = this.utils.buildProfile(person, this.disciplines, this.countries, null, this.currentUser.uid);
             person.avatarLoaded = true;
             person.iconName = null;
@@ -213,9 +211,6 @@ export class SearchPage {
 
     let filtersSize = this.filters.length;
 
-
-
-    console.log('filtersSize', filtersSize);
     if(filtersSize === 0){
       this.people = [];
       //this.isSearching = false;
@@ -266,7 +261,6 @@ export class SearchPage {
             if(settings[_filter.alias] == _filter.value){
               person.score++;
             }
-            console.log(this.translatedString.FILTER_GENDER[_filter.value]);
           }else{
             if(settings[_filter.alias] == _filter.value){
               person.score++;
@@ -276,7 +270,6 @@ export class SearchPage {
         return person;
       }).filter((people) => people.score == scoreToMatch);
 
-      console.log(this.filters);
 
     if(this.people.length===0){
       this.showNoResult = true;

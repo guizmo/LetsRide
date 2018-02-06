@@ -25,6 +25,7 @@ export class EventsPage {
 
   activeMenu = 'EventsPage';
   popover = null;
+  segments = 'events';
   translatedStrings:any = {};
   public places: any = [];
   private activeItemSliding:boolean = false;
@@ -87,6 +88,8 @@ export class EventsPage {
         });
       }
     });
+  }
+  segmentChanged(action){
   }
 
   ionViewWillUnload(){
