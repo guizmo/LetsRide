@@ -20,6 +20,7 @@ export class ProfileEditModalPage {
   activeMenu = 'ProfilePage';
   editProfileForm: FormGroup;
   localProfile: any;
+  translateSub;
 
   constructor(
     public navCtrl: NavController,
@@ -28,7 +29,7 @@ export class ProfileEditModalPage {
     private formBuilder: FormBuilder,
     public translateService: TranslateService,
   ) {
-    this.translateService.get(['COUNTRIES', 'DISCIPLINES']).subscribe((values) => {
+    this.translateSub = this.translateService.get(['COUNTRIES', 'DISCIPLINES']).subscribe((values) => {
       this.disciplines = values.DISCIPLINES.sort(function(a, b) {
         if(a.name < b.name) return -1;
         if(a.name > b.name) return 1;
@@ -74,6 +75,9 @@ export class ProfileEditModalPage {
 
   }
 
+  ionViewDidLeave(){
+    this.translateSub.unsubscribe();
+  }
 
   dismiss() {
     this.viewCtrl.dismiss('cancel');

@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup, FormControl, ValidationErrors } from '@angular/forms';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
 import { CustomValidators } from 'ng2-validation';
 import { EmailValidator } from '../../validators/email';
@@ -15,6 +17,7 @@ import { LoadingProvider, AlertProvider } from '../../providers';
 })
 export class AccountEditModalPage {
 
+  private ngUnsubscribe: Subject = new Subject();
   editAccountForm: FormGroup;
   field: null;
   public activeMenu = 'AccountPage';
@@ -45,9 +48,15 @@ export class AccountEditModalPage {
     this.editAccountForm = formBuilder.group(group);
     this.editAccountForm.valueChanges
     		.debounceTime(400)
+        .takeUntil(this.ngUnsubscribe)
     		.subscribe(data => this.onValueChanged(data));
   }
 
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+  
   onValueChanged(data?: any) {
     if (!this.editAccountForm) { return; }
   }

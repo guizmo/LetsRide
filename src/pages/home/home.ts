@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, ModalController, ItemSliding, Item } from 'ionic-angular';
 
-import { Subscription } from 'rxjs/Subscription';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import { UserProvider, LocationTrackerProvider, NotificationsProvider, UtilsProvider} from '../../providers';
@@ -16,10 +17,8 @@ export class MainPage {
 
   activeMenu = 'MainPage';
   refresher;
-  canTrackSubject: Subscription;
-  isTrackingSubject: Subscription;
   activeItemSliding: ItemSliding = null;
-  //private onResumeSubscription;
+  private ngUnsubscribe: Subject = new Subject();
   private state: any;
   private searchDone: boolean = null;
   private noResults: boolean = false;
@@ -49,16 +48,20 @@ export class MainPage {
       enabled: this.locationTracker.is_tracking
     }
 
-    this.afAuth.authState.subscribe((user) => {
+    this.afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((user) => {
       if(user){
         this.currentUser = user.toJSON();
-        let userData = (this.userProvider.userData) ? this.userProvider.userData : this.userProvider.getUserData() ;
-        userData.subscribe((settings) => {
+        this.userProvider.getUserData().takeUntil(this.ngUnsubscribe).subscribe((settings) => {
           this.userSettings = settings;
           this.userProvider.checkProviderInfos(settings);
         });
       }
     });
+  }
+
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   showPerson(profile){
@@ -67,14 +70,14 @@ export class MainPage {
   }
 
   ionViewWillEnter(){
-    this.canTrackSubject = this.locationTracker.getCanTrack().subscribe((can_track) => {
+    this.locationTracker.getCanTrack().takeUntil(this.ngUnsubscribe).subscribe((can_track) => {
       //console.log('subscribe this.canTrackSubject', can_track);
       if(this.state.enabled && !can_track){
         this.state.enabled = can_track;
       }
     });
 
-    this.isTrackingSubject = this.locationTracker.getIsTracking().subscribe((is_tracking) => {
+    this.locationTracker.getIsTracking().takeUntil(this.ngUnsubscribe).subscribe((is_tracking) => {
       //console.log('subscribe this.isTrackingSubject', is_tracking);
       if(this.locationTracker.can_track){
         this.state.enabled = is_tracking;
@@ -85,12 +88,6 @@ export class MainPage {
 
 
   }
-  ionViewWillLeave(){
-    //console.log('ionViewWillLeave', this);
-    this.canTrackSubject.unsubscribe();
-    this.isTrackingSubject.unsubscribe();
-  }
-
 
   onToggleEnabled() {
 

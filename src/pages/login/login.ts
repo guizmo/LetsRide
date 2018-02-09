@@ -1,6 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, ToastController, Slides, MenuController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup, ValidationErrors } from '@angular/forms';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
@@ -24,6 +26,7 @@ export class LoginPage {
   activeMenu = 'AccountPage';
   public signInForm: FormGroup;
   public resetPasswordForm:FormGroup;
+  private ngUnsubscribe: Subject = new Subject();
 
   // Our translated text strings
   private loginErrorString: string;
@@ -40,7 +43,7 @@ export class LoginPage {
     public loadingProvider: LoadingProvider
   ) {
     this.menuCtrl.enable(false, 'mainMenu');
-    afAuth.authState.subscribe((_user: firebase.User) => {
+    afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((_user: firebase.User) => {
       if (_user) {
         this.menuCtrl.enable(true, 'mainMenu');
         this.navCtrl.setRoot('MainPage');
@@ -56,7 +59,12 @@ export class LoginPage {
       email: ['', Validators.compose([Validators.required, EmailValidator.isValid])]
     });
 
-    this.translate.getString('LOGIN_ERROR').subscribe( value => this.loginErrorString = value );
+    this.translate.getString('LOGIN_ERROR').takeUntil(this.ngUnsubscribe).subscribe( value => this.loginErrorString = value );
+  }
+
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   slideTo(index) {
@@ -85,14 +93,14 @@ export class LoginPage {
 
         this.userProvider.afdb.object(`/users/${user.uid}`)
           .snapshotChanges()
-          .subscribe((data) => {
+          .takeUntil(this.ngUnsubscribe).subscribe((data) => {
             // TODO: check if data.$exists()
             if(data){
               this.navCtrl.setRoot('MainPage');
               this.loadingProvider.hide();
             }else{
               let providerData = {...user.providerData[0], ...{ aFuid: user.uid, profileImg:{}, settings : { displayName : user.displayName } } };
-              this.userProvider.addUserData(providerData).subscribe((data) => {
+              this.userProvider.addUserData(providerData).takeUntil(this.ngUnsubscribe).subscribe((data) => {
                 if(data.aFuid){
                   this.navCtrl.setRoot('ProfilePage', {...providerData, ...{'emailVerified': true} } );
                 }else{

@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 
 import 'rxjs/add/observable/forkJoin';
-import {Observable} from 'rxjs/Observable';
+import { Observable } from 'rxjs/Observable';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 import * as moment  from 'moment';
 import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -18,6 +20,7 @@ export class NotificationsPage {
 
   activeMenu = 'NotificationsPage';
   notifEventId = null;
+  private ngUnsubscribe: Subject = new Subject();
   public disciplines:ReadonlyArray<any>;
   public eventsNotifications: any = [] ;
   public requestsNotifications: any = [] ;
@@ -65,10 +68,9 @@ export class NotificationsPage {
       }
     }
 
-    this.afAuth.authState.subscribe((user) => {
+    this.afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((user) => {
       if(user){
-        let userData = (this.userProvider.userData) ? this.userProvider.userData : this.userProvider.getUserData() ;
-        userData.subscribe((settings) => {
+        this.userProvider.getUserData().takeUntil(this.ngUnsubscribe).subscribe((settings) => {
           if(settings){
             this.userData = settings;
             this.currentUser = user.toJSON();
@@ -83,7 +85,9 @@ export class NotificationsPage {
     console.log(this);
   }
 
-  ionViewWillUnload(){
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
     this.buddiesSubcription.unsubscribe();
     this.badgesNotifSubscription.unsubscribe();
     this.buddiesRequestSubscription.unsubscribe();
@@ -220,7 +224,7 @@ export class NotificationsPage {
 
     this.userData.buddies[aFuid].pending = false;
     //let data = this.userData;
-    this.userProvider.updateUserData(this.userData).subscribe((_userData) => {
+    this.userProvider.updateUserData(this.userData).takeUntil(this.ngUnsubscribe).subscribe((_userData) => {
       if(_userData){
         //add new buddie to the ASKER
         let asker = {
@@ -333,7 +337,7 @@ export class NotificationsPage {
 
       for(let uid in event.participants){
         if(event.participants[uid] === true){
-          this.buddiesProvider.getUserByID(uid).subscribe(res => {
+          this.buddiesProvider.getUserByID(uid).takeUntil(this.ngUnsubscribe).subscribe(res => {
             if(res){
               this.buddiesProvider.eventsParticipantsList.push(res)
             }
@@ -341,7 +345,7 @@ export class NotificationsPage {
         }
       }
       if(event.place_id){
-        this.placesProvider.getById(event.place_id).subscribe(place => {
+        this.placesProvider.getById(event.place_id).takeUntil(this.ngUnsubscribe).subscribe(place => {
           this.presentMapModal(event, place);
         });
       }else{

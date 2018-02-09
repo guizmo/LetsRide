@@ -1,5 +1,7 @@
 import { Component, ViewChild, NgZone, ElementRef } from '@angular/core';
 import { IonicPage, NavController, LoadingController, NavParams, ViewController } from 'ionic-angular';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
 import { MapsAPILoader } from '@agm/core';
 import { ZoomControlOptions, ControlPosition } from '@agm/core/services/google-maps-types';
@@ -38,6 +40,7 @@ export class MapPage {
   public place: any;
   public event: any;
   public translatedStrings:any = {};
+  private ngUnsubscribe: Subject = new Subject();
   pageClass: string = '';
   noLocation:boolean = false;
   searchVisible:boolean = true;
@@ -76,7 +79,7 @@ export class MapPage {
     (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
     (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
     this.mapStyle = MapStyle;
-    this.translateService.get(['SAVE_BUTTON', 'CANCEL_BUTTON', 'DONE_BUTTON', 'BACK_BUTTON_TEXT']).subscribe((values) => {
+    this.translateService.get(['SAVE_BUTTON', 'CANCEL_BUTTON', 'DONE_BUTTON', 'BACK_BUTTON_TEXT']).takeUntil(this.ngUnsubscribe).subscribe((values) => {
       this.translatedStrings = values;
       this.backButton = values.CANCEL_BUTTON;
       this.saveButton = values.SAVE_BUTTON;
@@ -90,9 +93,6 @@ export class MapPage {
 
   ionViewWillEnter(){
     this.viewCtrl.setBackButtonText(this.translatedStrings.CANCEL_BUTTON)
-  }
-  ionViewWillLeave(){
-    this.modalNavPage.data = this.marker;
   }
   onMapReady(map) {
     this.gmap = map;
@@ -121,7 +121,7 @@ export class MapPage {
       this.fullscreen = false;
       this.event = this.modalNavPage.navParams.get('event');
       this.place = this.modalNavPage.navParams.get('values');
-      this.buddiesProvider.getUserByID(this.event.aFuid).subscribe(res => {
+      this.buddiesProvider.getUserByID(this.event.aFuid).takeUntil(this.ngUnsubscribe).subscribe(res => {
         if(res){
           res = this.utils.buildProfile(res, this.disciplines, this.countries);
           this.event.host = res;
@@ -140,7 +140,7 @@ export class MapPage {
       this.setCurrentPosition();
       this.afdb.object(`/trackers/${this.buddy.aFuid}`)
         .valueChanges()
-        .subscribe((res) => {
+        .takeUntil(this.ngUnsubscribe).subscribe((res) => {
           if(res) this.buddy.location = res;
         })
     }
@@ -153,6 +153,14 @@ export class MapPage {
       }
     }
 
+  }
+  ionViewWillLeave(){
+    this.modalNavPage.data = this.marker;
+  }
+
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   presentLoader(message){

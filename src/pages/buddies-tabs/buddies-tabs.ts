@@ -1,5 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, Tabs, NavParams } from 'ionic-angular';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 
@@ -15,6 +17,7 @@ export class BuddiesTabsPage {
   @ViewChild('buddiesTabs') tabRef: Tabs;
 
   userLoaded = false;
+  private ngUnsubscribe: Subject = new Subject();
 
   searchRoot = 'SearchPage';
   buddiesRoot = 'BuddiesPage';
@@ -32,11 +35,15 @@ export class BuddiesTabsPage {
     this.tabsParams = this.navParams;
   }
 
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
   fetchUserData(){
-    this.afAuth.authState.subscribe((user) => {
+    this.afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((user) => {
       if(user){
-        let userData = (this.userProvider.userData) ? this.userProvider.userData : this.userProvider.getUserData() ;
-        userData.subscribe((settings) => {
+        this.userProvider.getUserData().takeUntil(this.ngUnsubscribe).subscribe((settings) => {
           if(settings){
             this.userLoaded = true;
           }

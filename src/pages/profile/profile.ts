@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, MenuController } from 'ionic-angular';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
 import { UserProvider, AlertProvider, NotificationsProvider, FileProvider, UtilsProvider } from '../../providers';
 
@@ -18,6 +20,7 @@ export class ProfilePage {
   isAnyProfile:boolean = false;
   showMap:boolean = false;
   profileViewData:any = null;
+  private ngUnsubscribe: Subject = new Subject();
   private userData:any;
   private profileImg:string = null;
   private profileImgLoaded:boolean = false;
@@ -66,6 +69,11 @@ export class ProfilePage {
       this.showMap = this.navParams.get('showMap');
     }
 
+  }
+
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   openMap(){
@@ -124,7 +132,7 @@ export class ProfilePage {
         let tags = profile;
         tags.user_id = aFuid;
         this.sendUserTags(tags);
-        this.userProvider.updateUserData(userData).subscribe((data) => {
+        this.userProvider.updateUserData(userData).takeUntil(this.ngUnsubscribe).subscribe((data) => {
           //TODO
           //Handle errors
           //console.log('updateUserData', data);
@@ -139,10 +147,10 @@ export class ProfilePage {
   }
 
   userAuth(){
-    this.userProvider.afAuth.authState.subscribe((_user: firebase.User) => {
+    this.userProvider.afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((_user: firebase.User) => {
       if (_user) {
-        let userData = (this.userProvider.userData) ? this.userProvider.userData : this.userProvider.getUserData() ;
-        userData.subscribe((data) => {
+        this.userProvider.getUserData().takeUntil(this.ngUnsubscribe).subscribe((data) => {
+          console.log('userData', data);
 
           if(!this.isAnyProfile){
             this.profileViewData = this.utils.buildProfile(data, this.disciplines, this.countries, _user);

@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
-import 'rxjs/add/observable/forkJoin';
-import {Observable} from 'rxjs/Observable';
+import { Observable } from 'rxjs/Observable';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
 import { UserProvider, BuddiesProvider, FacebookProvider, UtilsProvider } from '../../../providers';
 
@@ -17,6 +18,7 @@ import { AngularFireDatabase } from 'angularfire2/database';
 })
 export class BuddiesPage {
 
+  private ngUnsubscribe: Subject = new Subject();
   disciplines: ReadonlyArray<any>;
   countries: ReadonlyArray<any>;
   currentUser;
@@ -24,7 +26,6 @@ export class BuddiesPage {
   userData;
   buddiesId:Observable<any[]>;
   buddies: any = [] ;
-  buddiesSubcription;
   showSpinner:boolean = true;
   showNoResult:boolean = false;
   activeMenu = 'BuddiesTabsPage';
@@ -46,12 +47,16 @@ export class BuddiesPage {
     this.fetchUserData();
   }
 
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
   fetchUserData(){
-    this.afAuth.authState.subscribe((user) => {
+    this.afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((user) => {
       if(user){
         this.getBuddies(user.uid);
-        let userData = (this.userProvider.userData) ? this.userProvider.userData : this.userProvider.getUserData() ;
-        userData.subscribe((settings) => {
+        this.userProvider.getUserData().takeUntil(this.ngUnsubscribe).subscribe((settings) => {
           if(settings){
             this.userData = settings;
             this.currentUser =  user.toJSON();
@@ -66,13 +71,6 @@ export class BuddiesPage {
     delete profile.providerId;
     this.navCtrl.push('ProfilePage', {userProfile:profile, isAnyProfile:true});
   }
-
-  ionViewWillUnload(){
-    if(this.buddiesSubcription){
-      this.buddiesSubcription.unsubscribe();
-    }
-  }
-
 
   goto(page){
     this.navCtrl.push(page);
@@ -92,7 +90,7 @@ export class BuddiesPage {
     if(this.navParams.get('notificationID')){
       notif_user_id = this.navParams.get('additionalData').from.user_id;
     }
-    this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((buddies) => {
+    this.buddiesProvider.buddies.takeUntil(this.ngUnsubscribe).subscribe((buddies) => {
       this.showSpinner = false;
       this.showNoResult = (buddies.length < 1) ? true : false ;
 

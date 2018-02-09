@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup, ValidationErrors } from '@angular/forms';
-import { EmailValidator } from '../../validators/email';
-
-import { UserProvider, LoadingProvider, AlertProvider } from '../../providers';
-
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 import { TranslateService } from '@ngx-translate/core';
+
+import { EmailValidator } from '../../validators/email';
+import { UserProvider, LoadingProvider, AlertProvider } from '../../providers';
 
 
 @IonicPage({
@@ -20,8 +21,7 @@ export class SignupPage {
   private signupErrorString: string;
   public signupForm: FormGroup;
   activeMenu = 'AccountPage';
-
-
+  private ngUnsubscribe: Subject = new Subject();
 
   constructor(
     public navCtrl: NavController,
@@ -31,7 +31,7 @@ export class SignupPage {
     public loadingProvider: LoadingProvider,
     public alertProvider: AlertProvider
   ) {
-    this.translateService.get('SIGNUP_ERROR').subscribe((value) => {
+    this.translateService.get('SIGNUP_ERROR').takeUntil(this.ngUnsubscribe).subscribe((value) => {
       this.signupErrorString = value;
     })
 
@@ -40,6 +40,11 @@ export class SignupPage {
         email: ['', Validators.compose([EmailValidator.isValid, Validators.required])],
         password: ['', Validators.compose([Validators.minLength(6), Validators.required])]
     })
+  }
+
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 
@@ -69,7 +74,7 @@ export class SignupPage {
 
           let providerData = {...user.providerData[0], ...{ aFuid: user.uid, profileImg: {}, settings : { displayName : user.displayName } } };
 
-          this.userProvider.addUserData(providerData).subscribe((data) => {
+          this.userProvider.addUserData(providerData).takeUntil(this.ngUnsubscribe).subscribe((data) => {
             if(data.aFuid){
               this.navCtrl.setRoot('ProfilePage', {...providerData, ...{'emailVerified': user.emailVerified} });
             }else{

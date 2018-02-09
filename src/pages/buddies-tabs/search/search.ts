@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 
-import { Subject } from 'rxjs/Subject'
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 import { TranslateService } from '@ngx-translate/core';
 
 import {
@@ -38,6 +39,7 @@ export class SearchPage {
   isSearching = false;
   showNoResult = false;
   filters:any = [];
+  private ngUnsubscribe: Subject = new Subject();
   public disciplines: ReadonlyArray<any>;
   public countries: ReadonlyArray<any>;
 
@@ -58,17 +60,20 @@ export class SearchPage {
     (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
     (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
     this.fetchUserData();
-    this.translateService.get(['SEARCH_PAGE']).subscribe((values) => {
+    this.translateService.get(['SEARCH_PAGE']).takeUntil(this.ngUnsubscribe).subscribe((values) => {
       this.translatedString.FILTER_GENDER = values.SEARCH_PAGE.FILTER_GENDER;
     });
   }
 
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
 
   fetchUserData(){
-    this.afAuth.authState.subscribe((user) => {
+    this.afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((user) => {
       if(user){
-        let userData = (this.userProvider.userData) ? this.userProvider.userData : this.userProvider.getUserData() ;
-        userData.subscribe((settings) => {
+        this.userProvider.getUserData().takeUntil(this.ngUnsubscribe).subscribe((settings) => {
           if(settings){
             //this.userLoaded = true;
             this.userData = settings;
@@ -81,7 +86,7 @@ export class SearchPage {
   }
 
   getPeople(){
-    this.peoplePrv.getPeople().subscribe(people => {
+    this.peoplePrv.getPeople().takeUntil(this.ngUnsubscribe).subscribe(people => {
         if(people.length){
           people.map((person:any) => {
             person = this.utils.buildProfile(person, this.disciplines, this.countries, null, this.currentUser.uid);

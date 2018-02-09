@@ -1,5 +1,7 @@
 import { Component, ViewChildren } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, AlertController, FabContainer } from 'ionic-angular';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
 import { UserProvider, PlacesProvider, CaptureProvider, UtilsProvider} from '../../providers';
 
@@ -14,6 +16,7 @@ import { Country } from '../../models';
 export class PlacesPage {
   @ViewChildren('fab') fabs;
 
+  private ngUnsubscribe: Subject = new Subject();
   public countries: ReadonlyArray<any>;
   places;
   user;
@@ -35,10 +38,10 @@ export class PlacesPage {
   ) {
     (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
 
-    this.userProvider.afAuth.authState.subscribe((user) => {
+    this.userProvider.afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((user) => {
       if(user){
         this.user = user.toJSON();
-        this.placesProvider.getAllByUser(this.user.uid).subscribe((data) => {
+        this.placesProvider.getAllByUser(this.user.uid).takeUntil(this.ngUnsubscribe).subscribe((data) => {
           this.places = data;
           this.places.map(place => place.countryName = this.utils.getCountry(place.country, this.countries))
           this.showNoResult = (data.length < 1) ? true : false ;
@@ -48,8 +51,9 @@ export class PlacesPage {
     });
   }
 
-  ionViewDidLoad() {
-
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 

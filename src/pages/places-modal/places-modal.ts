@@ -1,10 +1,11 @@
-import { ModalNavPage } from '../modal-nav/modal-nav';
-
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
+import { ModalNavPage } from '../modal-nav/modal-nav';
 import { CaptureProvider } from '../../providers';
 import { Discipline, Country, Place } from '../../models';
 
@@ -19,6 +20,7 @@ import { Discipline, Country, Place } from '../../models';
 export class PlacesModalPage {
 
   activeMenu = 'PlacesPage';
+  private ngUnsubscribe: Subject = new Subject();
   private disciplines: ReadonlyArray<Discipline>;
   private countries: ReadonlyArray<Country>;
   private placeForm: FormGroup;
@@ -37,7 +39,7 @@ export class PlacesModalPage {
     public translateService: TranslateService,
     private capture: CaptureProvider
   ) {
-    this.translateService.get(['COUNTRIES', 'DISCIPLINES']).subscribe((values) => {
+    this.translateService.get(['COUNTRIES', 'DISCIPLINES']).takeUntil(this.ngUnsubscribe).subscribe((values) => {
       this.countries = values.COUNTRIES.sort(function(a, b) {
         if(a.name < b.name) return -1;
         if(a.name > b.name) return 1;
@@ -79,6 +81,10 @@ export class PlacesModalPage {
     }
   }
 
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
 
   dismiss(){
     this.modalNavPage.dismissModal({state: 'cancel'});
@@ -93,7 +99,7 @@ export class PlacesModalPage {
     let actionSheet = this.capture.presentActionSheet();
     actionSheet.present();
     actionSheet.onDidDismiss(() => {
-      this.capture.imageName.subscribe(
+      this.capture.imageName.takeUntil(this.ngUnsubscribe).subscribe(
         (image) => {
           console.log('setImage res', image);
           this.placeForm.controls['image'].setValue(image) ;

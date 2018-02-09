@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, AlertController, MenuController } from 'ionic-angular';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
 import { UserProvider, LoadingProvider, AlertProvider } from '../../providers';
 
@@ -14,6 +16,7 @@ import * as firebase from 'firebase/app';
 })
 export class AccountPage {
 
+  private ngUnsubscribe: Subject = new Subject();
   private currentUser: firebase.User;
   private emailVerified: boolean = false;
   private alert;
@@ -32,15 +35,15 @@ export class AccountPage {
     public menuCtrl: MenuController
   ) {
     this.userAuth();
-
     console.log(this)
-
+  }
+  ionViewDidLeave(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
-
-
   userAuth(){
-    this.userProvider.afAuth.authState.subscribe((_user: firebase.User) => {
+    this.userProvider.afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((_user: firebase.User) => {
       if (_user) {
         this.providerId = _user.providerData[0].providerId;
         this.currentUser = _user;

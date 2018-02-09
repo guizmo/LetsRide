@@ -1,7 +1,10 @@
 import { Component, ViewChildren, QueryList } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, AlertController, PopoverController, ItemSliding, Item } from 'ionic-angular';
 
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
+
 import { TranslateService } from '@ngx-translate/core';
 
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
@@ -23,19 +26,12 @@ export class EventsPage {
   @ViewChildren('eventsItem') eventsItem: QueryList<Item>;
   @ViewChildren('eventsSliding') eventsSliding: QueryList<ItemSliding>;
 
-  userDataSub;
-  userSub;
-  eventsSub;
-  buddiesEventsSub;
-  buddiesSub;
-  placesSub;
-  translateSub;
-
   activeMenu = 'EventsPage';
   popover = null;
   segments = 'events';
   translatedStrings:any = {};
   filters;
+  private ngUnsubscribe: Subject = new Subject();
   public places: any = [];
   private activeItemSliding:boolean = false;
   private userData;
@@ -76,20 +72,19 @@ export class EventsPage {
     (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
     (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
 
-    this.translateSub = this.translateService.get(['EVENTS_PAGE', 'CANCEL_BUTTON', 'DELETE_BUTTON']).subscribe((values) => {
+    this.translateService.get(['EVENTS_PAGE', 'CANCEL_BUTTON', 'DELETE_BUTTON']).takeUntil(this.ngUnsubscribe).subscribe((values) => {
       this.translatedStrings = values.EVENTS_PAGE;
       this.translatedStrings.CANCEL_BUTTON = values.CANCEL_BUTTON;
       this.translatedStrings.DELETE_BUTTON = values.DELETE_BUTTON;
     });
 
-    this.userSub = this.afAuth.authState.subscribe((user) => {
+    this.afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((user) => {
       if(user){
         this.currentUser = user.toJSON();
         this.getBuddiesEvents();
         this.getBuddies();
         this.listPlaces(user.uid);
-        let userData = (this.userProvider.userData) ? this.userProvider.userData : this.userProvider.getUserData() ;
-        this.userDataSub = userData.subscribe((settings) => {
+        this.userProvider.getUserData().takeUntil(this.ngUnsubscribe).subscribe((settings) => {
           console.log('getUserData event');
           if(settings){
             this.userData = settings;
@@ -100,13 +95,8 @@ export class EventsPage {
   }
 
   ionViewDidLeave(){
-    this.userDataSub.unsubscribe();
-    this.userSub.unsubscribe();
-    this.buddiesEventsSub.unsubscribe();
-    this.buddiesSub.unsubscribe();
-    this.eventsSub.unsubscribe();
-    this.placesSub.unsubscribe();
-    this.translateSub.unsubscribe();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   locationFound(results){
@@ -171,7 +161,7 @@ export class EventsPage {
   getBuddiesEvents(){
     let now = moment();
     this.buddiesProvider.getBuddies(this.currentUser.uid);
-    this.buddiesEventsSub = this.buddiesProvider.buddiesEvents.subscribe((events) => {
+    this.buddiesProvider.buddiesEvents.takeUntil(this.ngUnsubscribe).subscribe((events) => {
       let _events = [];
       Object.keys(events).filter((bud_key) => events[bud_key] ).map((bud_key) => {
         let bud_events = events[bud_key];
@@ -222,7 +212,7 @@ export class EventsPage {
     this.eventsRef = this.afdb.list(`/events/${uid}`, ref => ref.orderByChild('time') )
     this.events = this.eventsRef.snapshotChanges();
 
-    this.eventsSub = this.events.map((events) => {
+    this.events.map((events) => {
       let now = moment();
       return events.map((changes) => {
         let event = { key: changes.key, ...changes.payload.val() };
@@ -245,7 +235,7 @@ export class EventsPage {
           let eventTime = moment(event.time);
           return (eventTime.diff(now) >= 0);
         })
-    }).subscribe((events) => {
+    }).takeUntil(this.ngUnsubscribe).subscribe((events) => {
       if(events){
         //this.eventsListing = events;
         this.mergeEvents(events);
@@ -363,7 +353,7 @@ export class EventsPage {
   }
 
   getBuddies(){
-    this.buddiesSub = this.buddiesProvider.buddies.subscribe((_buddies) => {
+    this.buddiesProvider.buddies.takeUntil(this.ngUnsubscribe).subscribe((_buddies) => {
       if(_buddies){
         this.buddies = _buddies;
         this.oneSignalBuddiesId = _buddies.filter(buddie => buddie.oneSignalId).map(buddie => buddie.oneSignalId);
@@ -438,7 +428,7 @@ export class EventsPage {
   }
 
   listPlaces(uid:string){
-    this.placesSub = this.placesProvider.getAllByUser(uid).subscribe((data) => {
+    this.placesProvider.getAllByUser(uid).takeUntil(this.ngUnsubscribe).subscribe((data) => {
       this.places = data;
     });
   }
@@ -451,7 +441,7 @@ export class EventsPage {
 
       for(let uid in event.participants){
         if(event.participants[uid] === true){
-          this.buddiesProvider.getUserByID(uid).subscribe(res => {
+          this.buddiesProvider.getUserByID(uid).takeUntil(this.ngUnsubscribe).subscribe(res => {
             if(res){
               res = this.utils.buildProfile(res, this.disciplines, this.countries);
               this.buddiesProvider.eventsParticipantsList.push(res);
@@ -460,7 +450,7 @@ export class EventsPage {
         }
       }
       if(event.place_id){
-        this.placesProvider.getById(event.place_id).subscribe(place => {
+        this.placesProvider.getById(event.place_id).takeUntil(this.ngUnsubscribe).subscribe(place => {
           this.presentMapModal(event, place);
         });
       }else{
