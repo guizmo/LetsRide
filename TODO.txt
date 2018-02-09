@@ -1,0 +1,8 @@
+Event search:
+- by place (country or Geolocation):
+  - if has a place, find the country and Geolocation
+
+Place:
+ - http://maps.googleapis.com/maps/api/geocode/json?latlng=-22.2516062,166.389741&sensor=false
+https://developers.google.com/maps/documentation/javascript/examples/geocoding-reverse
+https://stackoverflow.com/questions/6764917/latitude-and-longitude-can-find-zip-code

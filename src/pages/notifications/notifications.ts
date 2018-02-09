@@ -67,7 +67,8 @@ export class NotificationsPage {
 
     this.afAuth.authState.subscribe((user) => {
       if(user){
-        this.userProvider.getUserData().subscribe((settings) => {
+        let userData = (this.userProvider.userData) ? this.userProvider.userData : this.userProvider.getUserData() ;
+        userData.subscribe((settings) => {
           if(settings){
             this.userData = settings;
             this.currentUser = user.toJSON();

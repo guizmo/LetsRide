@@ -52,7 +52,8 @@ export class MainPage {
     this.afAuth.authState.subscribe((user) => {
       if(user){
         this.currentUser = user.toJSON();
-        this.userProvider.getUserData().subscribe((settings) => {
+        let userData = (this.userProvider.userData) ? this.userProvider.userData : this.userProvider.getUserData() ;
+        userData.subscribe((settings) => {
           this.userSettings = settings;
           this.userProvider.checkProviderInfos(settings);
         });

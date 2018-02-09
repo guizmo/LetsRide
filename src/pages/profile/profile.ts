@@ -141,7 +141,8 @@ export class ProfilePage {
   userAuth(){
     this.userProvider.afAuth.authState.subscribe((_user: firebase.User) => {
       if (_user) {
-        this.userProvider.getUserData().subscribe((data) => {
+        let userData = (this.userProvider.userData) ? this.userProvider.userData : this.userProvider.getUserData() ;
+        userData.subscribe((data) => {
 
           if(!this.isAnyProfile){
             this.profileViewData = this.utils.buildProfile(data, this.disciplines, this.countries, _user);

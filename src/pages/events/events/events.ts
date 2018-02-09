@@ -23,10 +23,19 @@ export class EventsPage {
   @ViewChildren('eventsItem') eventsItem: QueryList<Item>;
   @ViewChildren('eventsSliding') eventsSliding: QueryList<ItemSliding>;
 
+  userDataSub;
+  userSub;
+  eventsSub;
+  buddiesEventsSub;
+  buddiesSub;
+  placesSub;
+  translateSub;
+
   activeMenu = 'EventsPage';
   popover = null;
   segments = 'events';
   translatedStrings:any = {};
+  filters;
   public places: any = [];
   private activeItemSliding:boolean = false;
   private userData;
@@ -43,8 +52,6 @@ export class EventsPage {
   public eventsListing: any = [];
   private showSpinner:boolean = true;
   private showNoResult:boolean = false;
-  private buddiesEventsSubscription;
-  private buddiesSubcription;
   private showMapIsEnabled: string = null;
   public disciplines: ReadonlyArray<any>;
   public countries: ReadonlyArray<any>;
@@ -69,19 +76,21 @@ export class EventsPage {
     (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
     (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
 
-    this.translateService.get(['EVENTS_PAGE', 'CANCEL_BUTTON', 'DELETE_BUTTON']).subscribe((values) => {
+    this.translateSub = this.translateService.get(['EVENTS_PAGE', 'CANCEL_BUTTON', 'DELETE_BUTTON']).subscribe((values) => {
       this.translatedStrings = values.EVENTS_PAGE;
       this.translatedStrings.CANCEL_BUTTON = values.CANCEL_BUTTON;
       this.translatedStrings.DELETE_BUTTON = values.DELETE_BUTTON;
     });
 
-    this.afAuth.authState.subscribe((user) => {
+    this.userSub = this.afAuth.authState.subscribe((user) => {
       if(user){
         this.currentUser = user.toJSON();
         this.getBuddiesEvents();
         this.getBuddies();
         this.listPlaces(user.uid);
-        this.userProvider.getUserData().subscribe((settings) => {
+        let userData = (this.userProvider.userData) ? this.userProvider.userData : this.userProvider.getUserData() ;
+        this.userDataSub = userData.subscribe((settings) => {
+          console.log('getUserData event');
           if(settings){
             this.userData = settings;
           }
@@ -89,13 +98,40 @@ export class EventsPage {
       }
     });
   }
-  segmentChanged(action){
+
+  ionViewDidLeave(){
+    this.userDataSub.unsubscribe();
+    this.userSub.unsubscribe();
+    this.buddiesEventsSub.unsubscribe();
+    this.buddiesSub.unsubscribe();
+    this.eventsSub.unsubscribe();
+    this.placesSub.unsubscribe();
+    this.translateSub.unsubscribe();
   }
 
-  ionViewWillUnload(){
-    this.buddiesEventsSubscription.unsubscribe();
-    this.buddiesSubcription.unsubscribe();
+  locationFound(results){
+    if(results[0]){
+      let place = results[0];
+      if (place.geometry === undefined || place.geometry === null) {
+        return;
+      }
+      let placeGeoloc = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng()
+      }
+      console.log(placeGeoloc);
+    }
+    console.log('locationFound', results);
   }
+
+
+  segmentChanged(action){
+    console.log('segmentChanged');
+    if(action.value == 'search'){
+
+    }
+  }
+
 
   presentPopover(event) {
     this.popover = this.popoverCtrl.create('EventPage', {
@@ -135,7 +171,7 @@ export class EventsPage {
   getBuddiesEvents(){
     let now = moment();
     this.buddiesProvider.getBuddies(this.currentUser.uid);
-    this.buddiesEventsSubscription = this.buddiesProvider.buddiesEvents.subscribe((events) => {
+    this.buddiesEventsSub = this.buddiesProvider.buddiesEvents.subscribe((events) => {
       let _events = [];
       Object.keys(events).filter((bud_key) => events[bud_key] ).map((bud_key) => {
         let bud_events = events[bud_key];
@@ -186,7 +222,7 @@ export class EventsPage {
     this.eventsRef = this.afdb.list(`/events/${uid}`, ref => ref.orderByChild('time') )
     this.events = this.eventsRef.snapshotChanges();
 
-    this.events.map((events) => {
+    this.eventsSub = this.events.map((events) => {
       let now = moment();
       return events.map((changes) => {
         let event = { key: changes.key, ...changes.payload.val() };
@@ -327,7 +363,7 @@ export class EventsPage {
   }
 
   getBuddies(){
-    this.buddiesSubcription = this.buddiesProvider.buddies.subscribe((_buddies) => {
+    this.buddiesSub = this.buddiesProvider.buddies.subscribe((_buddies) => {
       if(_buddies){
         this.buddies = _buddies;
         this.oneSignalBuddiesId = _buddies.filter(buddie => buddie.oneSignalId).map(buddie => buddie.oneSignalId);
@@ -402,7 +438,7 @@ export class EventsPage {
   }
 
   listPlaces(uid:string){
-    this.placesProvider.getAllByUser(uid).subscribe((data) => {
+    this.placesSub = this.placesProvider.getAllByUser(uid).subscribe((data) => {
       this.places = data;
     });
   }

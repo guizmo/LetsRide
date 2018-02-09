@@ -222,18 +222,16 @@
     }
   },
 
-  "EVENTS_TABS_PAGE":{
-    "TAB_1": "Evénement",
-    "TAB_2": "Recherche"
-  },
-
   "EVENTS_PAGE":{
     "CARD_HEAD": "Vous n'avez aucun événement en cours !",
     "CARD_CONTENT": "Lors de l'ajout d'événements, vos amis en seront automatiquement informés. Ils le verront dans leur notifications !",
     "ALERT_TITLE": "Effacer !",
     "PRIVATE": "Privé",
     "PUBLIC": "Publique",
-    "ALERT_MSG": "Vous allez supprimer définitivement cet événement !"
+    "ALERT_MSG": "Vous allez supprimer définitivement cet événement !",
+    "SEG_1": "Evénement",
+    "SEG_2": "Recherche",
+    "PLACEHOLDER": "Rechercher un événement"
   },
 
   "EVENTS_EDIT_PAGE":{
@@ -261,7 +259,7 @@
   },
 
   "MAP_PAGE": {
-    "SEARCH_PLACEHOLDER": "Rechercher",
+    "SEARCH_PLACEHOLDER": "Entrer un lieu",
     "EVENT_HEAD": "L'événement en détail",
     "EVENT_SUB_HEAD": "Les autres participants"
   },

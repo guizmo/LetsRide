@@ -13,10 +13,10 @@
   <ion-toolbar no-border-top>
     <ion-segment [(ngModel)]="segments" color="light" (ionChange)="segmentChanged($event)">
       <ion-segment-button value="events">
-        {{ 'EVENTS_TABS_PAGE.TAB_1' | translate }}
+        {{ 'EVENTS_PAGE.SEG_1' | translate }}
       </ion-segment-button>
       <ion-segment-button value="search">
-        {{ 'EVENTS_TABS_PAGE.TAB_2' | translate }}
+        {{ 'EVENTS_PAGE.SEG_2' | translate }}
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
@@ -102,5 +102,10 @@
         </ion-card>
       </ng-container>
     </ng-container>
+
+    <ng-container *ngSwitchCase="'search'">
+      <gmap-search (onLocationFound)="locationFound($event)" ></gmap-search>
+    </ng-container>
+
   </ng-container>
 </ion-content>

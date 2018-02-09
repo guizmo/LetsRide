@@ -50,7 +50,7 @@ export class LetsRide {
     private app: App,
     public events: Events,
   ) {
-    this.translate.init();
+    
     this.handleEvents();
     this.translate.getString(['MENU', 'LOGIN_TITLE']).subscribe( values => {
       this.translated.login = values.LOGIN_TITLE;

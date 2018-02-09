@@ -75,10 +75,7 @@ export class UserProvider {
 
   getUserData(){
     console.log('getUserData');
-    this.userData = this.userDataRef.snapshotChanges().map(changes => {
-      return changes.payload.val();
-    });
-    return this.userData;
+    return this.userData = this.userDataRef.snapshotChanges().map(changes => changes.payload.val());
   }
 
   addUserData(data: Profile) {
@@ -103,7 +100,9 @@ export class UserProvider {
 
   checkOneSignalID() {
     let one_id = this.notifications.one_id;
-    this.getUserData().subscribe((userData) => {
+    let userData = (this.userData) ? this.userData : this.getUserData() ;
+    userData.subscribe((userData) => {
+      console.log('getUserData checkOneSignalID user-provider');
       if(one_id && one_id != userData.oneSignalId){
         this.userDataRef.update({'oneSignalId': one_id});
       }

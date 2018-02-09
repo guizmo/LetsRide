@@ -1,0 +1,23 @@
+<div class="searchblock" *ngIf="mapAPI_loaded" >
+  <ion-toolbar no-padding [attr.transparent]="isTransparent" >
+    <ion-searchbar
+      color="dark"
+      (ionInput)="searchAutocomplete($event)"
+      [showCancelButton]=true
+      (ionCancel)="onCancelSearch($event)"
+      (ionClear)="onCancelSearch($event)"
+      [debounce]="500"
+      placeholder="{{ 'MAP_PAGE.SEARCH_PLACEHOLDER' | translate }}"
+      name="search"
+      animated=true
+      cancelButtonText="{{ 'CANCEL_BUTTON' | translate }}"
+      #search>
+    </ion-searchbar>
+    <ion-list no-margin>
+      <ion-item tappable *ngFor="let item of autocompleteItems; let i = index" (click)="geocodePlaceId(item.place_id)">
+        {{ item.description }}
+      </ion-item>
+    </ion-list>
+  </ion-toolbar>
+
+</div>

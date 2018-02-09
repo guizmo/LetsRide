@@ -4,6 +4,7 @@ import { MapPage } from './map';
 import { MomentModule } from 'angular2-moment';
 import { AgmCoreModule } from '@agm/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { ComponentsModule } from '../../components/components.module';
 
 
 @NgModule({
@@ -11,6 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
     MapPage,
   ],
   imports: [
+    ComponentsModule,
     IonicPageModule.forChild(MapPage),
     AgmCoreModule,
     TranslateModule.forChild(),

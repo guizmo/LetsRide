@@ -48,7 +48,6 @@ export class MapPage {
   markerDraggable:boolean = true;
   public state: string;
   public marker: marker = {};
-  private autocompleteItems:Array<any>=[];
   private geocoder;
   private autocompleteService;
   private mapAPI_loaded:boolean = false;
@@ -103,7 +102,6 @@ export class MapPage {
 
     this.map.zoom = 15;
     this.setMapAPI();
-    //this.autocomplete();
 
     this.marker.userId = this.modalNavPage.navParams.get('userId');
     this.state = this.modalNavPage.navParams.get('state');
@@ -165,58 +163,32 @@ export class MapPage {
   }
 
   setMapAPI(){
-    this.mapsAPILoader.load().then(() => {
+    if(typeof(google) != 'undefined'){
       this.geocoder = new google.maps.Geocoder();
-      this.autocompleteService = new google.maps.places.AutocompleteService();
       this.mapAPI_loaded = true;
-    });
-  }
-
-  onCancelSearch(searchbar){
-    this.autocompleteItems = [];
-  }
-
-  searchAutocomplete(searchbar) {
-    // set q to the value of the searchbar
-    var q = (searchbar.srcElement != null ) ? searchbar.srcElement.value : searchbar;
-    if (!q) {
-      return;
-    }
-
-    let _self = this;
-    this.autocompleteService.getPlacePredictions({ input: q, componentRestrictions: {} }, function (predictions, status) {
-      _self.autocompleteItems = [];
-      _self.ngZone.run(function () {
-        if(predictions)
-        predictions.forEach(function (prediction) {
-          _self.autocompleteItems.push({description:prediction.description, place_id:prediction.place_id});
-        });
+    }else{
+      this.mapsAPILoader.load().then(() => {
+        this.geocoder = new google.maps.Geocoder();
+        this.mapAPI_loaded = true;
       });
-    });
+    }
   }
 
-  geocodePlaceId(id){
-    this.autocompleteItems = [];
-    let _self = this;
-    this.geocoder.geocode( { 'placeId': id}, function(results, status) {
-      if (status == 'OK') {
-        let place = results[0];
-        if (place.geometry === undefined || place.geometry === null) {
-          return;
-        }
-        //set latitude, longitude and zoom
-        _self.map = {
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
-          zoom: 13
-        }
-        _self.marker = _self.map;
-        _self.marker.name = place.name;
-        _self.addressToMarker(place.address_components);
-
+  locationFound(results){
+    if(results[0]){
+      let place = results[0];
+      if (place.geometry === undefined || place.geometry === null) {
+        return;
       }
-    });
-
+      this.map = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+        zoom: 13
+      }
+      this.marker = this.map;
+      this.marker.name = place.name;
+      this.addressToMarker(place.address_components);
+    }
   }
 
 
@@ -260,7 +232,6 @@ export class MapPage {
           this.marker.lng = lng;
         }
 
-
         if(this.buddy && this.mapAPI_loaded){
           let bounds = new google.maps.LatLngBounds();
           bounds.extend( new google.maps.LatLng(this.marker.lat, this.marker.lng) );
@@ -269,8 +240,6 @@ export class MapPage {
           this.map.lng = bounds.getCenter().lng();
           this.map.zoom = 12;
         }
-
-
         this.loading.dismiss();
       });
     }else{
@@ -279,28 +248,24 @@ export class MapPage {
   }
 
   getGeoLocation(lat: number, lng: number) {
-    //if (navigator.geolocation) {
-
-      let latlng = new google.maps.LatLng(lat, lng);
-      let request = { latLng: latlng };
+    let latlng = new google.maps.LatLng(lat, lng);
+    let request = { latLng: latlng };
 
 
-      this.geocoder.geocode(request, (results, status) => {
+    this.geocoder.geocode(request, (results, status) => {
+      if (status == google.maps.GeocoderStatus.OK) {
+        let result = results[0];
 
-        if (status == google.maps.GeocoderStatus.OK) {
-          let result = results[0];
-
-          this.marker.postal_code = '';
-          this.marker.city = '';
-          this.marker.country= '';
-          if (result) {
-            this.addressToMarker(result.address_components);
-          } else {
-            alert("No address available!");
-          }
+        this.marker.postal_code = '';
+        this.marker.city = '';
+        this.marker.country= '';
+        if (result) {
+          this.addressToMarker(result.address_components);
+        } else {
+          alert("No address available!");
         }
-      });
-    //}
+      }
+    });
   }
 
   onSave(){

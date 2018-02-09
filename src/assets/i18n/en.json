@@ -223,10 +223,6 @@
     }
   },
 
-  "EVENTS_TABS_PAGE":{
-    "TAB_1": "Events",
-    "TAB_2": "Search"
-  },
 
   "EVENTS_PAGE":{
     "CARD_HEAD": "You have no current event !",
@@ -234,7 +230,10 @@
     "ALERT_TITLE": "Deleting !",
     "PRIVATE": "Private",
     "PUBLIC": "Public",
-    "ALERT_MSG": "You are going to permanently delete this event !"
+    "ALERT_MSG": "You are going to permanently delete this event !",
+    "SEG_1": "Events",
+    "SEG_2": "Search",
+    "PLACEHOLDER": "Find an event"
   },
 
   "EVENTS_EDIT_PAGE":{
@@ -262,7 +261,7 @@
   },
 
   "MAP_PAGE": {
-    "SEARCH_PLACEHOLDER": "search for location",
+    "SEARCH_PLACEHOLDER": "Enter a location",
     "EVENT_HEAD": "Event details",
     "EVENT_SUB_HEAD": "They are going to ..."
   },

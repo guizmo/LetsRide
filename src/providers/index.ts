@@ -16,3 +16,4 @@ export { CloudFunctionsProvider } from './cloud-functions';
 export { StringManipulationProvider } from './string-manipulation';
 export { HotUpdateProvider } from './hot-update';
 export { UtilsProvider } from './utils';
+export { GoogleMapsConfig } from './google-map-config';

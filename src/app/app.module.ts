@@ -4,6 +4,7 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { Storage, IonicStorageModule } from '@ionic/storage';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { NativePageTransitions } from '@ionic-native/native-page-transitions';
 import { Network } from '@ionic-native/network';
@@ -22,17 +23,8 @@ import { VirtualScrollModule } from 'angular2-virtual-scroll';
 import { NgPipesModule, LatinisePipe } from 'ngx-pipes';
 
 //import 'web-animations-js/web-animations.min';
-//import { AgmCoreModule } from '@agm/core';
-//import {GoogleMapsAPIWrapper} from '@agm/core/services';
-import {
-  AgmCoreModule,
-  MapsAPILoader,
-  NoOpMapsAPILoader,
-  MouseEvent,
-  GoogleMapsAPIWrapper,
-} from '@agm/core';
+import { AgmCoreModule, LAZY_MAPS_API_CONFIG } from '@agm/core';
 
-import { ReactiveFormsModule } from '@angular/forms';
 
 import { LetsRide } from './app.component';
 
@@ -54,7 +46,8 @@ import {
   CloudFunctionsProvider,
   StringManipulationProvider,
   HotUpdateProvider,
-  UtilsProvider
+  UtilsProvider,
+  GoogleMapsConfig
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -70,10 +63,9 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 
-import { GbLogoutButtonModule } from '../components/gb-logout-button/gb-logout-button.module';
+import { ComponentsModule } from '../components/components.module';
 
-
-import { firebaseConfig } from './configs';
+import { firebaseConfig, GOOGLEMAPAPIKEY } from './configs';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -82,15 +74,24 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 }
 
 
+/*class GoogleMapsConfig implements LazyMapsAPILoaderConfigLiteral {
+  public apiKey: string ;
+  public libraries ;
+  public language: string ;
+  constructor() {
+    console.log('INSIDE MAPs'); //This is not displayed in console
+    this.apiKey = 'AIzaSyBvmBNw3scf3o1dSZGQRGjFUGfhlOQw0a0';
+    this.libraries = ['places'];
+    this.language = 'fr';
+  }
+}*/
+
+
 @NgModule({
   declarations: [
     LetsRide,
   ],
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    GbLogoutButtonModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -98,10 +99,10 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyBvmBNw3scf3o1dSZGQRGjFUGfhlOQw0a0',
-      libraries: ['places']
-    }),
+    BrowserModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    ComponentsModule,
     IonicModule.forRoot(LetsRide),
     IonicStorageModule.forRoot(),
     AngularFireModule.initializeApp(firebaseConfig),
@@ -109,7 +110,12 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     AngularFireAuthModule,
     ReactiveFormsModule,
     MomentModule,
-    NgPipesModule
+    NgPipesModule,
+    AgmCoreModule.forRoot({
+      apiKey: GOOGLEMAPAPIKEY,
+      libraries: ['places'],
+      language: 'en'
+    }),
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -121,6 +127,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
+    {provide: LAZY_MAPS_API_CONFIG, useClass: GoogleMapsConfig, deps: [Translate]},
     Facebook,
     GooglePlus,
     Dialogs,
@@ -129,7 +136,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     AlertProvider,
     PlacesProvider,
     NativePageTransitions,
-    GoogleMapsAPIWrapper,
     ConnectivityService,
     Network,
     BuddiesProvider,
@@ -154,7 +160,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     LatinisePipe,
     StringManipulationProvider,
     HotUpdateProvider,
-    UtilsProvider
+    UtilsProvider,
   ]
 })
 export class AppModule {}
