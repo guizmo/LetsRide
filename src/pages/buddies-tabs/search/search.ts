@@ -39,7 +39,7 @@ export class SearchPage {
   isSearching = false;
   showNoResult = false;
   filters:any = [];
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject();
   public disciplines: ReadonlyArray<any>;
   public countries: ReadonlyArray<any>;
 
@@ -66,6 +66,16 @@ export class SearchPage {
   }
 
   ionViewDidLeave(){
+    //used on tab switch
+    this.ionTabLeave();
+  }
+
+  ionViewWillUnload(){
+    //used on sidemenu switch
+    this.ionTabLeave();
+  }
+
+  ionTabLeave(){
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

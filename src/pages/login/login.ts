@@ -26,7 +26,7 @@ export class LoginPage {
   activeMenu = 'AccountPage';
   public signInForm: FormGroup;
   public resetPasswordForm:FormGroup;
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject(); 
 
   // Our translated text strings
   private loginErrorString: string;

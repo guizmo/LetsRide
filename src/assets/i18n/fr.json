@@ -147,6 +147,7 @@
     "EventsPage": "Evénements",
     "EventsTabsPage": "Evénements",
     "NotificationsPage": "Notifications",
+    "MessagesPage": "Messages",
     "AccountPage": "Mon compte"
   },
 
@@ -238,7 +239,7 @@
     "WHEN": "Date",
     "PLACE": "Spot",
     "WHAT": "Sport",
-    "STATUS": "Seulement pour les amis"
+    "STATUS": "Seulement les amis"
   },
 
   "NOTIFICATIONS_PAGE":{

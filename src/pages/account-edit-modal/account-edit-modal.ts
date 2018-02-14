@@ -17,7 +17,7 @@ import { LoadingProvider, AlertProvider } from '../../providers';
 })
 export class AccountEditModalPage {
 
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject();
   editAccountForm: FormGroup;
   field: null;
   public activeMenu = 'AccountPage';
@@ -56,7 +56,7 @@ export class AccountEditModalPage {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-  
+
   onValueChanged(data?: any) {
     if (!this.editAccountForm) { return; }
   }

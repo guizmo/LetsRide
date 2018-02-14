@@ -1,0 +1,29 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-buttons start>
+      <button ion-button icon-left (click)="dismiss()">
+        <ion-icon name="arrow-back"></ion-icon>
+        {{ 'CANCEL_BUTTON' | translate }}
+      </button>
+    </ion-buttons>
+    <ion-title>sportsList</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-right (click)="onSave()" [disabled]="!sportsForm" >
+        {{ 'SAVE_BUTTON' | translate }}
+        <ion-icon name="ios-calendar-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <ion-list radio-group [(ngModel)]="sportsForm">
+    <ion-item *ngFor="let discipline of disciplines" >
+      <ion-label>{{discipline.name}}</ion-label>
+      <ion-radio [value]="discipline.alias"></ion-radio>
+    </ion-item>
+  </ion-list>
+</ion-content>

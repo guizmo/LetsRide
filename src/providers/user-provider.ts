@@ -5,6 +5,7 @@ import { Facebook } from '@ionic-native/facebook';
 import { GooglePlus } from '@ionic-native/google-plus';
 
 import { Observable } from "rxjs/Rx";
+import { Subject } from 'rxjs/Subject';
 import { AngularFireDatabase, AngularFireObject } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
@@ -25,6 +26,7 @@ export class UserProvider {
   checkVerified;
   userDataRef: AngularFireObject<any>;
   userData: Observable<any>;
+  user: Subject<any> = new Subject();
 
   constructor(
     public translate: Translate,
@@ -43,15 +45,20 @@ export class UserProvider {
       if (_user) {
         this.currentUser = _user;
         this.userDataRef = this.afdb.object(`/users/${_user.uid}`);
-        //this.getUserData();
+        this.getUserData().subscribe( user => this.user.next(user));
         this.emailVerified = this.currentUser.emailVerified;
         //console.log('afAuth.authState Observable in')
-        this.checkOneSignalID();
+        //this.checkOneSignalID();
       } else {
         //console.log('afAuth.authState Observable out')
+        this.user.next(false);
       }
 
     });
+  }
+
+  getUser(){
+    return this.user;
   }
 
   checkProviderInfos(user){
@@ -74,8 +81,12 @@ export class UserProvider {
   }
 
   getUserData(){
-    console.log('getUserData');
-    return this.userData = this.userDataRef.snapshotChanges().map(changes => changes.payload.val());
+    console.log('getUserData()');
+    return this.userData = this.userDataRef.snapshotChanges().map(changes => {
+      let val = changes.payload.val();
+      console.log(val);
+      return val;
+    });
   }
 
   addUserData(data: Profile) {
@@ -94,7 +105,6 @@ export class UserProvider {
   //updateUserData(data: Profile) {
   updateUserData(data:any) {
     this.userDataRef.update(data);
-    console.log(this.userData);
     return this.userData;
   }
 
@@ -102,7 +112,6 @@ export class UserProvider {
     let one_id = this.notifications.one_id;
     let userData = (this.userData) ? this.userData : this.getUserData() ;
     userData.subscribe((userData) => {
-      console.log('getUserData checkOneSignalID user-provider');
       if(one_id && one_id != userData.oneSignalId){
         this.userDataRef.update({'oneSignalId': one_id});
       }

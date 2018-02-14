@@ -47,7 +47,9 @@ import {
   StringManipulationProvider,
   HotUpdateProvider,
   UtilsProvider,
-  GoogleMapsConfig
+  GoogleMapsConfig,
+  SearchProvider,
+  MessagesProvider
 } from '../providers';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -72,19 +74,6 @@ import { firebaseConfig, GOOGLEMAPAPIKEY } from './configs';
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, 'assets/i18n/', '.json');
 }
-
-
-/*class GoogleMapsConfig implements LazyMapsAPILoaderConfigLiteral {
-  public apiKey: string ;
-  public libraries ;
-  public language: string ;
-  constructor() {
-    console.log('INSIDE MAPs'); //This is not displayed in console
-    this.apiKey = 'AIzaSyBvmBNw3scf3o1dSZGQRGjFUGfhlOQw0a0';
-    this.libraries = ['places'];
-    this.language = 'fr';
-  }
-}*/
 
 
 @NgModule({
@@ -161,6 +150,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     StringManipulationProvider,
     HotUpdateProvider,
     UtilsProvider,
+    SearchProvider,
+    MessagesProvider,
   ]
 })
 export class AppModule {}

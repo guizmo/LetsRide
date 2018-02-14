@@ -16,7 +16,7 @@ import { Country } from '../../models';
 export class PlacesPage {
   @ViewChildren('fab') fabs;
 
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject(); 
   public countries: ReadonlyArray<any>;
   places;
   user;

@@ -18,7 +18,7 @@ export class MainPage {
   activeMenu = 'MainPage';
   refresher;
   activeItemSliding: ItemSliding = null;
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject();
   private state: any;
   private searchDone: boolean = null;
   private noResults: boolean = false;

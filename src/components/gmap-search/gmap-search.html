@@ -11,10 +11,11 @@
       name="search"
       animated=true
       cancelButtonText="{{ 'CANCEL_BUTTON' | translate }}"
+      [(ngModel)]="placeDescription"
       #search>
     </ion-searchbar>
     <ion-list no-margin>
-      <ion-item tappable *ngFor="let item of autocompleteItems; let i = index" (click)="geocodePlaceId(item.place_id)">
+      <ion-item tappable *ngFor="let item of autocompleteItems; let i = index" (click)="geocodePlaceId(item.place_id, item.description)">
         {{ item.description }}
       </ion-item>
     </ion-list>

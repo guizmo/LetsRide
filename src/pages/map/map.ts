@@ -40,7 +40,7 @@ export class MapPage {
   public place: any;
   public event: any;
   public translatedStrings:any = {};
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject();
   pageClass: string = '';
   noLocation:boolean = false;
   searchVisible:boolean = true;
@@ -121,14 +121,14 @@ export class MapPage {
       this.fullscreen = false;
       this.event = this.modalNavPage.navParams.get('event');
       this.place = this.modalNavPage.navParams.get('values');
-      this.buddiesProvider.getUserByID(this.event.aFuid).takeUntil(this.ngUnsubscribe).subscribe(res => {
+      this.buddiesProvider.getUserByID(this.event.aFuid).takeUntil(this.ngUnsubscribe).subscribe((res:any) => {
         if(res){
           res = this.utils.buildProfile(res, this.disciplines, this.countries);
+          //this.event.displayName = (res.settings && res.settings.displayName) ? res.settings.displayName : res.displayName;
+          this.event.displayName = res.displayName;
           this.event.host = res;
         }
       });
-
-      console.log(this);
     }
     if( this.state.includes('display') ){
       this.searchVisible = false;

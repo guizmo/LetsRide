@@ -92,7 +92,7 @@
           {{ 'MAP_PAGE.EVENT_HEAD' | translate }}
         </ion-list-header>
 
-        <button ion-item (click)="showPerson(event, true)">
+        <button ion-item (click)="showPerson(event, true)" *ngIf="event.displayName">
           <ion-icon name="contact" color="dark" item-start></ion-icon>
           {{ event.displayName }}
         </button>

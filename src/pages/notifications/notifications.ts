@@ -20,7 +20,7 @@ export class NotificationsPage {
 
   activeMenu = 'NotificationsPage';
   notifEventId = null;
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject(); 
   public disciplines:ReadonlyArray<any>;
   public eventsNotifications: any = [] ;
   public requestsNotifications: any = [] ;

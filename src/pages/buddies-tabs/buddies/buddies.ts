@@ -18,7 +18,7 @@ import { AngularFireDatabase } from 'angularfire2/database';
 })
 export class BuddiesPage {
 
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject();
   disciplines: ReadonlyArray<any>;
   countries: ReadonlyArray<any>;
   currentUser;
@@ -48,6 +48,16 @@ export class BuddiesPage {
   }
 
   ionViewDidLeave(){
+    //used on tab switch
+    this.ionTabLeave();
+  }
+
+  ionViewWillUnload(){
+    //used on sidemenu switch
+    this.ionTabLeave();
+  }
+
+  ionTabLeave(){
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

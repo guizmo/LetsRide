@@ -19,6 +19,7 @@ export class GmapSearchComponent {
   private geocoder;
   private mapAPI_loaded = false;
   private autocompleteItems:Array<any>=[];
+  public placeDescription = '';
 
   constructor(
     private mapsAPILoader: MapsAPILoader,
@@ -27,10 +28,7 @@ export class GmapSearchComponent {
   ) {
     this.currentLang = this.translate.currentLang;
     this.setMapAPI();
-    console.log('Hello GmapSearchComponent', this);
   }
-
-
 
   setMapAPI(){
     this.mapsAPILoader.load().then(() => {
@@ -62,29 +60,12 @@ export class GmapSearchComponent {
     });
   }
 
-  geocodePlaceId(id){
+  geocodePlaceId(id, description){
     this.autocompleteItems = [];
+    this.placeDescription = description;
     this.geocoder.geocode( { 'placeId': id}, (results, status) => {
-
       this.onLocationFound.emit(results);
-      /*if (status == 'OK') {
-        let place = results[0];
-        if (place.geometry === undefined || place.geometry === null) {
-          return;
-        }
-        //set latitude, longitude and zoom
-        this.map = {
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
-          zoom: 13
-        }
-        _self.marker = _self.map;
-        _self.marker.name = place.name;
-        _self.addressToMarker(place.address_components);
-
-      }
-      */
     });
-
   }
+
 }

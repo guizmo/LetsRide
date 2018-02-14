@@ -12,7 +12,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 
 import * as moment  from 'moment';
 
-import { UserProvider, BuddiesProvider, PlacesProvider, NotificationsProvider, UtilsProvider} from '../../../providers';
+import { UserProvider, BuddiesProvider, PlacesProvider, NotificationsProvider, UtilsProvider, SearchProvider} from '../../../providers';
 
 //https://forum.ionicframework.com/t/click-to-slide-open-ion-item-sliding-instead-of-swiping/54642/5
 //http://blog.ihsanberahim.com/2017/05/trigger-ionitemsliding-using-click-event.html
@@ -30,9 +30,10 @@ export class EventsPage {
   popover = null;
   segments = 'events';
   translatedStrings:any = {};
-  filters;
-  private ngUnsubscribe: Subject = new Subject();
-  public places: any = [];
+  sportfilter;
+  private ngUnsubscribe:Subject<void> = new Subject();
+  private places: any = [];
+  private placesFullList: any = [];
   private activeItemSliding:boolean = false;
   private userData;
   private currentUser;
@@ -40,6 +41,7 @@ export class EventsPage {
   private refresher;
   private eventModal;
   private mapModal;
+  private sportModal;
   public eventsRef: AngularFireList<any>;
   public events: Observable<any[]>;
   public buddiesEvents: any = [];
@@ -51,6 +53,8 @@ export class EventsPage {
   private showMapIsEnabled: string = null;
   public disciplines: ReadonlyArray<any>;
   public countries: ReadonlyArray<any>;
+  private publicEvents: Array<any> = [];
+  private publicEventsSearchResult: Array<any> = [];
 
   constructor(
     public navCtrl: NavController,
@@ -63,9 +67,10 @@ export class EventsPage {
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
     private placesProvider: PlacesProvider,
-    public translateService: TranslateService,
+    private translateService: TranslateService,
     private popoverCtrl: PopoverController,
-    public utils: UtilsProvider
+    private utils: UtilsProvider,
+    private searchProvider: SearchProvider
   ) {
     console.log(this);
     moment.locale(this.translateService.currentLang);
@@ -85,13 +90,13 @@ export class EventsPage {
         this.getBuddies();
         this.listPlaces(user.uid);
         this.userProvider.getUserData().takeUntil(this.ngUnsubscribe).subscribe((settings) => {
-          console.log('getUserData event');
           if(settings){
             this.userData = settings;
           }
         });
       }
     });
+
   }
 
   ionViewDidLeave(){
@@ -99,26 +104,59 @@ export class EventsPage {
     this.ngUnsubscribe.complete();
   }
 
+  searchEvents(){
+    this.publicEvents = [];
+    this.publicEventsSearchResult = [];
+    let style = 'default.png';
+    this.searchProvider.fetchEvents(this.userData.aFuid).subscribe( (evts) => {
+      evts.forEach(event => {
+        if(event && event.place_id){
+          let place = this.placesFullList.find( p => p.key == event.place_id );
+          if(!place.lat){
+            return;
+          }
+          event.place = place;
+        }
+        if(event.disciplines){
+          let discipline = this.utils.getRidingStyle(event.disciplines, this.disciplines);
+          event.disciplinesName = discipline.name;
+          style = discipline.image;
+        }
+        event.backgroundImage = `./assets/img/styles/${style}`;
+        this.publicEvents.push(event);
+      });
+    }, null, () => {
+      console.log('fetchEvents done');
+      //TODO
+      //handle loader
+    });
+  }
+
   locationFound(results){
     if(results[0]){
       let place = results[0];
+      let searchResults = [];
       if (place.geometry === undefined || place.geometry === null) {
         return;
       }
-      let placeGeoloc = {
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng()
+      if(place.types[0] == 'country'){
+        let country = place.address_components[0].short_name;
+        searchResults = this.publicEvents.filter(res => res.place.country == country);
+      }else{
+        let placeGeoloc = {
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng()
+        }
+        searchResults = this.searchProvider.eventNearBy(this.publicEvents, placeGeoloc);
       }
-      console.log(placeGeoloc);
+      this.publicEventsSearchResult = searchResults;
     }
-    console.log('locationFound', results);
   }
 
 
   segmentChanged(action){
-    console.log('segmentChanged');
     if(action.value == 'search'){
-
+      this.searchEvents();
     }
   }
 
@@ -141,7 +179,6 @@ export class EventsPage {
     if(event){
       this.itemInUpdateMode = event.key;
     }
-    console.log(event);
     this.eventModal = this.modalCtrl.create('EventsModalPage', { values: event, places: this.places }, { cssClass: 'inset-modal' })
     this.eventModal.present();
 
@@ -149,7 +186,7 @@ export class EventsPage {
   }
 
   presentMapModal(event, place){
-    if(!event.displayName) event.displayName = this.userData.displayName;
+    if(!event.aFuid) event.displayName = this.userData.displayName;
     this.mapModal = this.modalCtrl.create('ModalNavPage', { state: 'display_place_event',values: place, page: 'MapPage', event });
     this.mapModal.present();
     this.mapModal.onDidDismiss(data => {
@@ -157,6 +194,15 @@ export class EventsPage {
     })
   }
 
+  presentSportModal(discipline = null){
+    discipline = 'xc';
+    console.log('sport filter', discipline);
+    this.sportModal = this.modalCtrl.create('SportsListPage', { values:discipline});
+    this.sportModal.present();
+    this.sportModal.onDidDismiss(data => {
+      console.log('sportModal.onDidDismiss', data);
+    })
+  }
 
   getBuddiesEvents(){
     let now = moment();
@@ -181,7 +227,6 @@ export class EventsPage {
             let event = bud_events[key];
             let eventTime = moment(event.time);
             let style = 'default.png';
-            console.log(event.disciplines);
             if(event.disciplines){
               let discipline = this.utils.getRidingStyle(event.disciplines, this.disciplines);
               event.disciplinesName = discipline.name;
@@ -222,7 +267,6 @@ export class EventsPage {
             this.eventsRef.remove(event.key);
           }
           let style = 'default.png';
-          console.log(event.disciplines);
           if(event.disciplines){
             let discipline = this.utils.getRidingStyle(event.disciplines, this.disciplines);
             event.disciplinesName = discipline.name;
@@ -279,11 +323,12 @@ export class EventsPage {
             en: `${name} has created an event`,
             fr: `${name} a crée un événement`
           }
-          this.addEvent(event).then((event) => {
-            this.sendEventToBuddies(message, event.key, type);
+
+          this.addEvent(event).then((res) => {
+            this.sendEventToBuddies(message, res.key, type);
             if(data.create_place){
-              let place = {userId:this.currentUser.uid, name: event.where};
-              this.addPlace(place, event.key);
+              let place = { userId: this.currentUser.uid, name: event.where };
+              this.addPlace(place, res.key);
             }
           })
         }
@@ -428,15 +473,16 @@ export class EventsPage {
   }
 
   listPlaces(uid:string){
-    this.placesProvider.getAllByUser(uid).takeUntil(this.ngUnsubscribe).subscribe((data) => {
-      this.places = data;
+    this.placesProvider.getAll().takeUntil(this.ngUnsubscribe).subscribe((data) => {
+      this.placesFullList = data;
+      this.places = data.filter(res => res.userId == uid);
     });
   }
 
-  showMap(index){
+  showMap(index, event){
     if(this.showMapIsEnabled === null){
       this.showMapIsEnabled = index;
-      let event = this.eventsListing[index];
+
       console.log(event);
 
       for(let uid in event.participants){
@@ -451,6 +497,7 @@ export class EventsPage {
       }
       if(event.place_id){
         this.placesProvider.getById(event.place_id).takeUntil(this.ngUnsubscribe).subscribe(place => {
+          place = ( place ) ? place : {};
           this.presentMapModal(event, place);
         });
       }else{

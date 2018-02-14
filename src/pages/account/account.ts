@@ -16,7 +16,7 @@ import * as firebase from 'firebase/app';
 })
 export class AccountPage {
 
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject(); 
   private currentUser: firebase.User;
   private emailVerified: boolean = false;
   private alert;

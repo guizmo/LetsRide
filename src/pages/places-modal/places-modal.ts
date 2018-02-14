@@ -20,7 +20,7 @@ import { Discipline, Country, Place } from '../../models';
 export class PlacesModalPage {
 
   activeMenu = 'PlacesPage';
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject(); 
   private disciplines: ReadonlyArray<Discipline>;
   private countries: ReadonlyArray<Country>;
   private placeForm: FormGroup;

@@ -17,7 +17,7 @@ export class BuddiesTabsPage {
   @ViewChild('buddiesTabs') tabRef: Tabs;
 
   userLoaded = false;
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject();
 
   searchRoot = 'SearchPage';
   buddiesRoot = 'BuddiesPage';

@@ -20,7 +20,7 @@ export class ProfilePage {
   isAnyProfile:boolean = false;
   showMap:boolean = false;
   profileViewData:any = null;
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject(); 
   private userData:any;
   private profileImg:string = null;
   private profileImgLoaded:boolean = false;

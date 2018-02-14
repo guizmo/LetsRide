@@ -21,7 +21,7 @@ export class SignupPage {
   private signupErrorString: string;
   public signupForm: FormGroup;
   activeMenu = 'AccountPage';
-  private ngUnsubscribe: Subject = new Subject();
+  private ngUnsubscribe:Subject<void> = new Subject(); 
 
   constructor(
     public navCtrl: NavController,

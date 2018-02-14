@@ -17,3 +17,5 @@ export { StringManipulationProvider } from './string-manipulation';
 export { HotUpdateProvider } from './hot-update';
 export { UtilsProvider } from './utils';
 export { GoogleMapsConfig } from './google-map-config';
+export { SearchProvider } from './search';
+export { MessagesProvider } from './messages';

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
+
+import 'rxjs/RX';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 
 import { UtilsProvider} from './utils';
@@ -8,6 +9,8 @@ import { UtilsProvider} from './utils';
 @Injectable()
 export class PlacesProvider {
 
+  eventsRef: AngularFireList<any>;
+  events: Observable<any[]>;
   placesRef: AngularFireList<any[]>;
   places: Observable<any[]>;
   public countries: ReadonlyArray<any>;
@@ -51,6 +54,7 @@ export class PlacesProvider {
   }
   delete(key: string) {
     this.placesRef.remove(key);
+    this.removeLinkToEvent(key)
   }
   deleteEverything() {
     this.placesRef.remove();
@@ -58,6 +62,21 @@ export class PlacesProvider {
   handleError(error) {
     console.error(error);
     return Observable.throw(error.json().error || 'Server error');
+  }
+  removeLinkToEvent(place_id:string){
+    this.eventsRef = this.db.list('/events/');
+    this.events = this.eventsRef.snapshotChanges();
+    this.events.take(1).flatMap(changes => {
+      return changes.map(c => ({ key: c.payload.key, ...{events:c.payload.val()} }));
+    }).subscribe(res => {
+      let uid = res.key;
+      let events = res.events;
+      for (let key in events) {
+        if(events[key].place_id == place_id){
+          this.db.object(`/events/${uid}/${key}`).update({place_id: null});
+        }
+      }
+    });
   }
 
 }

@@ -5,7 +5,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AppVersion } from '@ionic-native/app-version';
 
-import { Translate, NotificationsProvider, LocationTrackerProvider, HotUpdateProvider } from '../providers';
+import { Translate, UserProvider, NotificationsProvider, LocationTrackerProvider, HotUpdateProvider } from '../providers';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import 'rxjs/add/operator/map';
@@ -27,6 +27,7 @@ export class LetsRide {
     { title: 'Friends', component: 'BuddiesTabsPage', icon: 'people', is_active: false },
     { title: 'Events', component: 'EventsPage', icon: 'calendar', is_active: false },
     { title: 'Notifications', component: 'NotificationsPage', icon: 'mail', is_active: false },
+    { title: 'Messages', component: 'MessagesPage', icon: 'mail', is_active: false }
     //{ title: 'MockNotifsPage', component: 'MockNotifsPage', icon: 'mail', is_active: false },
   ]
 
@@ -36,6 +37,7 @@ export class LetsRide {
   fetchByIdSubscription;
   translated:any = {};
 
+
   constructor(
     private translate: Translate,
     public platform: Platform,
@@ -43,6 +45,7 @@ export class LetsRide {
     public splashScreen: SplashScreen,
     private afAuth: AngularFireAuth,
     public menuCtrl: MenuController,
+    private userProvider: UserProvider,
     private locationTracker: LocationTrackerProvider,
     private notifications: NotificationsProvider,
     private appVersion: AppVersion,
@@ -50,7 +53,11 @@ export class LetsRide {
     private app: App,
     public events: Events,
   ) {
-    
+    this.userProvider.getUser().subscribe(res => {
+      console.log('getUser()', res);
+    })
+    console.log('app component');
+
     this.handleEvents();
     this.translate.getString(['MENU', 'LOGIN_TITLE']).subscribe( values => {
       this.translated.login = values.LOGIN_TITLE;
@@ -85,6 +92,8 @@ export class LetsRide {
         this.locationTracker.initLocation();
         this.appVersion.getVersionNumber().then(res => this.appliVersion = res);
         this.appVersion.getAppName().then(res => this.appliName = res);
+
+        //this.userProvider.checkOneSignalID();
       }
     });
   }
@@ -114,6 +123,7 @@ export class LetsRide {
     this.app.viewWillEnter.subscribe((view) => {
       if (view.instance && view.instance.activeMenu) {
         let name = view.instance.activeMenu;
+
         if(view.getNav() && view.getNav().canGoBack()){
           return false;
         }
