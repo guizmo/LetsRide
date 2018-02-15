@@ -42,19 +42,32 @@ export class MainPage {
     private notifications: NotificationsProvider,
     private utils: UtilsProvider,
   ) {
+    console.log(this);
     (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
     (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
     this.state = {
       enabled: this.locationTracker.is_tracking
     }
 
-    this.afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((user) => {
+    /*this.afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((user) => {
       if(user){
-        this.currentUser = user.toJSON();
+        this.currentUser = this.userProvider.currentUser;
         this.userProvider.getUserData().takeUntil(this.ngUnsubscribe).subscribe((settings) => {
-          this.userSettings = settings;
-          this.userProvider.checkProviderInfos(settings);
+          console.log('settings', settings);
+          if(settings){
+            console.log('settings checkProviderInfos', settings.providerId);
+            this.userSettings = settings;
+            this.userProvider.checkProviderInfos(settings);
+          }
         });
+      }
+    });*/
+    this.currentUser = this.userProvider.userObject;
+    this.userProvider.getUser().takeUntil(this.ngUnsubscribe).subscribe(user => {
+      if(user){
+        this.currentUser = this.userProvider.currentUser;
+        this.userSettings = user;
+        this.userProvider.checkProviderInfos(user);
       }
     });
   }

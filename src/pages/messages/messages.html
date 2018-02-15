@@ -13,6 +13,16 @@
 
 
 
-<ion-content padding>
+<ion-content>
+  <ion-list no-margin>
+    <ion-item-sliding *ngFor="let message of messages; let i = index">
+      <button ion-item (click)="showMessage(message)">
+        <ion-avatar item-start>
+          <img src="{{message.profileImgPath}}" (error)="updateUrl($event, messages, i)">
+        </ion-avatar>
+        <h2>{{message.displayName}}</h2>
+      </button>
+    </ion-item-sliding>
 
+  </ion-list>
 </ion-content>

@@ -26,7 +26,7 @@ export class LoginPage {
   activeMenu = 'AccountPage';
   public signInForm: FormGroup;
   public resetPasswordForm:FormGroup;
-  private ngUnsubscribe:Subject<void> = new Subject(); 
+  private ngUnsubscribe:Subject<void> = new Subject();
 
   // Our translated text strings
   private loginErrorString: string;
@@ -149,7 +149,6 @@ export class LoginPage {
       this.userProvider.signInUser(this.signInForm.value.email, this.signInForm.value.password)
         .then((success) => {
           this.loadingProvider.hide();
-
           this.alertProvider.showSignInToast('email: ' + this.signInForm.value.email);
           this.userProvider.checkEmailIsVerified();
 

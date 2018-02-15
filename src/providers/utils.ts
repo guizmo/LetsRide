@@ -81,19 +81,27 @@ export class UtilsProvider {
           data.isFriendPending = true;
         }
       }
-      data.displayName = data.settings.displayName;
+      data.displayName = this.getDisplayName(data);
       data.emailVerified = true;
     }
 
-    if(data.profileImg && data.profileImg.url){
-      data.profileImgPath = data.profileImg.url;
-    }else if(data.photoURL){
-      data.profileImgPath = data.photoURL;
-    }else{
-      data.profileImgPath = './assets/img/man.svg';
-    }
+    data.profileImgPath = this.getProfileImg(data);
 
     return data;
+  }
+
+  getDisplayName(user){
+    return (user.settings && user.settings.displayName) ? user.settings.displayName : user.displayName;
+  }
+
+  getProfileImg(data){
+    let profileImgPath = './assets/img/man.svg';
+    if(data.profileImg && data.profileImg.url){
+      profileImgPath = data.profileImg.url;
+    }else if(data.photoURL){
+      profileImgPath = data.photoURL;
+    }
+    return profileImgPath;
   }
 
   getRidingStyle(alias: string, disciplinesList){

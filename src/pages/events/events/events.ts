@@ -17,6 +17,10 @@ import { UserProvider, BuddiesProvider, PlacesProvider, NotificationsProvider, U
 //https://forum.ionicframework.com/t/click-to-slide-open-ion-item-sliding-instead-of-swiping/54642/5
 //http://blog.ihsanberahim.com/2017/05/trigger-ionitemsliding-using-click-event.html
 
+
+//https://stackoverflow.com/questions/43185996/subscribe-to-done-event-in-datetime-picker-in-ionic2
+
+
 @IonicPage()
 @Component({
   selector: 'page-events',

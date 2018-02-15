@@ -23,6 +23,9 @@ export class EventsModalPage {
   public currentYear = moment().format('YYYY');
   public currentDate = moment().format();
   public maxYear = moment().add(1, 'year').format('YYYY');
+  public pickerOptions = {
+    enableBackdropDismiss:false
+  }
 
   constructor(
     private formBuilder: FormBuilder,

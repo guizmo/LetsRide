@@ -27,7 +27,7 @@ export class LetsRide {
     { title: 'Friends', component: 'BuddiesTabsPage', icon: 'people', is_active: false },
     { title: 'Events', component: 'EventsPage', icon: 'calendar', is_active: false },
     { title: 'Notifications', component: 'NotificationsPage', icon: 'mail', is_active: false },
-    { title: 'Messages', component: 'MessagesPage', icon: 'mail', is_active: false }
+    { title: 'Messages', component: 'MessagesPage', icon: 'chatbubbles', is_active: false }
     //{ title: 'MockNotifsPage', component: 'MockNotifsPage', icon: 'mail', is_active: false },
   ]
 
@@ -36,6 +36,7 @@ export class LetsRide {
   appliName = null;
   fetchByIdSubscription;
   translated:any = {};
+
 
 
   constructor(
@@ -53,10 +54,8 @@ export class LetsRide {
     private app: App,
     public events: Events,
   ) {
-    this.userProvider.getUser().subscribe(res => {
-      console.log('getUser()', res);
-    })
     console.log('app component');
+    console.log(this);
 
     this.handleEvents();
     this.translate.getString(['MENU', 'LOGIN_TITLE']).subscribe( values => {
@@ -64,7 +63,19 @@ export class LetsRide {
       this.translated.accountPage = values.MENU.AccountPage;
       this.pages.map(page => page.title = values.MENU[page.component])
     });
-    this.afAuth.authState.subscribe((user) => {
+    this.userProvider.getUser().subscribe(user => {
+      console.log('app getUser()');
+      if (!user) {
+        this.currentUser = null;
+        this.nav.setRoot('LoginPage');
+      } else {
+        this.menuCtrl.enable(true, 'mainMenu');
+        this.currentUser = user;
+        this.userProvider.checkOneSignalID();
+        this.getBadges(user.aFuid);
+      }
+    })
+    /*this.afAuth.authState.subscribe((user) => {
       if (!user) {
         this.nav.setRoot('LoginPage');
       } else {
@@ -72,7 +83,7 @@ export class LetsRide {
         this.currentUser = {...user.providerData[0], ...{'aFuid': user.uid} };
         this.getBadges(user.uid);
       }
-    });
+    });*/
     this.initializeApp();
   }
 
@@ -92,8 +103,6 @@ export class LetsRide {
         this.locationTracker.initLocation();
         this.appVersion.getVersionNumber().then(res => this.appliVersion = res);
         this.appVersion.getAppName().then(res => this.appliName = res);
-
-        //this.userProvider.checkOneSignalID();
       }
     });
   }

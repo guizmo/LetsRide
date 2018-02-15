@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, ModalController, MenuController } 
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
 
-import { UserProvider, AlertProvider, NotificationsProvider, FileProvider, UtilsProvider } from '../../providers';
+import { UserProvider, AlertProvider, NotificationsProvider, FileProvider, UtilsProvider, MessagesProvider } from '../../providers';
 
 import * as firebase from 'firebase/app';
 import * as moment  from 'moment';
@@ -20,7 +20,9 @@ export class ProfilePage {
   isAnyProfile:boolean = false;
   showMap:boolean = false;
   profileViewData:any = null;
-  private ngUnsubscribe:Subject<void> = new Subject(); 
+  user;
+  message;
+  private ngUnsubscribe:Subject<void> = new Subject();
   private userData:any;
   private profileImg:string = null;
   private profileImgLoaded:boolean = false;
@@ -39,8 +41,10 @@ export class ProfilePage {
     private notifications: NotificationsProvider,
     public menuCtrl: MenuController,
     private fileProvider: FileProvider,
-    public utils: UtilsProvider
+    public utils: UtilsProvider,
+    public messagesProvider: MessagesProvider
   ) {
+    console.log(this);
     (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
     (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
     this.userAuth();
@@ -67,13 +71,45 @@ export class ProfilePage {
     if(this.navParams.get('isAnyProfile')){
       this.isAnyProfile = this.navParams.get('isAnyProfile');
       this.showMap = this.navParams.get('showMap');
+      this.getUser();
     }
 
   }
 
+  getUser(){
+    if(this.userProvider.userObject){
+      this.user = this.userProvider.userObject;
+    }
+    this.userProvider.getUser().takeWhile(user => !this.user).subscribe(user => {
+      if(user){
+        this.user = user;
+      }
+    });
+  }
+
+
   ionViewDidLeave(){
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  getMessages(){
+    this.messagesProvider.getThreadId(this.user.aFuid, this.profileViewData.aFuid)
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe( (thread) => {
+        this.message = {
+          state: (!thread) ? 'create' : 'exist',
+          threadId: (!thread) ? null : thread.key,
+          key: this.profileViewData.aFuid,
+          displayName: this.profileViewData.displayName
+        }
+    });
+  }
+
+  sendMessage(){
+    //TODO: MESSAGE ROUTE
+    console.log('send message');
+    this.navCtrl.push('MessageThreadPage', {message:this.message, me:this.user});
   }
 
   openMap(){
@@ -88,11 +124,6 @@ export class ProfilePage {
     this.modalCtrl
       .create('ModalNavPage', data)
       .present();
-  }
-
-  sendMessage(){
-    //TODO: MESSAGE ROUTE
-    console.log('send message');
   }
 
   changeProfileImg(){
@@ -156,6 +187,7 @@ export class ProfilePage {
             this.profileViewData = this.utils.buildProfile(data, this.disciplines, this.countries, _user);
           }else{
             let userData = this.navParams.get('userProfile');
+
             if(!userData.profileImgPath){
               this.profileViewData = this.utils.buildProfile(userData, this.disciplines, this.countries);
             }else{
@@ -165,6 +197,7 @@ export class ProfilePage {
             if(!this.profileViewData.location){
               this.showMap = false;
             }
+            this.getMessages();
           }
           this.emailVerified = this.profileViewData.emailVerified;
 

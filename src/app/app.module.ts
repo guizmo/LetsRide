@@ -66,6 +66,7 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 
 import { ComponentsModule } from '../components/components.module';
+import { DirectivesModule } from '../directives/directives.module'
 
 import { firebaseConfig, GOOGLEMAPAPIKEY } from './configs';
 
@@ -100,6 +101,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     ReactiveFormsModule,
     MomentModule,
     NgPipesModule,
+    DirectivesModule,
     AgmCoreModule.forRoot({
       apiKey: GOOGLEMAPAPIKEY,
       libraries: ['places'],

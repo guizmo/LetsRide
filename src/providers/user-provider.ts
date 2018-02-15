@@ -6,6 +6,7 @@ import { GooglePlus } from '@ionic-native/google-plus';
 
 import { Observable } from "rxjs/Rx";
 import { Subject } from 'rxjs/Subject';
+
 import { AngularFireDatabase, AngularFireObject } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
@@ -27,6 +28,7 @@ export class UserProvider {
   userDataRef: AngularFireObject<any>;
   userData: Observable<any>;
   user: Subject<any> = new Subject();
+  userObject;
 
   constructor(
     public translate: Translate,
@@ -45,13 +47,18 @@ export class UserProvider {
       if (_user) {
         this.currentUser = _user;
         this.userDataRef = this.afdb.object(`/users/${_user.uid}`);
-        this.getUserData().subscribe( user => this.user.next(user));
+        this.getUserData().subscribe( user => {
+          this.user.next(user);
+          this.userObject = user;
+        });
         this.emailVerified = this.currentUser.emailVerified;
         //console.log('afAuth.authState Observable in')
         //this.checkOneSignalID();
       } else {
         //console.log('afAuth.authState Observable out')
         this.user.next(false);
+        this.userObject = null;
+        //TODO: handle complete etc
       }
 
     });
@@ -81,10 +88,8 @@ export class UserProvider {
   }
 
   getUserData(){
-    console.log('getUserData()');
     return this.userData = this.userDataRef.snapshotChanges().map(changes => {
       let val = changes.payload.val();
-      console.log(val);
       return val;
     });
   }
@@ -327,12 +332,10 @@ export class UserProvider {
   }
   //OK
   checkEmailIsVerified(): Promise<boolean>{
-    let that = this;
     return new Promise<boolean>((resolve, reject) => {
-      let checkVerified = setInterval(function() {
-        console.log('ticking');
-        that.currentUser.reload();
-        if (that.currentUser.emailVerified) {
+      let checkVerified = setInterval( () => {
+        this.currentUser.reload();
+        if (this.currentUser.emailVerified) {
           clearInterval(checkVerified);
           //that.emailVerified = true;
           resolve(true);
