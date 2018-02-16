@@ -3,6 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { MessagesPage } from './messages';
 import { TranslateModule } from '@ngx-translate/core';
 import { MomentModule } from 'angular2-moment';
+import { PipesModule } from '../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -11,7 +12,8 @@ import { MomentModule } from 'angular2-moment';
   imports: [
     IonicPageModule.forChild(MessagesPage),
     TranslateModule.forChild(),
-    MomentModule
+    MomentModule,
+    PipesModule
   ],
 })
 export class MessagesPageModule {}

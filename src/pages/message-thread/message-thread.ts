@@ -24,6 +24,9 @@ export class MessageThreadPage {
   editorMsg = '';
   textArea;
   viewState;
+  footerIsHidden:boolean = false;
+  showSpinner:boolean = true;
+  showNoResult:boolean = false;
 
   private ngUnsubscribe:Subject<void> = new Subject();
 
@@ -40,21 +43,27 @@ export class MessageThreadPage {
   }
 
   ionViewDidLoad(){
+    if(!this.threadDetail) return;
     if(this.viewState == 'exist'){
       this.initChat();
     }else{
+      this.showSpinner = false;
       this.messagesProvider.hasThread.subscribe( (res) => {
         this.viewState = 'exist';
         this.threadDetail.threadId = res;
         this.initChat();
       });
-
     }
   }
 
+  ionViewWillLeave(){
+    //visully hide footer on leave
+    this.footerIsHidden = true;
+  }
+
   initChat(){
+    this.messagesProvider.setUsersThreadRef(this.user.aFuid, this.threadDetail.key);
     let threadId = this.threadDetail.threadId;
-    console.log('threadId', threadId);
     this.messagesProvider.getThreadDetails(threadId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe( res => {
@@ -167,6 +176,9 @@ export class MessageThreadPage {
     setTimeout(() => {
       if (this.content.scrollToBottom) {
         this.content.scrollToBottom(duration);
+        if(this.showSpinner){
+          this.showSpinner = false;
+        }
       }
     }, 400)
   }

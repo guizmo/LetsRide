@@ -23,6 +23,7 @@ export class MessagesPage {
   buddies = [];
   messages = [];
   user;
+  timeChanged = 0;
   private ngUnsubscribe:Subject<void> = new Subject();
 
   constructor(
@@ -34,6 +35,7 @@ export class MessagesPage {
     public utils: UtilsProvider,
     public messagesProvider: MessagesProvider
   ) {
+
     console.log(this);
     this.buddiesProvider.buddies.takeUntil(this.ngUnsubscribe).subscribe((buddies) => {
       this.buddies = buddies;
@@ -50,7 +52,7 @@ export class MessagesPage {
     });
   }
 
-  ionViewDidLeave(){
+  ionViewWillUnload(){
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
@@ -60,34 +62,65 @@ export class MessagesPage {
     this.messagesProvider.getAllThreads(this.user.aFuid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe( (threads) => {
-        threads.forEach((thread, index) => {
-          let bud;
-          if(this.buddies.length && ( bud = this.buddies.find(bud => bud.aFuid == thread.key) ) ){
-            thread.displayName = bud.displayName;
-            this.messages.splice(index, 0, thread);
-          }else{
-            this.fetchUsername(thread, index);
-          }
-        });
+        //console.log(threads);
+        if(!this.messages.length){
+          this.messages = threads;
+          this.fetchUsername(this.messages);
+        }else{
+          this.UpdateMsgList(threads);
+        }
     });
   }
 
-  fetchUsername(thread, index){
-    this.buddiesProvider.getUserByID(thread.key)
-      .take(1)
-      .subscribe( (user) => {
-        thread.displayName = this.utils.getDisplayName(user);
-        thread.profileImgPath = this.utils.getProfileImg(user);
-        this.messages.splice(index, 0, thread);
-      });
+  UpdateMsgList(newThreads){
+    this.messages.map((thread, index) => {
+
+
+      let newThread = newThreads.find(res => res.key == thread.key)
+      if(thread.timestamp != newThread.timestamp){
+        console.log(newThread);
+        console.log('new threads =', newThread.timestamp );
+        console.log('this.message =', thread.timestamp );
+        console.log('Test if right object', thread.key);
+        thread.timestamp = newThread.timestamp;
+        thread.unseenCount = newThread.unseenCount;
+        this.timeChanged++;
+        return thread;
+      }
+    }).slice();
+    //let modifiedMessage = this.messages.filter((thread, index) => !thread.timestamp != threads[index].timestamp );
+    //console.log(modifiedMessage);
+  }
+
+  fetchUsername(items){
+    items.forEach((thread, index) => {
+      let bud;
+      if(this.buddies.length && ( bud = this.buddies.find(bud => bud.aFuid == thread.key) ) ){
+        thread.displayName = bud.displayName;
+        thread.profileImgPath = bud.profileImgPath;
+        //this.messages.splice(index, 0, thread);
+      }else{
+        this.buddiesProvider.getUserByID(thread.key)
+          .take(1)
+          .subscribe( (user) => {
+            thread.displayName = this.utils.getDisplayName(user);
+            thread.profileImgPath = this.utils.getProfileImg(user);
+            //this.messages.splice(index, 0, thread);
+          });
+      }
+    });
   }
 
   updateUrl(event: Event, array, index) {
     array[index].profileImgPath = './assets/img/man.svg';
   }
 
-  showMessage(message){
-    this.navCtrl.push('MessageThreadPage', {message, me:this.user});
+  showMessage(threadDetails){
+    this.navCtrl.push('MessageThreadPage', {message:threadDetails, me:this.user});
+  }
+
+  removeThread(threadDetails){
+
   }
 
 }

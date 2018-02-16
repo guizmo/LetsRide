@@ -21,6 +21,9 @@ ion-modal.inset-modal {
   background-color: $content_back;
 }
 
+ion-item-options .button[icon-only]:last-child {
+    padding-right: 0em;
+}
 
 // HELPERS
 // --------------------------------------------------

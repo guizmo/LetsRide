@@ -8,37 +8,30 @@
 
 
 <ion-content>
-
-
-  <ng-template #loading>
-      <div>Loading...</div>
-  </ng-template>
-
-  <div class="message-wrap">
-
-      <div *ngFor="let msg of chats"
-        class="message"
-        [class.left]="msg.user_id !== user.aFuid"
-        [class.right]="msg.user_id === user.aFuid"
-      >
-        <img *ngIf="msg.user_id !== user.aFuid" class="user-img" [src]="threadDetail.profileImgPath" (error)="updateUrl($event, 'threadDetail')">
-        <img *ngIf="msg.user_id === user.aFuid" class="user-img" [src]="user.profileImgPath" (error)="updateUrl($event, 'user')">
-        <ion-spinner name="dots" *ngIf="msg.state === 'pending'"></ion-spinner>
-        <div class="msg-detail">
-          <div class="msg-info">
-            <p>{{msg.timestamp | amDateFormat: 'DD/MM/YY, HH:mm' }}</p>
-          </div>
-          <div class="msg-content">
-              <span class="triangle"></span>
-              <p class="line-breaker ">{{msg.payload}}</p>
-          </div>
+  <ion-spinner class="list-content" *ngIf="showSpinner"></ion-spinner>
+  <div [class.noOpacity]="showSpinner" class="message-wrap">
+    <div *ngFor="let msg of chats"
+      class="message"
+      [class.left]="msg.user_id !== user.aFuid"
+      [class.right]="msg.user_id === user.aFuid"
+    >
+      <img *ngIf="msg.user_id !== user.aFuid" class="user-img" [src]="threadDetail.profileImgPath" (error)="updateUrl($event, 'threadDetail')">
+      <img *ngIf="msg.user_id === user.aFuid" class="user-img" [src]="user.profileImgPath" (error)="updateUrl($event, 'user')">
+      <ion-spinner name="dots" *ngIf="msg.state === 'pending'"></ion-spinner>
+      <div class="msg-detail">
+        <div class="msg-info">
+          <p>{{msg.timestamp | amDateFormat: 'DD/MM/YY, HH:mm' }}</p>
+        </div>
+        <div class="msg-content">
+            <span class="triangle"></span>
+            <p class="line-breaker ">{{msg.payload}}</p>
         </div>
       </div>
-
+    </div>
   </div>
-
 </ion-content>
-<ion-footer no-border>
+
+<ion-footer no-border *ngIf="!footerIsHidden">
   <ion-grid class="input-wrap">
     <ion-row>
       <ion-col col>

@@ -46,6 +46,11 @@ page-message-thread {
   }
 
   .message-wrap {
+    transition: opacity 0.15s ease-in;
+    &.noOpacity{
+      opacity: 0;
+    }
+    opacity: 1;
     padding: 0 10px;
     .message {
       position: relative;

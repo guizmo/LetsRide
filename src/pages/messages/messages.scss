@@ -1,3 +1,14 @@
 page-messages {
-
+  .new_message button{
+    //background-color: #dedede;
+    ion-label{
+      h2{
+        font-weight: 600;
+      }
+      p{
+        color: #000;
+        font-weight: 500;
+      }
+    }
+  }
 }

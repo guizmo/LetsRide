@@ -10,11 +10,13 @@ export class MessagesProvider {
 
   buddy: any;
   conversation: any;
-  messages = [];
+  //messages = [];
 
   public threadsRef:AngularFireList<any[]>;
   public threads: Observable<any[]>;
 
+  public fromUserThreadRef:AngularFireObject<any>;
+  public toUserThreadRef:AngularFireObject<any>;
   public threadDetailsRef:AngularFireObject<any>;
   public threadRef:AngularFireList<any>;
   public threadDetails: Observable<any>;
@@ -27,9 +29,11 @@ export class MessagesProvider {
     console.log('Hello MessagesProvider Provider');
   }
 
+
   getAllThreads(uid) {
-    this.threadsRef = this.afdb.list(`/messages/list/${uid}/`, ref => ref.orderByChild('timestamp') );
+    this.threadsRef = this.afdb.list(`/messages/list/${uid}/`, ref => ref.orderByChild('timestamp').limitToLast(50) );
     this.threads = this.threadsRef.snapshotChanges(['child_added', 'child_changed']).map(changes => {
+      console.log(changes);
       return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
     });
     return this.threads;
@@ -40,6 +44,12 @@ export class MessagesProvider {
     this.threadDetails = this.threadDetailsRef.valueChanges();
     return this.threadDetails;
   }
+
+  setUsersThreadRef(from_uid,to_uid){
+    this.fromUserThreadRef = this.afdb.object(`/messages/list/${from_uid}/${to_uid}/`);
+    this.toUserThreadRef = this.afdb.object(`/messages/list/${to_uid}/${from_uid}/`);
+  }
+
 
   getThreadId(uid, to_uid) {
     return this.afdb.object(`/messages/list/${uid}/${to_uid}/`).valueChanges();
@@ -63,7 +73,8 @@ export class MessagesProvider {
     to[to_uid] = {};
     let detail = {
       timestamp: details.timestamp,
-      unseenCount: 1
+      unseenCount: 1,
+      to_uid
     }
     from[to_uid] = detail;
     to[from_uid] = detail;
@@ -85,9 +96,30 @@ export class MessagesProvider {
 
   addMessage(msg) {
     this.threadRef.push(msg).then(res => {
-      this.threadDetailsRef.update({last_msg_added: res.key})
+      this.threadDetailsRef.update({last_msg_added: res.key, timestamp: msg.timestamp  })
+      this.fromUserThreadRef.update({unseenCount: 0, timestamp: msg.timestamp  })
+      this.toUserThreadRef.update({unseenCount: 1, timestamp: msg.timestamp  })
     })
   }
 
+
+  removeThread(){
+
+  }
+
+  //HELPER
+  /*buildThreadPaths(details){
+    let from , to ;
+    let from_uid = details.creator_id;
+    let to_uid = details.to_uid;
+    //from[from_uid] = {};
+    //to[to_uid] = {};
+    let details = {
+      timestamp: details.timestamp,
+      unseenCount: 1
+    }
+    from[to_uid] = details;
+    to[from_uid] = details;
+  }*/
 
 }

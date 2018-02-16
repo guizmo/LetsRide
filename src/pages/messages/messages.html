@@ -15,13 +15,21 @@
 
 <ion-content>
   <ion-list no-margin>
-    <ion-item-sliding *ngFor="let message of messages; let i = index">
+    <ion-item-sliding *ngFor="let message of messages | orderBy :['timestamp']:timeChanged | reverse; let i = index;" [class.new_message]="message.unseenCount != 0">
       <button ion-item (click)="showMessage(message)">
         <ion-avatar item-start>
-          <img src="{{message.profileImgPath}}" (error)="updateUrl($event, messages, i)">
+          <img [hidden]="!message.imgLoaded" *ngIf="message.profileImgPath" (load)="message.imgLoaded = true" src="{{message.profileImgPath}}" (error)="updateUrl($event, messages, i)">
+          <ion-spinner *ngIf="!message.imgLoaded"></ion-spinner>
         </ion-avatar>
         <h2>{{message.displayName}}</h2>
+        <p>{{message.timestamp | amDateFormat: 'DD/MM/YY, HH:mm' }}</p>
       </button>
+      <ion-item-options side="right">
+        <button ion-button color="danger" icon-only (click)="removeThread($event, i)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+
     </ion-item-sliding>
 
   </ion-list>

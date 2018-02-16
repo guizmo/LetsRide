@@ -21,7 +21,7 @@ export class ProfilePage {
   showMap:boolean = false;
   profileViewData:any = null;
   user;
-  message;
+  thread;
   private ngUnsubscribe:Subject<void> = new Subject();
   private userData:any;
   private profileImg:string = null;
@@ -96,10 +96,10 @@ export class ProfilePage {
   getMessages(){
     this.messagesProvider.getThreadId(this.user.aFuid, this.profileViewData.aFuid)
       .takeUntil(this.ngUnsubscribe)
-      .subscribe( (thread) => {
-        this.message = {
+      .subscribe( (thread:any) => {
+        this.thread = {
           state: (!thread) ? 'create' : 'exist',
-          threadId: (!thread) ? null : thread.key,
+          threadId: (!thread) ? null : thread.threadId,
           key: this.profileViewData.aFuid,
           displayName: this.profileViewData.displayName
         }
@@ -107,9 +107,7 @@ export class ProfilePage {
   }
 
   sendMessage(){
-    //TODO: MESSAGE ROUTE
-    console.log('send message');
-    this.navCtrl.push('MessageThreadPage', {message:this.message, me:this.user});
+    this.navCtrl.push('MessageThreadPage', {message:this.thread, me:this.user});
   }
 
   openMap(){
