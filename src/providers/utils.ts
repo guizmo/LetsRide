@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
+import * as moment  from 'moment';
 
 @Injectable()
 export class UtilsProvider {
@@ -118,6 +119,16 @@ export class UtilsProvider {
     return discipline;
   }
 
+  dateTransform(timestamp){
+    let m = moment();
+    if(m.isSame(timestamp, 'day')){
+      return 'LT';
+    }
+    if(m.isSame(timestamp, 'week')){
+      return 'dddd';
+    }
+    return 'DD MMMM';
+  }
 
   getDistanceBetweenPoints(start, end, units){
     let earthRadius = {

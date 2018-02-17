@@ -37,6 +37,7 @@ export class MessageThreadPage {
     public navParams: NavParams
   ) {
     this.threadDetail = this.navParams.get('message');
+    if(!this.threadDetail) this.navCtrl.setRoot('MessagesPage');
     this.user = this.navParams.get('me');
     this.viewState = (this.threadDetail && !this.threadDetail.threadId) ? 'create' : 'exist';
     console.log(this);
@@ -59,6 +60,8 @@ export class MessageThreadPage {
   ionViewWillLeave(){
     //visully hide footer on leave
     this.footerIsHidden = true;
+    //update seenCount
+    if(this.threadDetail) this.messageRead();
   }
 
   initChat(){
@@ -75,11 +78,20 @@ export class MessageThreadPage {
       .subscribe( res => {
         let duration = !this.chats.length ? 0 : 300;
         let notPresentInData = res.filter((val, index) => !this.chats[index]);
-        notPresentInData.forEach(r => this.chats.push(r) );
+        notPresentInData.forEach(r => {
+          r.dateFormat = this.utils.dateTransform(r.timestamp);
+          this.chats.push(r);
+        });
         this.scrollToBottom(duration);
       });
 
     this.user.profileImgPath = this.utils.getProfileImg(this.user);
+  }
+
+  messageRead(){
+    if(this.threadDetail.unseenCount == 1){
+      this.messagesProvider.messageRead(this.threadDetail.key);
+    }
   }
 
   updateUrl(event: Event, item) {

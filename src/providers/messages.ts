@@ -33,7 +33,6 @@ export class MessagesProvider {
   getAllThreads(uid) {
     this.threadsRef = this.afdb.list(`/messages/list/${uid}/`, ref => ref.orderByChild('timestamp').limitToLast(50) );
     this.threads = this.threadsRef.snapshotChanges(['child_added', 'child_changed']).map(changes => {
-      console.log(changes);
       return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
     });
     return this.threads;
@@ -86,8 +85,6 @@ export class MessagesProvider {
       to[from_uid]['threadId'] = threadId;
       this.afdb.object(`/messages/list/${from_uid}`).update(from);
       this.afdb.object(`/messages/list/${to_uid}`).update(to);
-
-      console.log(threadId);
       this.hasThread.next(threadId);
       this.hasThread.complete();
       this.addMessage(msg);
@@ -102,6 +99,9 @@ export class MessagesProvider {
     })
   }
 
+  messageRead(uid){
+    this.threadsRef.update(uid, {unseenCount:0})
+  }
 
   removeThread(){
 

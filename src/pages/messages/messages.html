@@ -22,7 +22,7 @@
           <ion-spinner *ngIf="!message.imgLoaded"></ion-spinner>
         </ion-avatar>
         <h2>{{message.displayName}}</h2>
-        <p>{{message.timestamp | amDateFormat: 'DD/MM/YY, HH:mm' }}</p>
+        <p>{{message.timestamp | amDateFormat: message.dateFormat }}</p>
       </button>
       <ion-item-options side="right">
         <button ion-button color="danger" icon-only (click)="removeThread($event, i)">

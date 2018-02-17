@@ -17,10 +17,9 @@
     >
       <img *ngIf="msg.user_id !== user.aFuid" class="user-img" [src]="threadDetail.profileImgPath" (error)="updateUrl($event, 'threadDetail')">
       <img *ngIf="msg.user_id === user.aFuid" class="user-img" [src]="user.profileImgPath" (error)="updateUrl($event, 'user')">
-      <ion-spinner name="dots" *ngIf="msg.state === 'pending'"></ion-spinner>
       <div class="msg-detail">
         <div class="msg-info">
-          <p>{{msg.timestamp | amDateFormat: 'DD/MM/YY, HH:mm' }}</p>
+          <p>{{msg.timestamp | amDateFormat: msg.dateFormat }}</p>
         </div>
         <div class="msg-content">
             <span class="triangle"></span>

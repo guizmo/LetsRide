@@ -10,7 +10,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { UserProvider, BuddiesProvider, UtilsProvider, MessagesProvider } from '../../providers';
 
 //https://www.skcript.com/svr/how-to-structure-firebase-database-for-a-scalable-chat-app/
-
+import * as moment from 'moment';
 
 @IonicPage()
 @Component({
@@ -24,6 +24,7 @@ export class MessagesPage {
   messages = [];
   user;
   timeChanged = 0;
+
   private ngUnsubscribe:Subject<void> = new Subject();
 
   constructor(
@@ -35,7 +36,6 @@ export class MessagesPage {
     public utils: UtilsProvider,
     public messagesProvider: MessagesProvider
   ) {
-
     console.log(this);
     this.buddiesProvider.buddies.takeUntil(this.ngUnsubscribe).subscribe((buddies) => {
       this.buddies = buddies;
@@ -57,12 +57,12 @@ export class MessagesPage {
     this.ngUnsubscribe.complete();
   }
 
+
   getMessages(user){
     this.user = user;
     this.messagesProvider.getAllThreads(this.user.aFuid)
       .takeUntil(this.ngUnsubscribe)
       .subscribe( (threads) => {
-        //console.log(threads);
         if(!this.messages.length){
           this.messages = threads;
           this.fetchUsername(this.messages);
@@ -72,40 +72,33 @@ export class MessagesPage {
     });
   }
 
+
   UpdateMsgList(newThreads){
     this.messages.map((thread, index) => {
-
-
       let newThread = newThreads.find(res => res.key == thread.key)
-      if(thread.timestamp != newThread.timestamp){
-        console.log(newThread);
-        console.log('new threads =', newThread.timestamp );
-        console.log('this.message =', thread.timestamp );
-        console.log('Test if right object', thread.key);
+      if(thread.timestamp != newThread.timestamp || thread.unseenCount != newThread.unseenCount){
         thread.timestamp = newThread.timestamp;
         thread.unseenCount = newThread.unseenCount;
+        thread.dateFormat = this.utils.dateTransform(thread.timestamp);
         this.timeChanged++;
         return thread;
       }
-    }).slice();
-    //let modifiedMessage = this.messages.filter((thread, index) => !thread.timestamp != threads[index].timestamp );
-    //console.log(modifiedMessage);
+    })
   }
 
   fetchUsername(items){
     items.forEach((thread, index) => {
+      thread.dateFormat = this.utils.dateTransform(thread.timestamp);
       let bud;
       if(this.buddies.length && ( bud = this.buddies.find(bud => bud.aFuid == thread.key) ) ){
         thread.displayName = bud.displayName;
         thread.profileImgPath = bud.profileImgPath;
-        //this.messages.splice(index, 0, thread);
       }else{
         this.buddiesProvider.getUserByID(thread.key)
           .take(1)
           .subscribe( (user) => {
             thread.displayName = this.utils.getDisplayName(user);
             thread.profileImgPath = this.utils.getProfileImg(user);
-            //this.messages.splice(index, 0, thread);
           });
       }
     });
@@ -117,6 +110,14 @@ export class MessagesPage {
 
   showMessage(threadDetails){
     this.navCtrl.push('MessageThreadPage', {message:threadDetails, me:this.user});
+    setTimeout(() => {
+      this.messageread(threadDetails);
+    }, 400)
+  }
+  messageread(threadDetails){
+    if(threadDetails.unseenCount == 1){
+      this.messagesProvider.messageRead(threadDetails.key);
+    }
   }
 
   removeThread(threadDetails){

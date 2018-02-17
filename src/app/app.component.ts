@@ -9,7 +9,7 @@ import { Translate, UserProvider, NotificationsProvider, LocationTrackerProvider
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import 'rxjs/add/operator/map';
-
+import * as moment from 'moment';
 
 @Component({
   templateUrl: 'app.html',
@@ -56,7 +56,7 @@ export class LetsRide {
   ) {
     console.log('app component');
     console.log(this);
-
+    this.setMoment(this.translate.browserLang);
     this.handleEvents();
     this.translate.getString(['MENU', 'LOGIN_TITLE']).subscribe( values => {
       this.translated.login = values.LOGIN_TITLE;
@@ -139,6 +139,16 @@ export class LetsRide {
         this.is_active = name;
       }
     });
+  }
+
+  setMoment(lang){
+    //https://momentjs.com/docs/#/customization/
+    moment.locale(lang);
+    if(lang == 'fr'){
+      moment.updateLocale('fr', {
+        weekdaysMin : 'Dim_Lun_Mar_Mer_Jeu_Ven_Sam'.split('_')
+      });
+    }
   }
 
 
