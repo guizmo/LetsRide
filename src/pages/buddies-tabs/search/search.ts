@@ -124,7 +124,6 @@ export class SearchPage {
     this.people[index].avatarLoaded = true;
   }
 
-
   showOptions(){
     let modal = this.modalCtrl.create('SearchFilterModalPage', {filters: this.filters} );
 
@@ -170,33 +169,10 @@ export class SearchPage {
 
   sendFriendRequest(clickEvent: Event, index){
     clickEvent.stopPropagation();
-    this.people[index].iconName = 'checkmark';
     let person = this.people[index];
-    let key = person.aFuid;
-    let oneSignalId = person.oneSignalId;
-    let name = person.settings.displayName;
-
-    let contents = {
-      'en': `${this.userData.displayName} sent you a friend request!`
-    }
-
-    let data = {
-      type: 'friendRequest',
-      from: {
-        oneSignalId: this.userData.oneSignalId || null,
-        user_id: this.userData.aFuid,
-        pending: true,
-      },
-      displayName: name
-    };
-
-
-    this.afdb.list(`/users/${key}/buddies`).update(this.userData.aFuid, data.from);
-
-    if(this.userData.oneSignalId && oneSignalId){
-      this.notifications.sendMessage([oneSignalId], data, contents);
-    }
-
+    person.isFriendPending = true;
+    person.iconName = 'checkmark';
+    this.notifications.sendFriendRequest(this.userData, person);
   }
 
 

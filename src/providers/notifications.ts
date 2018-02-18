@@ -6,23 +6,17 @@ import {OneSignal} from '@ionic-native/onesignal';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
 import { NOTIFICATIONS } from '../data/notifications';
+import { ONE_SIGNAL_GOOGLE_ID, ONE_SIGNAL_ID, ONE_SIGNAL_TPL } from '../app/configs';
 
 @Injectable()
 export class NotificationsProvider {
   one_id: string = null;
-  private appId = '1b28e204-835f-4462-9c10-5b8eb31bfcc9';
-  private googleProjectId = '897213692051';
+  private appId = ONE_SIGNAL_ID;
+  private googleProjectId = ONE_SIGNAL_GOOGLE_ID;
+  public templates = ONE_SIGNAL_TPL;
 
   private navCtrl;
   private navParams;
-  public templates = {
-    friendRequest: 'e4732e1a-6463-4291-b4ab-c6fcb05ef22d',
-    friendRequestAccepted: '549bdde4-45ea-4197-8161-4255483695f0',
-    closeBy: 'a54afeb9-5ef1-4c7b-a226-cddb8a8e83df',
-    newEvent: '01bda817-8355-4ff7-86e0-6e340a4bb75e',
-    eventUpdate: '5416d6a8-9f7a-491a-8bf5-1114b194e5eb',
-    joinedEvent: '9558f575-afc3-4d51-9eb8-fb7a937a2425'
-  }
 
   public fetchAllRef:AngularFireList<any>;
   public fetchAll:Observable<any>;
@@ -40,7 +34,7 @@ export class NotificationsProvider {
     this.fetchAllRef = this.afdb.list(`/notifications`);
     this.fetchAll = this.fetchAllRef.snapshotChanges();
   }
-
+//http://codegists.com/snippet/typescript/one-signal-pushts_movibe_typescript
   init(nav) {
     this.navCtrl = nav;
     this.oneSignal.startInit(this.appId, this.googleProjectId);
@@ -65,6 +59,12 @@ export class NotificationsProvider {
 
     this.oneSignal.endInit();
 
+  }
+
+  getIds(){
+    this.oneSignal.getIds().then(result => {
+      console.log('result', result);
+    });
   }
 
 
@@ -216,5 +216,30 @@ export class NotificationsProvider {
     });
     alert.present();
   }
+
+
+  sendFriendRequest(dataFrom, dataTo){
+
+    let contents = {
+      'en': `${dataFrom.displayName} sent you a friend request!`,
+      'fr': `${dataFrom.displayName} vous a envoyé une demande d'ami!`
+    }
+    let data = {
+      type: 'friendRequest',
+      from: {
+        oneSignalId: dataFrom.oneSignalId || null,
+        user_id: dataFrom.aFuid,
+        pending: true,
+      },
+      displayName: dataTo.settings.displayName
+    };
+    this.afdb.list(`/users/${dataTo.aFuid}/buddies`).update(dataFrom.aFuid, data.from);
+
+    if(dataFrom.oneSignalId && dataTo.oneSignalId){
+      this.sendMessage([oneSignalId], data, contents);
+    }
+
+  }
+
 
 }

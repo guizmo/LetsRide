@@ -19,6 +19,12 @@
     </ion-buttons>
 
     <ion-buttons *ngIf="isAnyProfile && thread" end>
+      <button
+        *ngIf="!profileViewData.isFriendPending && !profileViewData.isFriend"
+        ion-button clear item-end icon-only
+        (click)="sendFriendRequest($event, i)" >
+        <ion-icon color="light" name="person-add"></ion-icon>
+      </button>
       <button icon-only ion-button (click)="sendMessage()">
         <ion-icon name="mail"></ion-icon>
       </button>
@@ -33,12 +39,16 @@
 
       <div class="profile">
         <ion-spinner *ngIf="!profileImgLoaded"></ion-spinner>
-        <img id="profile-image" [hidden]="!profileImgLoaded" (load)="imageHasLoaded()" [src]="profileViewData.profileImgPath" tappable (click)="changeProfileImg()"  />
+        <!-- <img id="profile-image" [hidden]="!profileImgLoaded" (load)="imageHasLoaded()" [src]="profileViewData.profileImgPath" tappable (click)="changeProfileImg()"  /> -->
+        <ion-img id="profile-image" [src]="profileViewData.profileImgPath" (click)="changeProfileImg()"></ion-img>
       </div>
 
       <!-- Show icon of logged in provider -->
       <h3 id="profile-name">
         <span>{{profileViewData.displayName}}</span>
+        <ion-icon *ngIf="profileViewData.isFriendPending || profileViewData.isFriend"
+          color="light" [name]="profileViewData.iconName"></ion-icon>
+
         <ng-container [ngSwitch]="profileViewData.providerId">
           <ion-icon *ngSwitchCase="'password'" name="md-flame" class="firebase"></ion-icon>
           <ion-icon *ngSwitchCase="'facebook.com'" name="logo-facebook" class="facebook"></ion-icon>

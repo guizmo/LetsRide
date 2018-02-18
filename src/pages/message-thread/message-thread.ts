@@ -27,6 +27,7 @@ export class MessageThreadPage {
   footerIsHidden:boolean = false;
   showSpinner:boolean = true;
   showNoResult:boolean = false;
+  reOpenFlag:boolean = false;
 
   private ngUnsubscribe:Subject<void> = new Subject();
 
@@ -45,9 +46,21 @@ export class MessageThreadPage {
 
   ionViewDidLoad(){
     if(!this.threadDetail) return;
+    this.messagesProvider.setUsersThreadRef(this.user.aFuid, this.threadDetail.key);
     if(this.viewState == 'exist'){
       this.initChat();
     }else{
+      //check if this.toUserThreadRef exist
+      this.messagesProvider.toUserthreadExist().take(1).subscribe( (res) => {
+        console.log('toUserthreadExist', res);
+        if(res && res.threadId){
+          this.reOpenFlag = true;
+          this.viewState = 'exist';
+          this.threadDetail.threadId = res.threadId;
+          this.initChat();
+        }
+      });
+
       this.showSpinner = false;
       this.messagesProvider.hasThread.subscribe( (res) => {
         this.viewState = 'exist';
@@ -65,15 +78,15 @@ export class MessageThreadPage {
   }
 
   initChat(){
-    this.messagesProvider.setUsersThreadRef(this.user.aFuid, this.threadDetail.key);
+
     let threadId = this.threadDetail.threadId;
     this.messagesProvider.getThreadDetails(threadId)
       .takeUntil(this.ngUnsubscribe)
       .subscribe( res => {
         this.chatDetails = res;
       });
-
-    this.messagesProvider.getThread(threadId)
+    console.log('created on ', this.threadDetail.created_date);
+    this.messagesProvider.getThread(threadId, this.threadDetail.created_date)
       .takeUntil(this.ngUnsubscribe)
       .subscribe( res => {
         let duration = !this.chats.length ? 0 : 300;
@@ -111,8 +124,11 @@ export class MessageThreadPage {
     }
 
     if(this.viewState == 'exist'){
-      this.messagesProvider.addMessage(message);
+      let threadId = ( this.reOpenFlag === true ) ? this.threadDetail.threadId : null ;
+      this.messagesProvider.addMessage(message, threadId);
     }else{
+      //New thread creation
+      console.log('New thread creation');
       let details = {
         timestamp,
         creator_id: this.user.aFuid,
@@ -186,7 +202,7 @@ export class MessageThreadPage {
 
   scrollToBottom(duration = 300) {
     setTimeout(() => {
-      if (this.content.scrollToBottom) {
+      if (this.content) {
         this.content.scrollToBottom(duration);
         if(this.showSpinner){
           this.showSpinner = false;

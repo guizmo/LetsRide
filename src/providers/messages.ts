@@ -54,8 +54,8 @@ export class MessagesProvider {
     return this.afdb.object(`/messages/list/${uid}/${to_uid}/`).valueChanges();
   }
 
-  getThread(threadId) {
-    this.threadRef = this.afdb.list(`/messages/objects/${threadId}/thread/`, ref => ref.orderByChild('timestamp').limitToLast(50))
+  getThread(threadId, startAtTime) {
+    this.threadRef = this.afdb.list(`/messages/objects/${threadId}/thread/`, ref => ref.orderByChild('timestamp').limitToLast(50).startAt(startAtTime))
     this.thread = this.threadRef.snapshotChanges(['child_added']).map(changes => {
       return changes.map(c => ({ key: c.payload.key, ...c.payload.val() }));
     });
@@ -64,25 +64,21 @@ export class MessagesProvider {
 
 
   createThread(details, msg, to_uid) {
-    console.log(details, msg, to_uid);
     let from = {};
     let to = {};
     let from_uid = details.creator_id;
-    from[from_uid] = {};
-    to[to_uid] = {};
     let detail = {
+      created_date: details.timestamp,
       timestamp: details.timestamp,
       unseenCount: 1,
-      to_uid
     }
-    from[to_uid] = detail;
-    to[from_uid] = detail;
     //Create un object and save key in both user list
     let messageObjects = this.afdb.list(`/messages/objects/`);
     messageObjects.push({details: details}).then(thread => {
       let threadId = thread.key;
-      from[to_uid]['threadId'] = threadId;
-      to[from_uid]['threadId'] = threadId;
+      detail.threadId = threadId;
+      from[to_uid] = detail;
+      to[from_uid] = detail;
       this.afdb.object(`/messages/list/${from_uid}`).update(from);
       this.afdb.object(`/messages/list/${to_uid}`).update(to);
       this.hasThread.next(threadId);
@@ -91,10 +87,15 @@ export class MessagesProvider {
     });
   }
 
-  addMessage(msg) {
+  addMessage(msg, threadId:string = null) {
+    let fromUserUpdate = {unseenCount: 0, timestamp: msg.timestamp  };
+    if( threadId ) {
+      fromUserUpdate.created_date = msg.timestamp;
+      fromUserUpdate.threadId = threadId;
+    }
     this.threadRef.push(msg).then(res => {
       this.threadDetailsRef.update({last_msg_added: res.key, timestamp: msg.timestamp  })
-      this.fromUserThreadRef.update({unseenCount: 0, timestamp: msg.timestamp  })
+      this.fromUserThreadRef.update(fromUserUpdate)
       this.toUserThreadRef.update({unseenCount: 1, timestamp: msg.timestamp  })
     })
   }
@@ -103,23 +104,16 @@ export class MessagesProvider {
     this.threadsRef.update(uid, {unseenCount:0})
   }
 
-  removeThread(){
-
+  removeThread(threadDetails){
+    let { from_uid, to_uid, threadId } = threadDetails;
+    this.afdb.object(`/messages/list/${from_uid}/${to_uid}`).remove();
+    //this.afdb.object(`/messages/list/${to_uid}/${from_uid}`).remove();
+    //this.afdb.object(`/messages/objects/${threadId}`).remove();
   }
 
-  //HELPER
-  /*buildThreadPaths(details){
-    let from , to ;
-    let from_uid = details.creator_id;
-    let to_uid = details.to_uid;
-    //from[from_uid] = {};
-    //to[to_uid] = {};
-    let details = {
-      timestamp: details.timestamp,
-      unseenCount: 1
-    }
-    from[to_uid] = details;
-    to[from_uid] = details;
-  }*/
+  toUserthreadExist(){
+    return this.toUserThreadRef.valueChanges();
+  }
+
 
 }

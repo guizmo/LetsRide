@@ -93,6 +93,13 @@ export class ProfilePage {
     this.ngUnsubscribe.complete();
   }
 
+  sendFriendRequest(clickEvent: Event, index){
+    let person = this.profileViewData;
+    person.isFriendPending = true;
+    person.iconName = 'checkmark';
+    this.notifications.sendFriendRequest(this.user, person);
+  }
+
   getMessages(){
     this.messagesProvider.getThreadId(this.user.aFuid, this.profileViewData.aFuid)
       .takeUntil(this.ngUnsubscribe)
@@ -125,7 +132,7 @@ export class ProfilePage {
   }
 
   changeProfileImg(){
-    let profileImgName = this.profileViewData.profileImg.fileName || null;
+    let profileImgName = (this.profileViewData.profileImg && this.profileViewData.profileImg.fileName)? this.profileViewData.profileImg.fileName :  null;
     let timestamp = moment().valueOf()+Math.floor((Math.random() * 100) + 1);
     this.fileProvider.openGallery(timestamp, this.profileViewData.settings.displayName)
       .then((res) => {
@@ -178,8 +185,8 @@ export class ProfilePage {
   userAuth(){
     this.userProvider.afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((_user: firebase.User) => {
       if (_user) {
+        this.currentUser = _user;
         this.userProvider.getUserData().takeUntil(this.ngUnsubscribe).subscribe((data) => {
-          console.log('userData', data);
 
           if(!this.isAnyProfile){
             this.profileViewData = this.utils.buildProfile(data, this.disciplines, this.countries, _user);
@@ -196,10 +203,9 @@ export class ProfilePage {
               this.showMap = false;
             }
             this.getMessages();
+            this.buddyState();
           }
           this.emailVerified = this.profileViewData.emailVerified;
-
-          this.currentUser = _user;
 
           this.menuCtrl.enable(this.emailVerified, 'mainMenu');
         });
@@ -207,6 +213,22 @@ export class ProfilePage {
     });
   }
 
+  buddyState(){
+
+    if( this.profileViewData.buddies && this.profileViewData.buddies[this.currentUser.uid]){
+      this.profileViewData.isFriendPending = this.profileViewData.buddies[this.currentUser.uid].pending;
+      if(!this.profileViewData.isFriendPending ){
+        //is not pending
+        this.profileViewData.isFriend = true;
+        this.profileViewData.iconName = 'contacts';
+      }else{
+        this.profileViewData.iconName = 'checkmark';
+      }
+    }else{
+      this.profileViewData.isFriend = false;
+    }
+
+  }
 
   getDisciplinesAliases(disciplines){
     let aliases = {};

@@ -104,8 +104,9 @@ export class MessagesPage {
     });
   }
 
-  updateUrl(event: Event, array, index) {
-    array[index].profileImgPath = './assets/img/man.svg';
+  updateUrl(event: Event, thread) {
+    let index = this.messages.findIndex(res => res.key == thread.key);
+    this.messages[index].profileImgPath = './assets/img/man.svg';
   }
 
   showMessage(threadDetails){
@@ -120,8 +121,15 @@ export class MessagesPage {
     }
   }
 
-  removeThread(threadDetails){
-
+  removeThread(thread){
+    let threadDetails = {
+      from_uid: this.user.aFuid,
+      to_uid: thread.key,
+      threadId: thread.threadId
+    }
+    this.messagesProvider.removeThread(threadDetails);
+    let index = this.messages.findIndex(res => res.key == thread.key);
+    this.messages.splice(index, 1);
   }
 
 }

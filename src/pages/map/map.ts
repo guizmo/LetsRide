@@ -321,8 +321,8 @@ export class MapPage {
 
   showPerson(data, host = false){
     let profile = (host && data.host) ? data.host : (host && !data.host) ? null : data;
+    profile = (!host && this.event.currentUser == data.aFuid) ? null : profile;
     let isAnyProfile = (profile) ? true : false;
-    console.log('isAnyProfile', isAnyProfile);
     if(profile && profile.providerId) delete profile.providerId;
     this.navCtrl.push('ProfilePage', {userProfile:profile, isAnyProfile});
   }

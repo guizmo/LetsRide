@@ -486,8 +486,7 @@ export class EventsPage {
   showMap(index, event){
     if(this.showMapIsEnabled === null){
       this.showMapIsEnabled = index;
-
-      console.log(event);
+      event.currentUser = this.currentUser.uid;
 
       for(let uid in event.participants){
         if(event.participants[uid] === true){
