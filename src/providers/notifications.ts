@@ -39,7 +39,8 @@ export class NotificationsProvider {
     this.navCtrl = nav;
     this.oneSignal.startInit(this.appId, this.googleProjectId);
     //this.oneSignal.startInit(appid);
-    this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.Notification);
+    this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert);
+    //this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.Notification);
     this.oneSignal.setSubscription(true);
     this.oneSignal.handleNotificationReceived().subscribe((data) => {
       // handle received here how you wish.
@@ -236,7 +237,7 @@ export class NotificationsProvider {
     this.afdb.list(`/users/${dataTo.aFuid}/buddies`).update(dataFrom.aFuid, data.from);
 
     if(dataFrom.oneSignalId && dataTo.oneSignalId){
-      this.sendMessage([oneSignalId], data, contents);
+      this.sendMessage([dataFrom.oneSignalId], data, contents);
     }
 
   }

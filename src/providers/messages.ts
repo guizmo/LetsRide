@@ -12,7 +12,7 @@ export class MessagesProvider {
   conversation: any;
   //messages = [];
 
-  public threadsRef:AngularFireList<any[]>;
+  public threadsRef:AngularFireList<any>;
   public threads: Observable<any[]>;
 
   public fromUserThreadRef:AngularFireObject<any>;
@@ -71,6 +71,7 @@ export class MessagesProvider {
       created_date: details.timestamp,
       timestamp: details.timestamp,
       unseenCount: 1,
+      threadId: null
     }
     //Create un object and save key in both user list
     let messageObjects = this.afdb.list(`/messages/objects/`);
@@ -88,7 +89,7 @@ export class MessagesProvider {
   }
 
   addMessage(msg, threadId:string = null) {
-    let fromUserUpdate = {unseenCount: 0, timestamp: msg.timestamp  };
+    let fromUserUpdate:any = {unseenCount: 0, timestamp: msg.timestamp };
     if( threadId ) {
       fromUserUpdate.created_date = msg.timestamp;
       fromUserUpdate.threadId = threadId;
