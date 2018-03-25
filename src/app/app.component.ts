@@ -4,6 +4,7 @@ import { Nav, Platform, MenuController, Events, App} from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AppVersion } from '@ionic-native/app-version';
+//import { Keyboard } from '@ionic-native/keyboard';
 
 import { Translate, UserProvider, NotificationsProvider, LocationTrackerProvider, HotUpdateProvider } from '../providers';
 
@@ -13,6 +14,7 @@ import * as moment from 'moment';
 
 @Component({
   templateUrl: 'app.html',
+  //providers: [Keyboard]
 })
 export class LetsRide {
   @ViewChild(Nav) nav: Nav;
@@ -37,8 +39,6 @@ export class LetsRide {
   fetchByIdSubscription;
   translated:any = {};
 
-
-
   constructor(
     private translate: Translate,
     public platform: Platform,
@@ -53,8 +53,10 @@ export class LetsRide {
     private hotUpdate: HotUpdateProvider,
     private app: App,
     public events: Events,
+    //private keyboard: Keyboard
   ) {
-    console.log('app component');
+    this.menuCtrl.enable(false, 'mainMenu');
+    console.log('app component', this.translate.browserLang);
     console.log(this);
     this.setMoment(this.translate.browserLang);
     this.handleEvents();
@@ -64,7 +66,6 @@ export class LetsRide {
       this.pages.map(page => page.title = values.MENU[page.component])
     });
     this.userProvider.getUser().subscribe(user => {
-      console.log('app getUser()');
       if (!user) {
         this.currentUser = null;
         this.nav.setRoot('LoginPage');
@@ -74,35 +75,25 @@ export class LetsRide {
         this.userProvider.checkOneSignalID();
         this.getBadges(user.aFuid);
       }
+      this.initializeApp();
     })
-    /*this.afAuth.authState.subscribe((user) => {
-      if (!user) {
-        this.nav.setRoot('LoginPage');
-      } else {
-        this.menuCtrl.enable(true, 'mainMenu');
-        this.currentUser = {...user.providerData[0], ...{'aFuid': user.uid} };
-        this.getBadges(user.uid);
-      }
-    });*/
-    this.initializeApp();
   }
 
   initializeApp() {
-
     this.platform.ready().then(() => {
-      this.menuCtrl.enable(false, 'mainMenu');
-
       if(this.platform.is('cordova')){
+        //this.keyboard.disableScroll(true);
         if(this.hotUpdate.loader){
           this.hotUpdate.loader.dismiss();
         }
         this.hotUpdate.init();
         this.statusBar.styleDefault();
-        this.splashScreen.hide();
         this.notifications.init(this.nav);
+        //TODO: check location stay ON
         this.locationTracker.initLocation();
         this.appVersion.getVersionNumber().then(res => this.appliVersion = res);
         this.appVersion.getAppName().then(res => this.appliName = res);
+        setTimeout( () => this.splashScreen.hide() , 500);
       }
     });
   }

@@ -15,13 +15,12 @@ export class Translate {
   }
 
   init(){
-    console.log('init translate');
     // Set the default language for translation strings, and the current language.
     this.translate.addLangs(['en', 'fr']);
     this.translate.setDefaultLang('en');
     let browserLang = this.translate.getBrowserLang();
-    //this.translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');
-    this.translate.use('fr');
+    this.translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');
+    //this.translate.use('fr');
     this.browserLang = this.translate.currentLang;
     this.translate.get(['BACK_BUTTON_TEXT']).subscribe(values => {
       this.config.set('ios', 'backButtonText', values.BACK_BUTTON_TEXT);

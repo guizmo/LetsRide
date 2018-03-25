@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header #header>
 
   <ion-navbar>
     <ion-title *ngIf="threadDetail">{{threadDetail.displayName}}</ion-title>
@@ -7,7 +7,7 @@
 </ion-header>
 
 
-<ion-content>
+<ion-content no-bounce> 
   <ion-spinner class="list-content" *ngIf="showSpinner"></ion-spinner>
   <div [class.noOpacity]="showSpinner" class="message-wrap">
     <div *ngFor="let msg of chats"

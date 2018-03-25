@@ -69,7 +69,7 @@
         <ion-avatar item-start>
           <ion-img [src]="person.profileImgPath"></ion-img>
         </ion-avatar>
-        <h2>{{person.settings.displayName}}</h2>
+        <h2>{{person.displayName}}</h2>
         <h3 *ngIf="person.settings.country">{{person.settings.countryName}}</h3>
           <button item-end
             *ngIf="!person.isFriendPending && !person.isFriend"

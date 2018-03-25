@@ -17,6 +17,7 @@ import { FilePath } from '@ionic-native/file-path';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { AppVersion } from '@ionic-native/app-version';
 import { CodePush } from '@ionic-native/code-push';
+//import { Keyboard } from '@ionic-native/keyboard';
 
 import { MomentModule } from 'angular2-moment';
 import { VirtualScrollModule } from 'angular2-virtual-scroll';
@@ -93,7 +94,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     BrowserAnimationsModule,
     HttpClientModule,
     ComponentsModule,
-    IonicModule.forRoot(LetsRide),
     IonicStorageModule.forRoot(),
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
@@ -106,6 +106,18 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
       apiKey: GOOGLEMAPAPIKEY,
       libraries: ['places'],
       language: 'en'
+    }),
+    IonicModule.forRoot(LetsRide, {
+      //menuType: "push",// "overlay", "reveal", "push"
+      tabsPlacement: 'bottom',
+      swipeBackEnabled: false,
+      tabsHideOnSubPages: true,
+      ios: {
+          scrollAssist: false,
+          autoFocusAssist: false,
+          inputBlurring: false
+      },
+      //mode: 'ios'
     }),
   ],
   bootstrap: [IonicApp],
@@ -144,6 +156,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     PeopleProvider,
     Diagnostic,
     CodePush,
+    //Keyboard,
     AppVersion,
     PermissionsProvider,
     VirtualScrollModule,

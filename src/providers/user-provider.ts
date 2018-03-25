@@ -168,7 +168,7 @@ export class UserProvider {
 
   //OK
   signInWithProvider(provider:string): Promise<any> {
-
+    console.log('signInWithProvider');
     const providers = {
       gp : 'Google+',
       fb : 'Facebook'

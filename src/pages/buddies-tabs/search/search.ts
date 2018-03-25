@@ -181,7 +181,6 @@ export class SearchPage {
     //this.isSearching = true;
     if($event){
       q = $event.target.value;
-
       if (this.filters.filter(f => f.alias == 'displayName').length > 0) {
         if(!q){
           this.filters = this.filters.filter(f => f.alias != 'displayName');
@@ -222,13 +221,13 @@ export class SearchPage {
         person.score = 0;
         let settings = person.settings;
         let sports = person.disciplines;
-
+        person.displayName = this.utils.getDisplayName(person);
         this.filters.map((_filter) => {
           _filter.label = _filter.value;
           if(_filter.alias == 'displayName'){
             if(_filter.value) {
               let q = _filter.value;
-              let displayName = this.strManip.toLatineLowerCase(person.settings.displayName);
+              let displayName = this.strManip.toLatineLowerCase(person.displayName);
               if (displayName.indexOf(this.strManip.toLatineLowerCase(q)) > -1) {
                 person.score++;
               }

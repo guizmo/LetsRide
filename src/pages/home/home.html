@@ -101,7 +101,7 @@
   <ion-toolbar>
     <ion-title>{{ 'HOME_PAGE.MODE' | translate }}</ion-title>
     <ion-buttons end>
-      <ion-toggle [(ngModel)]="state.enabled" (ionChange)="onToggleEnabled()" color="secondary" style="display:block;"></ion-toggle>
+      <ion-toggle [(ngModel)]="state.enabled" (ionChange)="onToggleEnabled($event)" color="secondary" style="display:block;"></ion-toggle>
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>

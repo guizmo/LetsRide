@@ -116,15 +116,15 @@ export class LocationTrackerProvider {
 
   startTracking(uid: string) {
     //console.log('startTracking : cantrack = ', this.can_track);
-
-    if(this.can_track){
+    this.trackInBackground(uid);
+    /*if(this.can_track){
       //console.log('startTracking => this.trackInBackground(uid)', this.can_track);
       this.trackInBackground(uid);
     }else{
       //console.log('startTracking => this.perm.showMessage()', this.can_track);
       this.is_tracking = false;
       this.perm.showMessage();
-    }
+    }*/
 
   }
 
@@ -134,14 +134,14 @@ export class LocationTrackerProvider {
     this.tracker = this.trackerRef.snapshotChanges();
     this.timeTracker = moment();
 
-    //console.log('trackInBackground', this);
     // Background Tracking
+
 
     if(!this.bgGeolocConf){
       this.bgGeolocConf = this.backgroundGeolocation.configure(this.config);
     }
     this.bgGeolocConf.subscribe((location) => {
-      //console.log('this.backgroundGeolocation.configure', location);
+      console.log('this.bgGeolocConf.subscribe', location);
       let checkTimeTracking = this.checkTimeTracking();
 
 
@@ -300,20 +300,24 @@ export class LocationTrackerProvider {
     this.bgGeolocConf = this.backgroundGeolocation.configure(this.config);
 
     this.perm.isLocationAuthorized().then((res) => {
-      //console.log('initLocation then', res);
+      console.log('initLocation then', res);
     }).catch((res) => {
       if(res == 'GRANTED') return;
-      //console.log('initLocation catch', res);
+      console.log('initLocation catch', res);
       //console.log(this.backgroundGeolocation);
 
       this.backgroundGeolocation.start().then((res) => {
-        //console.log('start', res);
+        console.log('start backgroundGeolocation', this.platform.is('ios'));
         if (this.platform.is('ios')) {
+          console.log('is ios call finish');
           this.backgroundGeolocation.finish();
         }
+        console.log('this.backgroundGeolocation.stop');
         this.backgroundGeolocation.stop();
       });
-    })
+    }).catch((err) => {
+      console.log('this.backgroundGeolocation.start catch', err);
+    });
   }
 
 

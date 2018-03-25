@@ -90,20 +90,25 @@ export class NotificationsProvider {
     //console.log('notificationObj ', JSON.stringify(notificationObj));
 
     this.oneSignal.postNotification(notificationObj).then(res => {
-      //console.log('postNotification ', JSON.stringify(res));
       if(res.errors && res.errors.invalid_player_ids){
         let include_player_ids = notificationObj.include_player_ids.filter(val => !res.errors.invalid_player_ids.includes(val))
         notificationObj.include_player_ids = include_player_ids;
+        if(res.id == ''){
+          //when testing with simulator
+          res.id = this.randomNotifID();
+        }
       }
+      //console.log('postNotification ', JSON.stringify(res));
+      //console.log('notificationObj ', JSON.stringify(notificationObj));
       this.saveNotification(res.id, notificationObj);
     })
   }
 
+  randomNotifID() {
+    return '_' + Math.random().toString(36).substr(2, 9);
+  }
 
   saveNotification(id:string, notificationObj:any){
-    console.log('saveNotification', id);
-    console.log(notificationObj);
-
     let uids = [];
     if(notificationObj.data.to){
       if(notificationObj.data.to.user_ids){
@@ -220,7 +225,6 @@ export class NotificationsProvider {
 
 
   sendFriendRequest(dataFrom, dataTo){
-
     let contents = {
       'en': `${dataFrom.displayName} sent you a friend request!`,
       'fr': `${dataFrom.displayName} vous a envoyé une demande d'ami!`
@@ -232,12 +236,16 @@ export class NotificationsProvider {
         user_id: dataFrom.aFuid,
         pending: true,
       },
+      to: {
+        user_ids: [dataTo.aFuid]
+      },
       displayName: dataTo.settings.displayName
     };
+
     this.afdb.list(`/users/${dataTo.aFuid}/buddies`).update(dataFrom.aFuid, data.from);
 
     if(dataFrom.oneSignalId && dataTo.oneSignalId){
-      this.sendMessage([dataFrom.oneSignalId], data, contents);
+      this.sendMessage([dataTo.oneSignalId], data, contents);
     }
 
   }

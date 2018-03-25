@@ -42,6 +42,8 @@ export class LoginPage {
     public menuCtrl: MenuController,
     public loadingProvider: LoadingProvider
   ) {
+    //TODO: check why i put this code here
+    /*
     this.menuCtrl.enable(false, 'mainMenu');
     afAuth.authState.takeUntil(this.ngUnsubscribe).subscribe((_user: firebase.User) => {
       if (_user) {
@@ -49,6 +51,7 @@ export class LoginPage {
         this.navCtrl.setRoot('MainPage');
       }
     });
+    */
 
     this.signInForm = formBuilder.group({
       email: ['', Validators.compose([EmailValidator.isValid, Validators.required])],
@@ -86,26 +89,34 @@ export class LoginPage {
 
   signInWithProvider(provider:string) {
     this.loadingProvider.show();
+    console.log('loadingProvider.show');
     this.userProvider.signInWithProvider(provider)
       .then((user) => {
-
+        console.log('user', user);
+        console.log(this);
         this.alertProvider.showSignInToast(provider + ': ' + user.displayName);
 
         this.userProvider.afdb.object(`/users/${user.uid}`)
           .snapshotChanges()
           .takeUntil(this.ngUnsubscribe).subscribe((data) => {
+            console.log('this.userProvider.afdb.object(`/users/${user.uid}`)', data);
             // TODO: check if data.$exists()
             if(data){
-              this.navCtrl.setRoot('MainPage');
+              console.log('has data: login main page');
+              console.log('this.loadingProvider.hide');
               this.loadingProvider.hide();
+              this.navCtrl.setRoot('MainPage');
             }else{
+              console.log('has NO data');
               let providerData = {...user.providerData[0], ...{ aFuid: user.uid, profileImg:{}, settings : { displayName : user.displayName } } };
               this.userProvider.addUserData(providerData).takeUntil(this.ngUnsubscribe).subscribe((data) => {
+                console.log('addUserData');
                 if(data.aFuid){
                   this.navCtrl.setRoot('ProfilePage', {...providerData, ...{'emailVerified': true} } );
                 }else{
                   this.alertProvider.showErrorMessage('database/generique');
                 }
+                console.log('this.loadingProvider.hide');
                 this.loadingProvider.hide();
               });
 

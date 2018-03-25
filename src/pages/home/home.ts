@@ -102,12 +102,10 @@ export class MainPage {
 
   }
 
-  onToggleEnabled() {
-
+  onToggleEnabled(event) {
     if(this.state.enabled){
-      let that = this;
-      setTimeout(function(){
-        that.state.enabled = that.locationTracker.can_track;
+      setTimeout(() => {
+        //this.state.enabled = this.locationTracker.can_track;
       },300);
       this.locationTracker.startTracking(this.currentUser.uid);
 

@@ -58,6 +58,7 @@ export class ProfilePage {
           .then((res) => {
             this.emailVerified = res;
             this.alertProvider.showEmailVerifiedMessage();
+            this.profileViewData.emailVerified = this.emailVerified;
             this.menuCtrl.enable(this.emailVerified, 'mainMenu');
           })
           .catch((error) => {

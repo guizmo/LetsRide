@@ -1,21 +1,26 @@
-import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, Events, Content, TextInput, Button } from 'ionic-angular';
-
+import { Component, ViewChild, Renderer, ElementRef } from '@angular/core';
+import { IonicPage, NavController, NavParams, Events, Content, TextInput, Button, Platform } from 'ionic-angular';
+import { Keyboard } from '@ionic-native/keyboard';
+import { Observable, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
+import * as moment  from 'moment';
+declare var window;
 
 import { UtilsProvider, MessagesProvider } from '../../providers';
-import * as moment  from 'moment';
 
 @IonicPage()
 @Component({
   selector: 'page-message-thread',
   templateUrl: 'message-thread.html',
+  providers: [Keyboard]
 })
 export class MessageThreadPage {
+  @ViewChild('header') header: ElementRef;
   @ViewChild(Content) content: Content;
   @ViewChild('chat_input') messageInput: TextInput;
-  @ViewChild('sendButton') sendButton:Button;
+  @ViewChild('sendButton') sendButton: Button;
+  @ViewChild('mainNav') mainNav: ElementRef;
 
   threadDetail;
   chats:Array<any> = [];
@@ -28,20 +33,39 @@ export class MessageThreadPage {
   showSpinner:boolean = true;
   showNoResult:boolean = false;
   reOpenFlag:boolean = false;
-
+  private keybaordShowSub: Subscription;
+	private keyboardHideSub: Subscription;
   private ngUnsubscribe:Subject<void> = new Subject();
+  private keyboardHeight;
+  private platformHeight;
+  private mainNavElRef;
 
   constructor(
     public utils: UtilsProvider,
     public messagesProvider: MessagesProvider,
     public navCtrl: NavController,
-    public navParams: NavParams
+    public navParams: NavParams,
+    public renderer: Renderer,
+    public platform: Platform,
+    private elRef: ElementRef,
+    private keyboard: Keyboard
   ) {
     this.threadDetail = this.navParams.get('message');
     if(!this.threadDetail) this.navCtrl.setRoot('MessagesPage');
     this.user = this.navParams.get('me');
     this.viewState = (this.threadDetail && !this.threadDetail.threadId) ? 'create' : 'exist';
     console.log(this);
+
+    this.platform.ready().then(() => {
+      this.platformHeight = platform.height();
+      this.keyboard.disableScroll(true);
+    });
+  }
+
+  ionViewDidEnter() {
+    this.mainNavElRef = this.elRef.nativeElement.parentElement;
+    this.fixInputEvents();
+    this.addKeyboardListeners();
   }
 
   ionViewDidLoad(){
@@ -75,10 +99,41 @@ export class MessageThreadPage {
     this.footerIsHidden = true;
     //update seenCount
     if(this.threadDetail) this.messageRead();
+    if(this.mainNavElRef){
+      this.renderer.setElementStyle(this.mainNavElRef, 'transition', 'none');
+      this.renderer.setElementStyle(this.mainNavElRef, 'height', '100%');
+    }
+    this.removeKeyboardListeners();
   }
 
-  initChat(){
+  get keyboardStyle() {
+    let shrinKHeight = this.platformHeight - this.keyboardHeight
+    let style = {
+      'height': this.keyboardHeight ? shrinKHeight + 'px' : '100%'
+    }
+    return style;
+  }
 
+  private addKeyboardListeners() {
+    this.keybaordShowSub = Observable.fromEvent(window, 'native.keyboardshow').subscribe((e:any) => {
+      this.keyboardHeight = e.keyboardHeight;
+      this.renderer.setElementStyle(this.mainNavElRef, 'transition', 'height 0.1s linear');
+      this.renderer.setElementStyle(this.mainNavElRef, 'height', this.keyboardStyle.height)
+		});
+
+    this.keyboardHideSub = Observable.fromEvent(window, 'native.keyboardhide').subscribe((e:any) => {
+      this.keyboardHeight = e.keyboardHeight | 0;
+      this.renderer.setElementStyle(this.mainNavElRef, 'transition', 'none');
+      this.renderer.setElementStyle(this.mainNavElRef, 'height', this.keyboardStyle.height)
+		});
+	}
+
+	private removeKeyboardListeners() {
+		if (this.keybaordShowSub) this.keybaordShowSub.unsubscribe();
+		if (this.keyboardHideSub) this.keyboardHideSub.unsubscribe();
+	}
+
+  initChat(){
     let threadId = this.threadDetail.threadId;
     this.messagesProvider.getThreadDetails(threadId)
       .takeUntil(this.ngUnsubscribe)
@@ -144,7 +199,7 @@ export class MessageThreadPage {
   }
 
 
-  ionViewDidEnter(){
+  fixInputEvents(){
     this.textArea = this.messageInput._native.nativeElement;
     //https://github.com/ionic-team/ionic-plugin-keyboard/issues/81#issuecomment-278071581
     let el = this.sendButton._elementRef.nativeElement;
@@ -203,6 +258,8 @@ export class MessageThreadPage {
   scrollToBottom(duration = 300) {
     setTimeout(() => {
       if (this.content) {
+         //this.keyboard.disableScroll(false);
+        //this.content.resize();
         this.content.scrollToBottom(duration);
         if(this.showSpinner){
           this.showSpinner = false;

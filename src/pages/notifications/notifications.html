@@ -36,7 +36,7 @@
             <ion-avatar item-start>
               <img [src]="people.avatar" />
             </ion-avatar>
-            <h2>{{people.settings.displayName}}</h2>
+            <h2>{{people.displayName}}</h2>
             <button
               ion-button clear item-end icon-right
               (click)="acceptFriendRequest(i)" >
@@ -61,7 +61,7 @@
               <img *ngIf="!people.photoURL" src="./assets/img/man.svg" />
               <img *ngIf="people.photoURL" [src]="people.photoURL" />
             </ion-avatar>
-            <h2>{{people.settings.displayName}}</h2>
+            <h2>{{people.displayName}}</h2>
           </ion-item>
         </ng-container>
       </ion-list>

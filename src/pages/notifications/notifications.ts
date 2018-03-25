@@ -20,7 +20,7 @@ export class NotificationsPage {
 
   activeMenu = 'NotificationsPage';
   notifEventId = null;
-  private ngUnsubscribe:Subject<void> = new Subject(); 
+  private ngUnsubscribe:Subject<void> = new Subject();
   public disciplines:ReadonlyArray<any>;
   public eventsNotifications: any = [] ;
   public requestsNotifications: any = [] ;
@@ -82,7 +82,6 @@ export class NotificationsPage {
   }
 
   ionViewDidEnter() {
-    console.log(this);
   }
 
   ionViewDidLeave(){
@@ -179,7 +178,8 @@ export class NotificationsPage {
   getBuddiesRequest(uid:string){
     this.buddiesRequestSubscription = this.buddiesProvider.buddiesRequest.subscribe((friendRequests) => {
       friendRequests.map((_buddy) => {
-        _buddy.sortByName = _buddy.settings.displayName;
+        _buddy.displayName = this.utils.getDisplayName(_buddy);
+        _buddy.sortByName = _buddy.displayName;
 
         if(_buddy.profileImg && _buddy.profileImg.url != ''){
           _buddy.avatar = _buddy.profileImg.url;
@@ -219,6 +219,8 @@ export class NotificationsPage {
 
   acceptFriendRequest(index){
     let buddy = this.buddiesRequest[index];
+    buddy.displayName = this.utils.getDisplayName(buddy);
+
     let { aFuid, displayName, oneSignalId = null} = buddy;
     //console.log(`send notif to "${displayName}" from "${this.userData.displayName} - ${this.userData.aFuid}" @ "${oneSignalId}" after updating database for "${aFuid}"`);
 
@@ -289,6 +291,7 @@ export class NotificationsPage {
         let toRead = res.map((c) => {
           let eventKey = null;
           let payload = c.payload.val();
+
           if(payload.data.event && payload.data.event.id){
             eventKey = payload.data.event.id;
           }
@@ -302,7 +305,7 @@ export class NotificationsPage {
 
         this.badges['events'] = this.eventsNotifications.filter(res => res.read === false).length;
         this.badges['requests'] = this.requestsNotifications.filter(res => res.read === false).length;
-
+        console.log('this.messages', this.messages);
         this.clearBadges(this.messages);
       }
     });
@@ -311,6 +314,7 @@ export class NotificationsPage {
   clearBadges(type:string){
     setTimeout(() => {
       let notifsToUpdate = this[`${this.messages}Notifications`];
+      console.log('notifsToUpdate', notifsToUpdate);
       for(let notif of notifsToUpdate){
         this.notifications.setNotifState(notif.key, true);
       }
@@ -318,6 +322,7 @@ export class NotificationsPage {
   }
 
   segmentChanged(action){
+    console.log('segmentChanged', action.value);
     this.clearBadges(action.value);
   }
 
