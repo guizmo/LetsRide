@@ -116,15 +116,15 @@ export class LocationTrackerProvider {
 
   startTracking(uid: string) {
     //console.log('startTracking : cantrack = ', this.can_track);
-    this.trackInBackground(uid);
-    /*if(this.can_track){
+    //this.trackInBackground(uid);
+    if(this.can_track){
       //console.log('startTracking => this.trackInBackground(uid)', this.can_track);
       this.trackInBackground(uid);
     }else{
       //console.log('startTracking => this.perm.showMessage()', this.can_track);
       this.is_tracking = false;
       this.perm.showMessage();
-    }*/
+    }
 
   }
 

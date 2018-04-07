@@ -4,7 +4,6 @@ import { Nav, Platform, MenuController, Events, App} from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AppVersion } from '@ionic-native/app-version';
-//import { Keyboard } from '@ionic-native/keyboard';
 
 import { Translate, UserProvider, NotificationsProvider, LocationTrackerProvider, HotUpdateProvider } from '../providers';
 
@@ -53,7 +52,6 @@ export class LetsRide {
     private hotUpdate: HotUpdateProvider,
     private app: App,
     public events: Events,
-    //private keyboard: Keyboard
   ) {
     this.menuCtrl.enable(false, 'mainMenu');
     console.log('app component', this.translate.browserLang);
@@ -82,7 +80,6 @@ export class LetsRide {
   initializeApp() {
     this.platform.ready().then(() => {
       if(this.platform.is('cordova')){
-        //this.keyboard.disableScroll(true);
         if(this.hotUpdate.loader){
           this.hotUpdate.loader.dismiss();
         }

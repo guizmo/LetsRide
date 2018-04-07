@@ -17,7 +17,6 @@ import { FilePath } from '@ionic-native/file-path';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { AppVersion } from '@ionic-native/app-version';
 import { CodePush } from '@ionic-native/code-push';
-//import { Keyboard } from '@ionic-native/keyboard';
 
 import { MomentModule } from 'angular2-moment';
 import { VirtualScrollModule } from 'angular2-virtual-scroll';
@@ -156,7 +155,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     PeopleProvider,
     Diagnostic,
     CodePush,
-    //Keyboard,
     AppVersion,
     PermissionsProvider,
     VirtualScrollModule,

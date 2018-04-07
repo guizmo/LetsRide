@@ -7,7 +7,7 @@ import { Subject } from 'rxjs/Subject';
 import * as moment  from 'moment';
 declare var window;
 
-import { UtilsProvider, MessagesProvider } from '../../providers';
+import { UtilsProvider, MessagesProvider, NotificationsProvider } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -43,6 +43,7 @@ export class MessageThreadPage {
   constructor(
     public utils: UtilsProvider,
     public messagesProvider: MessagesProvider,
+    private notifications: NotificationsProvider,
     public navCtrl: NavController,
     public navParams: NavParams,
     public renderer: Renderer,
@@ -57,8 +58,10 @@ export class MessageThreadPage {
     console.log(this);
 
     this.platform.ready().then(() => {
-      this.platformHeight = platform.height();
-      this.keyboard.disableScroll(true);
+      if(this.platform.is('cordova')){
+        this.platformHeight = platform.height();
+        this.keyboard.disableScroll(true);
+      }
     });
   }
 
@@ -139,17 +142,27 @@ export class MessageThreadPage {
       .takeUntil(this.ngUnsubscribe)
       .subscribe( res => {
         this.chatDetails = res;
+        //console.log(res);
       });
-    console.log('created on ', this.threadDetail.created_date);
+    //console.log('created on ', this.threadDetail.created_date);
     this.messagesProvider.getThread(threadId, this.threadDetail.created_date)
       .takeUntil(this.ngUnsubscribe)
+      .map(res => res.map(r => ({ dateFormat: this.utils.dateTransform(r.timestamp), ...r }) )  )
       .subscribe( res => {
         let duration = !this.chats.length ? 0 : 300;
-        let notPresentInData = res.filter((val, index) => !this.chats[index]);
-        notPresentInData.forEach(r => {
-          r.dateFormat = this.utils.dateTransform(r.timestamp);
-          this.chats.push(r);
-        });
+        if(!this.chats.length){
+          this.chats = res;
+        }else{
+          let notPresentInData = res.filter((val, index) => !this.chats[index]);
+          notPresentInData.forEach((r, index) => {
+            //r.dateFormat = this.utils.dateTransform(r.timestamp);
+            //console.log(r, index);
+            if(!r.state && r.user_id != this.user.aFuid) r.state = 'seen';
+            //if(index == notPresentInData.length )
+            this.chats.push(r);
+          });
+        }
+
         this.scrollToBottom(duration);
       });
 
@@ -196,6 +209,37 @@ export class MessageThreadPage {
     this.editorMsg = '';
     this.messageInput.setFocus();
     this.adjust(false);
+
+    if(this.threadDetail.oneSignalId) this.sendNotification(message);
+  }
+
+  sendNotification(message){
+    setTimeout(() => {
+      let latestMsg = this.chats.filter(c => c.timestamp == message.timestamp);
+      if(latestMsg.length && latestMsg[0].state === false){
+        let data = {
+          type: 'chat',
+          from: {
+            oneSignalId: this.user.oneSignalId,
+            user_id: this.user.aFuid
+          },
+          to: {
+            user_ids: [this.threadDetail.key]
+          },
+          displayName: this.user.displayName
+        };
+
+        let contents = {
+          'en': message.payload,
+          'fr': message.payload
+        }
+        let headings = {
+          'en': this.user.displayName,
+          'fr': this.user.displayName
+        }
+        this.notifications.sendMessage([this.threadDetail.oneSignalId], data, contents, headings);
+      }
+    }, 1500)
   }
 
 

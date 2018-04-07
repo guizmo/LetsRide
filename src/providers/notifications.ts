@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { App, AlertController } from 'ionic-angular';
+import { App, AlertController, Platform } from 'ionic-angular';
 
 import {OneSignal} from '@ionic-native/onesignal';
 
@@ -27,6 +27,7 @@ export class NotificationsProvider {
     private oneSignal: OneSignal,
     private afdb: AngularFireDatabase,
     private app: App,
+    public platform: Platform,
     private alertCtrl: AlertController
   ) {
     //console.log('OneSignal', this);
@@ -89,19 +90,25 @@ export class NotificationsProvider {
 
     //console.log('notificationObj ', JSON.stringify(notificationObj));
 
-    this.oneSignal.postNotification(notificationObj).then(res => {
-      if(res.errors && res.errors.invalid_player_ids){
-        let include_player_ids = notificationObj.include_player_ids.filter(val => !res.errors.invalid_player_ids.includes(val))
-        notificationObj.include_player_ids = include_player_ids;
-        if(res.id == ''){
-          //when testing with simulator
-          res.id = this.randomNotifID();
+
+    if(this.platform.is('cordova')){
+      this.oneSignal.postNotification(notificationObj).then(res => {
+        console.log('postNotification', res);
+        if(res.errors && res.errors.invalid_player_ids){
+          let include_player_ids = notificationObj.include_player_ids.filter(val => !res.errors.invalid_player_ids.includes(val))
+          notificationObj.include_player_ids = include_player_ids;
+          if(res.id == ''){
+            //when testing with simulator
+            res.id = this.randomNotifID();
+          }
         }
-      }
-      //console.log('postNotification ', JSON.stringify(res));
-      //console.log('notificationObj ', JSON.stringify(notificationObj));
-      this.saveNotification(res.id, notificationObj);
-    })
+        //console.log('postNotification ', JSON.stringify(res));
+        //console.log('notificationObj ', JSON.stringify(notificationObj));
+        this.saveNotification(res.id, notificationObj);
+      });
+    }else{
+      console.log('Not in cordova ', notificationObj);
+    }
   }
 
   randomNotifID() {
@@ -168,6 +175,9 @@ export class NotificationsProvider {
           break;
         case 'newEvent':
           page = 'NotificationsPage'
+          break;
+        case 'chat':
+          page = 'MessagesPage'
           break;
         default:
           page = 'NotificationsPage'

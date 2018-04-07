@@ -95,14 +95,19 @@ export class MessagesProvider {
       fromUserUpdate.threadId = threadId;
     }
     this.threadRef.push(msg).then(res => {
-      this.threadDetailsRef.update({last_msg_added: res.key, timestamp: msg.timestamp  })
+      this.updateThreadDetails({last_msg_added: res.key, timestamp: msg.timestamp  })
       this.fromUserThreadRef.update(fromUserUpdate)
       this.toUserThreadRef.update({unseenCount: 1, timestamp: msg.timestamp  })
     })
   }
 
   messageRead(uid){
-    this.threadsRef.update(uid, {unseenCount:0})
+    this.threadsRef.update(uid, {unseenCount:0});
+    //this.updateThreadDetails({state: 'seen'})
+  }
+
+  updateThreadDetails(data){
+    this.threadDetailsRef.update(data);
   }
 
   removeThread(threadDetails){

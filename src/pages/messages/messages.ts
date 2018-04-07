@@ -93,12 +93,14 @@ export class MessagesPage {
       if(this.buddies.length && ( bud = this.buddies.find(bud => bud.aFuid == thread.key) ) ){
         thread.displayName = bud.displayName;
         thread.profileImgPath = bud.profileImgPath;
+        thread.oneSignalId = bud.oneSignalId;
       }else{
         this.buddiesProvider.getUserByID(thread.key)
           .take(1)
-          .subscribe( (user) => {
+          .subscribe( (user:any) => {
             thread.displayName = this.utils.getDisplayName(user);
             thread.profileImgPath = this.utils.getProfileImg(user);
+            thread.oneSignalId = user.oneSignalId;
           });
       }
     });
