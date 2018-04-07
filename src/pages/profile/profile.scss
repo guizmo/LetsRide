@@ -47,6 +47,13 @@ page-profile {
       margin: auto;
     }
   }
+  
+  .block-bottom{
+    display: flex;
+    ion-scroll{
+      flex: 1;
+    }
+  }
 
 
   #profile-info {

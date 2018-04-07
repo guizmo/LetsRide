@@ -65,6 +65,7 @@ export class MainPage {
     this.currentUser = this.userProvider.userObject;
     this.userProvider.getUser().takeUntil(this.ngUnsubscribe).subscribe(user => {
       if(user){
+        console.log('user', user);
         this.currentUser = this.userProvider.currentUser;
         this.userSettings = user;
         this.userProvider.checkProviderInfos(user);
@@ -143,6 +144,7 @@ export class MainPage {
         distanceMax: this.search.radius,
       })
       .then((res) => {
+        console.log('res', res);
         subscribtion_is_done = true;
         if(this.search.friends){
           res = this.filterByBuddies(res);
@@ -239,7 +241,7 @@ export class MainPage {
       userId: this.currentUser.uid,
       buddy: this.peopleAround[index]
     }
-    console.log(data);
+
     let modal = this.modalCtrl.create('ModalNavPage', data);
     modal.present();
     modal.onDidDismiss(data => {

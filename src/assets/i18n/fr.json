@@ -9,7 +9,7 @@
   "SIGNUP": "Inscription",
 
   "ME": "moi",
-  
+
   "TAB1_TITLE": "Items",
   "TAB2_TITLE": "Recherche",
 
@@ -264,7 +264,8 @@
   "MAP_PAGE": {
     "SEARCH_PLACEHOLDER": "Entrer un lieu",
     "EVENT_HEAD": "L'événement en détail",
-    "EVENT_SUB_HEAD": "Les autres participants"
+    "EVENT_SUB_HEAD": "Les autres participants",
+    "LOADER": "Recherche de la position ..."
   },
 
   "CAPTURE_PROVIDER": {

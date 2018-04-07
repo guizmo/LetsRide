@@ -8,10 +8,10 @@
 
 
 
-<ion-content fullscreen>
+<ion-content >
   <div id="content" class="block-content" block-flex>
     <div class="block-top" >
-      <div class="body-text" padding text-center f-width margin-top margin-bottom>
+      <div class="body-text" padding text-center f-width>
         <h1>{{buddies.length}} <span>{{ 'BUDDIES_PAGE.TITLE' | translate }}</span></h1>
         <p>{{ 'BUDDIES_PAGE.BODY' | translate }}</p>
         <!-- <button ion-button (click)="goto('ContactPage')">Invite them</button> -->
@@ -23,37 +23,39 @@
     </div>
 
     <div id="friend-list" class="block-bottom" block-grow>
-      <ion-spinner class="list-content" *ngIf="showSpinner"></ion-spinner>
-      <div class="no-result-card" *ngIf="showNoResult">
-        <ion-card>
-          <ion-card-header>
-            {{ 'BUDDIES_PAGE.CARD_HEAD' | translate }}
-          </ion-card-header>
-          <ion-card-content color="dark">
-            {{ 'BUDDIES_PAGE.CARD_CONTENT' | translate }}
-          </ion-card-content>
-        </ion-card>
-      </div>
-      <ion-list no-margin>
-        <ion-item-sliding *ngFor="let buddy of buddies | orderBy : ['sortByName']; let i = index">
-          <button ion-item (click)="showPerson(buddy)">
-            <ion-avatar item-start>
-              <img src="{{buddy.profileImgPath}}" (error)="updateUrl($event, i)">
-            </ion-avatar>
-            <h2 *ngIf="buddy.settings">{{buddy.settings.displayName}}</h2>
-            <h3 *ngIf="buddy.settings">{{buddy.settings.countryName}}</h3>
-            <ion-icon *ngIf="buddy.isNewBud == 'a_true'" color="dark" name="person-add" item-end></ion-icon>
-          </button>
-
-          <ion-item-options side="right">
-            <button ion-button color="danger" icon-only (click)="removeFriend($event, i)">
-              <ion-icon name="remove-circle"></ion-icon>
+      <ion-scroll scrollY="true">
+        <ion-spinner class="list-content" *ngIf="showSpinner"></ion-spinner>
+        <div class="no-result-card" *ngIf="showNoResult">
+          <ion-card>
+            <ion-card-header>
+              {{ 'BUDDIES_PAGE.CARD_HEAD' | translate }}
+            </ion-card-header>
+            <ion-card-content color="dark">
+              {{ 'BUDDIES_PAGE.CARD_CONTENT' | translate }}
+            </ion-card-content>
+          </ion-card>
+        </div>
+        <ion-list no-margin>
+          <ion-item-sliding *ngFor="let buddy of buddies | orderBy : ['sortByName']; let i = index">
+            <button ion-item (click)="showPerson(buddy)">
+              <ion-avatar item-start>
+                <img src="{{buddy.profileImgPath}}" (error)="updateUrl($event, i)">
+              </ion-avatar>
+              <h2 *ngIf="buddy.settings">{{buddy.settings.displayName}}</h2>
+              <h3 *ngIf="buddy.settings">{{buddy.settings.countryName}}</h3>
+              <ion-icon *ngIf="buddy.isNewBud == 'a_true'" color="dark" name="person-add" item-end></ion-icon>
             </button>
-          </ion-item-options>
 
-        </ion-item-sliding>
+            <ion-item-options side="right">
+              <button ion-button color="danger" icon-only (click)="removeFriend($event, i)">
+                <ion-icon name="remove-circle"></ion-icon>
+              </button>
+            </ion-item-options>
 
-      </ion-list>
+          </ion-item-sliding>
+
+        </ion-list>
+    </ion-scroll>
     </div>
 
   </div>

@@ -47,6 +47,7 @@ export class MapPage {
   fullscreen:boolean = true;
   backButton: string = 'Cancel';
   saveButton: string = 'Save';
+  loaderText: string = '';
   buddy:any = null;
   markerDraggable:boolean = true;
   public state: string;
@@ -79,10 +80,11 @@ export class MapPage {
     (!this.utils.countries) ? this.utils.getCountries().then(res => this.countries = res) : this.countries = this.utils.countries;
     (!this.utils.disciplines) ? this.utils.getDisciplines().then(res => this.disciplines = res) : this.disciplines = this.utils.disciplines;
     this.mapStyle = MapStyle;
-    this.translateService.get(['SAVE_BUTTON', 'CANCEL_BUTTON', 'DONE_BUTTON', 'BACK_BUTTON_TEXT']).takeUntil(this.ngUnsubscribe).subscribe((values) => {
+    this.translateService.get(['SAVE_BUTTON', 'CANCEL_BUTTON', 'DONE_BUTTON', 'BACK_BUTTON_TEXT', 'MAP_PAGE']).takeUntil(this.ngUnsubscribe).subscribe((values) => {
       this.translatedStrings = values;
       this.backButton = values.CANCEL_BUTTON;
       this.saveButton = values.SAVE_BUTTON;
+      this.loaderText = values.MAP_PAGE.LOADER;
     });
 
     this.zoomControlOptions = { position: ControlPosition.RIGHT_CENTER};
@@ -226,7 +228,7 @@ export class MapPage {
 
 
   setCurrentPosition() {
-    this.presentLoader('Searching Location ...');
+    this.presentLoader(this.loaderText);
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
         let lat = position.coords.latitude;

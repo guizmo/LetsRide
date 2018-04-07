@@ -33,14 +33,14 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content fullscreen>
+<ion-content>
   <div id="content" class="block-content" block-flex *ngIf="currentUser && profileViewData">
     <div id="profile-info" class="block-top" v-height="35">
 
       <div class="profile">
         <ion-spinner *ngIf="!profileImgLoaded"></ion-spinner>
         <!-- <img id="profile-image" [hidden]="!profileImgLoaded" (load)="imageHasLoaded()" [src]="profileViewData.profileImgPath" tappable (click)="changeProfileImg()"  /> -->
-        <ion-img id="profile-image" [src]="profileViewData.profileImgPath" (click)="changeProfileImg()"></ion-img>
+        <ion-img id="profile-image" [src]="profileViewData.profileImgPath" (click)="!isAnyProfile ? changeProfileImg(): return;"></ion-img>
       </div>
 
       <!-- Show icon of logged in provider -->
@@ -57,15 +57,15 @@
       </h3>
     </div>
     <ion-item text-center color="danger" *ngIf="!profileViewData.emailVerified" no-lines>
-      <p padding-left padding-right [innerHTML]="'PROFILE_PAGE.EMAIL_VERIFY' | translate">You must verify your email to use Let's Ride!<br>Check you mailbox!</p>
+      <p padding-left padding-right [innerHTML]="'PROFILE_PAGE.EMAIL_VERIFY' | translate"></p>
     </ion-item>
 
     <div class="userData block-bottom" block-grow>
-
+      <ion-scroll scrollY="true">
         <ion-list >
           <ion-item>
             <ion-icon name="pin" item-start></ion-icon>
-            <button block clear ion-button icon-left class="form-placeholder" *ngIf="!profileViewData.settings.city && !profileViewData.settings.country"  (click)="presentProfileModal()">{{'PROFILE_PAGE.LOCATION_BTN' | translate}}</button>
+            <button block clear ion-button icon-left class="form-placeholder" *ngIf="!isAnyProfile && !profileViewData.settings.city && !profileViewData.settings.country"  (click)="presentProfileModal()">{{'PROFILE_PAGE.LOCATION_BTN' | translate}}</button>
             {{profileViewData.settings.city}}
             <ng-container *ngIf="profileViewData.settings.city && profileViewData.settings.country"> | </ng-container>
             {{profileViewData.settings.countryName}}
@@ -73,7 +73,7 @@
 
           <ion-item >
               <ion-icon *ngIf="!profileViewData.settings.age && !profileViewData.settings.gender || !profileViewData.settings.gender" name="person" item-start></ion-icon>
-              <button *ngIf="!profileViewData.settings.age && !profileViewData.settings.gender" block clear ion-button icon-left class="form-placeholder"  (click)="presentProfileModal()">{{'PROFILE_PAGE.INFOS_BTN' | translate}}</button>
+              <button *ngIf="!isAnyProfile && !profileViewData.settings.age && !profileViewData.settings.gender" block clear ion-button icon-left class="form-placeholder"  (click)="presentProfileModal()">{{'PROFILE_PAGE.INFOS_BTN' | translate}}</button>
             <ng-container *ngIf="profileViewData.settings.gender" [ngSwitch]="profileViewData.settings.gender" item-start>
               <ion-icon *ngSwitchCase="'Male'" name="man" item-start></ion-icon>
               <ion-icon *ngSwitchCase="'Female'" name="woman" item-start></ion-icon>
@@ -83,7 +83,7 @@
         </ion-list>
 
         <ion-list >
-          <ion-item *ngIf="!profileViewData.disciplines" no-lines>
+          <ion-item *ngIf="!isAnyProfile && !profileViewData.disciplines" no-lines>
             <ion-icon name="bicycle" item-start></ion-icon>
             <button block clear ion-button icon-left class="form-placeholder"  (click)="presentProfileModal()">{{'PROFILE_PAGE.STYLE_BTN' | translate}}</button>
           </ion-item>
@@ -100,7 +100,7 @@
         <ion-list no-margin>
           <ion-item>
             <ion-icon name="fa-signal" item-start></ion-icon>
-            <button block clear ion-button icon-left class="form-placeholder" *ngIf="!profileViewData.settings.level"  (click)="presentProfileModal()">{{'PROFILE_PAGE.LEVEL_BTN' | translate}}</button>
+            <button block clear ion-button icon-left class="form-placeholder" *ngIf="!isAnyProfile && !profileViewData.settings.level"  (click)="presentProfileModal()">{{'PROFILE_PAGE.LEVEL_BTN' | translate}}</button>
             <ng-container [ngSwitch]="profileViewData.settings.level">
               <span *ngSwitchCase="'1'">{{'PROFILE_PAGE.LEVEL.1' | translate}}</span>
               <span *ngSwitchCase="'2'">{{'PROFILE_PAGE.LEVEL.2' | translate}}</span>
@@ -110,7 +110,8 @@
             </ng-container>
           </ion-item>
         </ion-list>
-      </div><!-- profileViewData -->
+      </ion-scroll>
+    </div><!-- profileViewData -->
 
   </div> <!-- #content -->
 </ion-content>

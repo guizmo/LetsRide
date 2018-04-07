@@ -234,6 +234,7 @@ export class LocationTrackerProvider {
     return new Promise<any>( (resolve, reject) => {
 
       this.geolocation.getCurrentPosition().then((position) => {
+        console.log('this.geolocation.getCurrentPosition');
 
         settings.lat = position.coords.latitude;
         settings.lng = position.coords.longitude;

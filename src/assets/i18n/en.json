@@ -266,7 +266,8 @@
   "MAP_PAGE": {
     "SEARCH_PLACEHOLDER": "Enter a location",
     "EVENT_HEAD": "Event details",
-    "EVENT_SUB_HEAD": "They are going to ..."
+    "EVENT_SUB_HEAD": "They are going too ...",
+    "LOADER": "Searching Location ..."
   },
 
   "CAPTURE_PROVIDER": {

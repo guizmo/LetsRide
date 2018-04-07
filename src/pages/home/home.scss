@@ -59,6 +59,17 @@ page-home {
     color: #bfbfbf;
   }
 
+  ion-toolbar{
+    ion-label{
+      color: #fff;
+    }
+    ion-item{
+      background-color: transparent !important;
 
+      .toggle-ios .toggle-icon::before{
+        //background-color: $brand;
+      }
+    }
+  }
 
 }

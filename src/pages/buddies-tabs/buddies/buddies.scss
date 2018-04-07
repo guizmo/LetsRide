@@ -20,6 +20,10 @@ page-buddies {
   }
   .block-bottom{
     //padding-bottom: 5rem;
+    display: flex;
+    ion-scroll{
+      flex: 1;
+    }
   }
 
   .block-content{
