@@ -21,7 +21,7 @@ export class MessagesProvider {
   public threadRef:AngularFireList<any>;
   public threadDetails: Observable<any>;
   public thread: Observable<any>;
-  public hasThread:Subject<void> = new Subject();
+  public hasThread:Subject<string> = new Subject();
 
   constructor(
     public afdb: AngularFireDatabase,

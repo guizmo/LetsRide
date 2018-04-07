@@ -92,6 +92,8 @@ export class ProfilePage {
   ionViewDidLeave(){
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+    this.fileProvider.ngUnsubscribe.next();
+    this.fileProvider.ngUnsubscribe.complete();
   }
 
   sendFriendRequest(clickEvent: Event, index){
@@ -135,8 +137,7 @@ export class ProfilePage {
   changeProfileImg(){
     let profileImgName = (this.profileViewData.profileImg && this.profileViewData.profileImg.fileName)? this.profileViewData.profileImg.fileName :  null;
     let timestamp = moment().valueOf()+Math.floor((Math.random() * 100) + 1);
-    this.fileProvider.openGallery(timestamp, this.profileViewData.settings.displayName)
-      .then((res) => {
+    this.fileProvider.openGallery(timestamp, this.profileViewData).then((res) => {
         let data = {
           profileImg:{
             fileName: res.fileName,
@@ -145,7 +146,7 @@ export class ProfilePage {
         }
         this.userProvider.updateUserData(data);
         if(profileImgName){
-          this.fileProvider.delete(profileImgName);
+          //this.fileProvider.delete(this.currentUser.uid, profileImgName);
         }
       })
       .catch((err) => console.log(err));
@@ -155,9 +156,9 @@ export class ProfilePage {
     //this.fileProvider.uploadImage('default.png');
   }
   getProfileImg(){
-    this.fileProvider.getUrl('default.png');
+    //not used
+    this.fileProvider.getUrl(this.currentUser.uid, 'profile.jpg');
   }
-
 
   presentProfileModal() {
 

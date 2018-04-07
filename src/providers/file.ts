@@ -1,25 +1,27 @@
 import { Injectable, Inject } from '@angular/core';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 
-import { FirebaseApp } from 'angularfire2';
-//import * as firebase from 'firebase';
-
+import { AngularFireStorage } from 'angularfire2/storage';
+import { Observable } from "rxjs/Rx";
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
 @Injectable()
 export class FileProvider {
 
   private firebase:any;
   private storageRef:any;
+  private uploadPercent: Observable<number>;
+  private downloadURL: Observable<string>;
+  ngUnsubscribe:Subject<void> = new Subject();
 
   constructor(
-    @Inject(FirebaseApp) firebaseApp: any,
-    private camera: Camera
+    private camera: Camera,
+    private storage: AngularFireStorage
   ) {
-    this.firebase = firebaseApp.firebase_;
-    //console.log(this);
   }
 
-  openGallery(timestamp, userName) {
+  openGallery(timestamp, user) {
     const options: CameraOptions = {
       quality: 60,
       destinationType: this.camera.DestinationType.DATA_URL,
@@ -30,19 +32,21 @@ export class FileProvider {
       targetHeight: 100
     }
 
-    let fileName = timestamp + '-' + this.sanitizeString(userName) + '.jpg';
+    const uid = user.aFuid;
 
+    //let fileName = timestamp + '-' + this.sanitizeString(userName) + '.jpg';
+    //let fileName = uid+'/profile.jpg';
+    let fileName = 'profile.jpg';
     return new Promise<any>( (resolve, reject) => {
       this.camera.getPicture(options).then((imageData) => {
        // imageData is either a base64 encoded string or a file URI
        // If it's base64:
        let base64Image = 'data:image/jpeg;base64,' + imageData;
-       this.uploadImage(base64Image, fileName).then((res) => {
-         let success = {
+       this.uploadImage(base64Image, fileName, uid).then((res) => {
+         resolve({
            fileName: fileName,
            url: res
-         }
-         resolve(success);
+         });
        }).catch((err) => reject(err) );
       }, (err) => {
        // Handle error
@@ -54,18 +58,35 @@ export class FileProvider {
 
 
 
-  uploadImage(data, fileName) {
 
-    //let blob = this.dataURItoBlob(data);
+  uploadImage(base64Image, fileName, uid) {
+    const ref = this.storage.ref(`/users/${uid}/${fileName}`);
+    const uploadTask = ref.putString(base64Image, 'data_url');
+    //const uploadTask = this.storage.upload(`/users/${filePath}`, data);
+
 
     return new Promise<any>( (resolve, reject) => {
+      // observe percentage changes
+      uploadTask.percentageChanges().takeUntil(this.ngUnsubscribe).subscribe(res => {
+        let progress = res/100;
+        console.log('uploadPercent', progress.toFixed(0) );
+      }, err => {
+        reject(err);
+        console.log(err);
+      })
 
-      this.storageRef = this.firebase.storage().ref();
-      //console.log(this.storageRef);
+      // get notified when the download URL is available
+      uploadTask.downloadURL().takeUntil(this.ngUnsubscribe).subscribe(res => {
+        console.log('downloadURL', res)
+        resolve(res);
+      }, err => {
+        reject(err);
+        console.log(err);
+      })
 
-      let uploadTask = this.storageRef.child(`/users/${fileName}`).putString(data, 'data_url');
+      //let uploadTask = this.storageRef.child(`/users/${fileName}`).putString(data, 'data_url');
 
-      uploadTask.on('state_changed', function(snapshot) {
+      /*uploadTask.on('state_changed', function(snapshot) {
         let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         //console.log('progress = ', progress);
         switch (snapshot.state) {
@@ -80,45 +101,49 @@ export class FileProvider {
       }, function() {
         let downloadURL = uploadTask.snapshot.downloadURL;
         resolve(downloadURL);
-      });
+      });*/
     });
   }
 
 
-  getUrl(fileName){
-    let storageRef = this.firebase.storage().ref().child(`/users/${fileName}`);
-    storageRef.getDownloadURL().then(url =>
-      console.log(url)
-    );
+
+  getUrl(uid, fileName){
+    const storageRef = this.storage.ref(`/users/${uid}/${fileName}`);
+    storageRef.getDownloadURL().takeUntil(this.ngUnsubscribe).subscribe(res => {
+      console.log('downloadURL', res)
+    }, err => {
+      console.log(err);
+    })
+
   }
 
-  delete(fileName){
-    let storageRef = this.firebase.storage().ref().child(`/users/${fileName}`);
+  delete(uid, fileName){
+    const storageRef = this.storage.ref(`/users/${uid}/${fileName}`);
+
     console.log('delete(fileName)', storageRef);
-    storageRef.delete().then(function() {
+    storageRef.delete().takeUntil(this.ngUnsubscribe).subscribe(res => {
       console.log('delete success');
-    }).catch(function(error) {
-      console.log('delete fail', error);
-    });
+    }, err => {
+      console.log('delete fail', err);
+    })
   }
 
   dataURItoBlob(dataURI) {
     // convert base64 to raw binary data held in a string
-    // doesn't handle URLEncoded DataURIs - see stack overflow answer #6850276 for code that does this
     var byteString = atob(dataURI.split(',')[1]);
 
     // separate out the mime component
-    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
 
     // write the bytes of the string to an ArrayBuffer
-    var ab = new ArrayBuffer(byteString.length);
-    var ia = new Uint8Array(ab);
+    var arrayBuffer = new ArrayBuffer(byteString.length);
+    var _ia = new Uint8Array(arrayBuffer);
     for (var i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
+        _ia[i] = byteString.charCodeAt(i);
     }
 
-    // write the ArrayBuffer to a blob
-    var blob = new Blob([ab], {type: mimeString});
+    var dataView = new DataView(arrayBuffer);
+    var blob = new Blob([dataView], { type: mimeString });
     return blob;
   }
 
